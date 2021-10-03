@@ -122,7 +122,7 @@ s4.rectangle(point1=(0.0, 0.0), point2=(b_width / sc, b_height / sc))
 s4.unsetPrimaryObject()
 print('Sketching done!')
 
-# # Part creation:
+# Part creation:
 p = mdb.models['Model-1'].Part(name='CfWeave1', dimensionality=THREE_D, type=DEFORMABLE_BODY)
 p1 = mdb.models['Model-1'].Part(name='CfWeave2', dimensionality=THREE_D, type=DEFORMABLE_BODY)
 p2 = mdb.models['Model-1'].Part(name='ResinBlock', dimensionality=THREE_D, type=DEFORMABLE_BODY)
@@ -134,35 +134,35 @@ p1.BaseSolidSweep(sketch=s3, path=s2)
 p2.BaseSolidExtrude(sketch=s4, depth=b_width / sc)
 print('Part creation done!')
 
-# # Delete sketches:
+# Delete sketches:
 del mdb.models['Model-1'].sketches['__sweep2__']
 del mdb.models['Model-1'].sketches['__sweep1__']
 del mdb.models['Model-1'].sketches['__profile3__']
 del mdb.models['Model-1'].sketches['__profile2__']
 del mdb.models['Model-1'].sketches['__profile1__']
 
-# # Material creation:
+# Material creation:
 mdb.models['Model-1'].Material(name=f_name)
 mdb.models['Model-1'].Material(name=m_name)
 mdb.models['Model-1'].materials[f_name].Elastic(table=((f_YsM, f_PsR), ))
 mdb.models['Model-1'].materials[m_name].Elastic(table=((m_YsM, m_PsR), ))
 
-# # Section creation:
+# Section creation:
 mdb.models['Model-1'].HomogeneousSolidSection(name='Cf_sec', material=f_name, thickness=None)
 mdb.models['Model-1'].HomogeneousSolidSection(name='Epo_sec', material=m_name, thickness=None)
 
-# # Assembly creation:
+# Assembly creation:
 a = mdb.models['Model-1'].rootAssembly
 a.DatumCsysByDefault(CARTESIAN)
 
-# # Instance creation:
+# Instance creation:
 a.Instance(name='CfWeave1-1', part=p, dependent=ON)
 a.Instance(name='CfWeave1-2', part=p, dependent=ON)
 a.Instance(name='CfWeave2-1', part=p1, dependent=ON)
 a.Instance(name='CfWeave2-2', part=p1, dependent=ON)
 a.Instance(name='ResinBlock-1', part=p2, dependent=ON)
 
-# # Weave arrangement:
+# Weave arrangement:
 a.rotate(instanceList=('CfWeave1-1', 'CfWeave2-1'), axisPoint=(0.0, 0.0, 0.0), axisDirection=(0.0, -90.0, 0.0), angle=90.0)
 a.translate(instanceList=('CfWeave1-1', 'CfWeave2-1'), vector=((e_width / (2 * sc)), 0.0, 0.0))
 a.translate(instanceList=('CfWeave2-1', ), vector=((period), 0.0, 0.0))
@@ -179,22 +179,22 @@ a.InstanceFromBooleanMerge(name='Fibers', instances=(a.instances['CfWeave1-1'], 
                                                      a.instances['CfWeave2-1-lin-6-1'], a.instances['CfWeave2-2-lin-2-1'], a.instances['CfWeave2-2-lin-3-1'], a.instances['CfWeave2-2-lin-4-1'], a.instances['CfWeave2-2-lin-5-1'], a.instances['CfWeave2-2-lin-6-1'],
                                                      a.instances['CfWeave1-2-lin-2-1'], a.instances['CfWeave1-2-lin-3-1'], a.instances['CfWeave1-2-lin-4-1'], a.instances['CfWeave1-2-lin-5-1'], a.instances['CfWeave1-2-lin-6-1'], ), originalInstances=DELETE, domain=GEOMETRY)
 
-# # Delete original weaves:
+# Delete original weaves:
 del mdb.models['Model-1'].parts['CfWeave1']
 del mdb.models['Model-1'].parts['CfWeave2']
 p = mdb.models['Model-1'].parts['Fibers']
 
-# # Resin matrix creation:
+# Resin matrix creation:
 a.translate(instanceList=('ResinBlock-1', ), vector=((overhang / sc), -(b_height / (2 * sc)), (overhang / sc)))
 a.Instance(name='Fibers-2', part=p, dependent=ON)
 a.InstanceFromBooleanCut(name='ResinMatrix', instanceToBeCut=mdb.models['Model-1'].rootAssembly.instances['ResinBlock-1'], cuttingInstances=(a.instances['Fibers-2'], ), originalInstances=DELETE)
 
-# # Delete original resin block:
+# Delete original resin block:
 del mdb.models['Model-1'].parts['ResinBlock']
 p1 = mdb.models['Model-1'].parts['ResinMatrix']
 print('Assembly done!')
 
-# # Section assignment:
+# Section assignment:
 c = p.cells
 cells = c.getSequenceFromMask(mask=('[#ffffff ]', ), )
 region = regionToolset.Region(cells=cells)
@@ -204,7 +204,7 @@ cells = c1.getSequenceFromMask(mask=('[#1 ]', ), )
 region = regionToolset.Region(cells=cells)
 p1.SectionAssignment(region=region, sectionName='Epo_sec', offset=0.0, offsetType=MIDDLE_SURFACE, offsetField='', thicknessAssignment=FROM_SECTION)
 
-# # Seeding and meshing:
+# Seeding and meshing:
 p.seedPart(size=(md / sc), deviationFactor=0.1, minSizeFactor=0.1)
 p.generateMesh()
 p1.seedPart(size=(md / sc), deviationFactor=0.1, minSizeFactor=0.1)
@@ -222,10 +222,10 @@ p1.generateMesh()
 a.regenerate()
 print('Meshing done!')
 
-# # Static analysis step:
+# Static analysis step:
 mdb.models['Model-1'].StaticStep(name='StaticAnalysis', previous='Initial')
 
-# # Boundary conditions (x-y supports):
+# Boundary conditions (x-y supports):
 e1 = a.instances['ResinMatrix-1'].edges
 edges1 = e1.getSequenceFromMask(mask=('[#0:2 #40000 ]', ), )
 region = regionToolset.Region(edges=edges1)
@@ -238,17 +238,17 @@ region = regionToolset.Region(edges=edges1)
 mdb.models['Model-1'].DisplacementBC(name='BC-2', createStepName='StaticAnalysis', region=region, u1=0.0, u2=0.0,
                                      u3=UNSET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
 
-# # Load (uniform pressure):
+# Load (uniform pressure):
 s1 = a.instances['ResinMatrix-1'].faces
 side1Faces1 = s1.getSequenceFromMask(mask=('[#10000000 ]', ), )
 region = regionToolset.Region(side1Faces=side1Faces1)
 mdb.models['Model-1'].Pressure(name='PressureLoad', createStepName='StaticAnalysis', region=region, distributionType=UNIFORM, field='', magnitude=p_mag, amplitude=UNSET)
 
-# # Job creation:
+# Job creation:
 mdb.Job(name='Job-1', model='Model-1', description='', type=ANALYSIS, atTime=None, waitMinutes=0, waitHours=0, queue=None, memory=90, memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True,
         explicitPrecision=SINGLE, nodalOutputPrecision=SINGLE, echoPrint=OFF, modelPrint=OFF, contactPrint=OFF, historyPrint=OFF, userSubroutine='', scratch='', resultsFormat=ODB)
-# # mdb.jobs['Job-1'].submit(consistencyChecking=OFF)
-# # print('Job submitted for processing!')
+# mdb.jobs['Job-1'].submit(consistencyChecking=OFF)
+# print('Job submitted for processing!')
 
 # End:
 print('*************************')
