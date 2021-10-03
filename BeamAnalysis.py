@@ -20,7 +20,7 @@ import displayGroupOdbToolset as dgo
 import connectorBehavior
 
 # Beam:
-b_len = 10
+b_len = 15
 
 # Material:
 mat_name = 'Steel'
