@@ -70,7 +70,7 @@ m_YsM = 38000000000.0
 m_PsR = 0.35
 
 # Mesh density:
-md = 1
+md = 0.5
 
 # Pressure magnitude:
 p_mag = 500
@@ -231,7 +231,6 @@ edges1 = e1.getSequenceFromMask(mask=('[#0:2 #40000 ]', ), )
 region = regionToolset.Region(edges=edges1)
 mdb.models['Model-1'].DisplacementBC(name='BC-1', createStepName='StaticAnalysis', region=region, u1=0.0, u2=0.0,
                                      u3=UNSET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
-
 e1 = a.instances['ResinMatrix-1'].edges
 edges1 = e1.getSequenceFromMask(mask=('[#0:2 #20000 ]', ), )
 region = regionToolset.Region(edges=edges1)
