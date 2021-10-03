@@ -45,17 +45,19 @@ print('Running script... so gimme a sec, aight?')
 sc = 1000
 
 # Sin curve:
-sin_x = 0.5 * sc
-step = 0.01 / sc
-pi_len = 24.0 / sc
-period = pi / sin_x
+sin_x = 0.5
+step = 0.01
+pi_len = 24.0
+period = pi / (sin_x * sc)
 
 # Elipse cs:
-e_width, e_height = 4.5 / sc, 0.6 / sc
+e_width = 4.5
+e_height = 0.6
 
 # Resin block:
-overhang = 0.5 / sc
-b_width, b_height = ((pi_len * pi) - (2 * overhang)), 4.0 / sc
+overhang = 0.5
+b_width = (pi_len * pi) - (2 * overhang)
+b_height = 4.0
 
 # Fiber prop:
 f_name = 'Carbon Fiber'
@@ -68,13 +70,13 @@ m_YsM = 38000000000.0
 m_PsR = 0.35
 
 # Mesh density:
-md = 0.5 / sc
+md = 1
 
 # Pressure magnitude:
 p_mag = 500
 
 # Sin spline nodes:
-points1, points2 = find_sin_nodes(sin_x, step, pi_len, sc)
+points1, points2 = find_sin_nodes((sin_x * sc), (step / sc), (pi_len / sc), sc)
 
 # Sin wave 1:
 s = mdb.models['Model-1'].ConstrainedSketch(name='__sweep1__', sheetSize=1)
@@ -83,13 +85,13 @@ s.setPrimaryObject(option=STANDALONE)
 s.Spline(points=(points1))
 s.unsetPrimaryObject()
 
-# Wave profile 1:
+# Weave profile 1:
 s1 = mdb.models['Model-1'].ConstrainedSketch(name='__profile1__', sheetSize=1, transform=(0.499980071344579, -0.866036909293288, 0.0, -0.0, 0.0, 1.0, -0.866036909293288, -0.499980071344579, -0.0, 0.0, 0.0, 0.0))
 g1, v1, d1, c1 = s1.geometry, s1.vertices, s1.dimensions, s1.constraints
 s1.setPrimaryObject(option=SUPERIMPOSE)
 s1.ConstructionLine(point1=(-0.5, 0.0), point2=(0.5, 0.0))
 s1.ConstructionLine(point1=(0.0, -0.5), point2=(0.0, 0.5))
-s1.EllipseByCenterPerimeter(center=(0.0, 0.0), axisPoint1=(0.0, (e_width / 2)), axisPoint2=(e_height, 0.0))
+s1.EllipseByCenterPerimeter(center=(0.0, 0.0), axisPoint1=(0.0, (e_width / (2 * sc))), axisPoint2=((e_height / sc), 0.0))
 s1.CoincidentConstraint(entity1=v1[0], entity2=g1[3], addUndoState=False)
 s1.CoincidentConstraint(entity1=v1[2], entity2=g1[2], addUndoState=False)
 s1.unsetPrimaryObject()
@@ -101,13 +103,13 @@ s2.setPrimaryObject(option=STANDALONE)
 s2.Spline(points=(points2))
 s2.unsetPrimaryObject()
 
-# Wave profile 2:
+# Weave profile 2:
 s3 = mdb.models['Model-1'].ConstrainedSketch(name='__profile2__', sheetSize=1, transform=(0.499980071344579, -0.866036909293288, 0.0, -0.0, 0.0, 1.0, -0.866036909293288, -0.499980071344579, -0.0, 0.0, 0.0, 0.0))
 g3, v3, d3, c3 = s3.geometry, s3.vertices, s3.dimensions, s3.constraints
 s3.setPrimaryObject(option=SUPERIMPOSE)
 s3.ConstructionLine(point1=(-0.5, 0.0), point2=(0.5, 0.0))
 s3.ConstructionLine(point1=(0.0, -0.5), point2=(0.0, 0.5))
-s3.EllipseByCenterPerimeter(center=(0.0, 0.0), axisPoint1=(0.0, (e_width / 2)), axisPoint2=(e_height, 0.0))
+s3.EllipseByCenterPerimeter(center=(0.0, 0.0), axisPoint1=(0.0, (e_width / (2 * sc))), axisPoint2=((e_height / sc), 0.0))
 s3.CoincidentConstraint(entity1=v1[0], entity2=g1[3], addUndoState=False)
 s3.CoincidentConstraint(entity1=v1[2], entity2=g1[2], addUndoState=False)
 s3.unsetPrimaryObject()
@@ -116,7 +118,7 @@ s3.unsetPrimaryObject()
 s4 = mdb.models['Model-1'].ConstrainedSketch(name='__profile3__', sheetSize=1)
 g4, v4, d4, c4 = s4.geometry, s4.vertices, s4.dimensions, s4.constraints
 s4.setPrimaryObject(option=STANDALONE)
-s4.rectangle(point1=(0.0, 0.0), point2=(b_width, b_height))
+s4.rectangle(point1=(0.0, 0.0), point2=(b_width / sc, b_height / sc))
 s4.unsetPrimaryObject()
 print('Sketching done!')
 
@@ -129,7 +131,7 @@ p1 = mdb.models['Model-1'].parts['CfWeave2']
 p2 = mdb.models['Model-1'].parts['ResinBlock']
 p.BaseSolidSweep(sketch=s1, path=s)
 p1.BaseSolidSweep(sketch=s3, path=s2)
-p2.BaseSolidExtrude(sketch=s4, depth=b_width)
+p2.BaseSolidExtrude(sketch=s4, depth=b_width / sc)
 print('Part creation done!')
 
 # # Delete sketches:
@@ -162,14 +164,14 @@ a.Instance(name='ResinBlock-1', part=p2, dependent=ON)
 
 # # Weave arrangement:
 a.rotate(instanceList=('CfWeave1-1', 'CfWeave2-1'), axisPoint=(0.0, 0.0, 0.0), axisDirection=(0.0, -90.0, 0.0), angle=90.0)
-a.translate(instanceList=('CfWeave1-1', 'CfWeave2-1'), vector=((e_width / 2), 0.0, 0.0))
+a.translate(instanceList=('CfWeave1-1', 'CfWeave2-1'), vector=((e_width / (2 * sc)), 0.0, 0.0))
 a.translate(instanceList=('CfWeave2-1', ), vector=((period), 0.0, 0.0))
 a.translate(instanceList=('CfWeave2-2', ), vector=(0.0, 0.0, (period / 2)))
-a.translate(instanceList=('CfWeave1-1', 'CfWeave2-1', 'CfWeave1-1-lin-2-1', 'CfWeave1-1-lin-3-1', 'CfWeave1-1-lin-4-1', 'CfWeave1-1-lin-5-1', 'CfWeave2-1-lin-2-1', 'CfWeave2-1-lin-3-1', 'CfWeave2-1-lin-4-1', 'CfWeave2-1-lin-5-1'), vector=(((period / 2) - (e_width / 2)), 0.0, 0.0))
+a.translate(instanceList=('CfWeave1-1', 'CfWeave2-1', 'CfWeave1-1-lin-2-1', 'CfWeave1-1-lin-3-1', 'CfWeave1-1-lin-4-1', 'CfWeave1-1-lin-5-1', 'CfWeave2-1-lin-2-1', 'CfWeave2-1-lin-3-1', 'CfWeave2-1-lin-4-1', 'CfWeave2-1-lin-5-1'), vector=(((period / 2) - (e_width / (2 * sc))), 0.0, 0.0))
 a.translate(instanceList=('CfWeave1-2', ), vector=(0.0, 0.0, (1.5 * period)))
-a.LinearInstancePattern(instanceList=('CfWeave1-1', 'CfWeave2-1'), direction1=(1.0, 0.0, 0.0), direction2=(0.0, 1.0, 0.0), number1=6, number2=1, spacing1=(period * 2), spacing2=2.60488)
+a.LinearInstancePattern(instanceList=('CfWeave1-1', 'CfWeave2-1'), direction1=(1.0, 0.0, 0.0), direction2=(0.0, 1.0, 0.0), number1=int(pi_len / 4), number2=1, spacing1=(period * 2), spacing2=2.60488)
 a.rotate(instanceList=('CfWeave1-1', 'CfWeave2-1', 'CfWeave1-1-lin-2-1', 'CfWeave1-1-lin-3-1', 'CfWeave1-1-lin-4-1', 'CfWeave1-1-lin-5-1', 'CfWeave2-1-lin-2-1', 'CfWeave2-1-lin-3-1', 'CfWeave2-1-lin-4-1', 'CfWeave2-1-lin-5-1', 'CfWeave2-2', 'CfWeave1-2'), axisPoint=(0.0, 0.0, 0.0), axisDirection=(0.0, -90.0, 0.0), angle=90.0)
-a.LinearInstancePattern(instanceList=('CfWeave2-2', 'CfWeave1-2'), direction1=(-1.0, 0.0, 0.0), direction2=(0.0, 1.0, 0.0), number1=6, number2=1, spacing1=(period * 2), spacing2=2.60488)
+a.LinearInstancePattern(instanceList=('CfWeave2-2', 'CfWeave1-2'), direction1=(-1.0, 0.0, 0.0), direction2=(0.0, 1.0, 0.0), number1=int(pi_len / 4), number2=1, spacing1=(period * 2), spacing2=2.60488)
 a.rotate(instanceList=('CfWeave1-1', 'CfWeave2-1', 'CfWeave1-1-lin-2-1', 'CfWeave1-1-lin-3-1', 'CfWeave1-1-lin-4-1', 'CfWeave1-1-lin-5-1', 'CfWeave2-1-lin-2-1', 'CfWeave2-1-lin-3-1', 'CfWeave2-1-lin-4-1', 'CfWeave2-1-lin-5-1', 'CfWeave2-2', 'CfWeave1-2', 'CfWeave2-2-lin-2-1',
                        'CfWeave2-2-lin-3-1', 'CfWeave2-2-lin-4-1', 'CfWeave2-2-lin-5-1', 'CfWeave2-2-lin-6-1', 'CfWeave1-2-lin-2-1', 'CfWeave1-2-lin-3-1', 'CfWeave1-2-lin-4-1', 'CfWeave1-2-lin-5-1', 'CfWeave1-2-lin-6-1'), axisPoint=(0.0, 0.0, 0.0), axisDirection=(0.0, 90.0, 0.0), angle=90.0)
 a.InstanceFromBooleanMerge(name='Fibers', instances=(a.instances['CfWeave1-1'], a.instances['CfWeave1-2'], a.instances['CfWeave2-1'], a.instances['CfWeave2-2'], a.instances['CfWeave1-1-lin-2-1'], a.instances['CfWeave1-1-lin-3-1'], a.instances['CfWeave1-1-lin-4-1'],
@@ -183,7 +185,7 @@ del mdb.models['Model-1'].parts['CfWeave2']
 p = mdb.models['Model-1'].parts['Fibers']
 
 # # Resin matrix creation:
-a.translate(instanceList=('ResinBlock-1', ), vector=(overhang, -(b_height / 2), overhang))
+a.translate(instanceList=('ResinBlock-1', ), vector=((overhang / sc), -(b_height / (2 * sc)), (overhang / sc)))
 a.Instance(name='Fibers-2', part=p, dependent=ON)
 a.InstanceFromBooleanCut(name='ResinMatrix', instanceToBeCut=mdb.models['Model-1'].rootAssembly.instances['ResinBlock-1'], cuttingInstances=(a.instances['Fibers-2'], ), originalInstances=DELETE)
 
@@ -203,9 +205,9 @@ region = regionToolset.Region(cells=cells)
 p1.SectionAssignment(region=region, sectionName='Epo_sec', offset=0.0, offsetType=MIDDLE_SURFACE, offsetField='', thicknessAssignment=FROM_SECTION)
 
 # # Seeding and meshing:
-p.seedPart(size=md, deviationFactor=0.1, minSizeFactor=0.1)
+p.seedPart(size=(md / sc), deviationFactor=0.1, minSizeFactor=0.1)
 p.generateMesh()
-p1.seedPart(size=md, deviationFactor=0.1, minSizeFactor=0.1)
+p1.seedPart(size=(md / sc), deviationFactor=0.1, minSizeFactor=0.1)
 c = p1.cells
 pickedRegions = c.getSequenceFromMask(mask=('[#1 ]', ), )
 p.setMeshControls(regions=pickedRegions, elemShape=TET, technique=FREE)
