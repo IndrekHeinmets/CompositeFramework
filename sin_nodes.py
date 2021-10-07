@@ -1,3 +1,6 @@
+from math import sin
+from math import pi
+
 def find_sin_nodes(sin_x, step, pi_len):
     points1 = []
     points2 = []
