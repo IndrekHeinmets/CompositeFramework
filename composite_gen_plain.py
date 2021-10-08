@@ -35,17 +35,17 @@ def find_sin_nodes(sin_x, step, pi_len, sc):
     return points
 
 
-# Start new model:
+# New model database creation:
 Mdb()
-print('Running script... so gimme a sec, aight?')
+print('Running script...')
 
 # Scale (m -> mm):
-sc = 1
+sc = 1000
 
 # Sin curve:
 sin_x = 0.5
 step = 0.01
-pi_len = 16.0
+pi_len = 12.0
 period = pi / (sin_x * sc)
 
 # Elipse cs:
@@ -67,10 +67,7 @@ m_YsM = 38000000000.0
 m_PsR = 0.35
 
 # Mesh density:
-md = 1.0
-
-# Pressure magnitude:
-p_mag = 500
+md = 0.5
 
 # Sin spline nodes:
 points = find_sin_nodes((sin_x * sc), (step / sc), (pi_len / sc), sc)
@@ -145,13 +142,12 @@ a.translate(instanceList=('CfWeave-3', ), vector=(0.0, 0.0, period))
 a.translate(instanceList=('CfWeave-1', 'CfWeave-2'), vector=((period / 2), 0.0, 0.0))
 a.translate(instanceList=('CfWeave-3', 'CfWeave-4'), vector=(0.0, 0.0, (period / 2)))
 a.LinearInstancePattern(instanceList=('CfWeave-1', 'CfWeave-2'), direction1=(1.0, 0.0, 0.0), direction2=(0.0, 1.0, 0.0), number1=int(pi_len / 4), number2=1, spacing1=(period * 2), spacing2=1)
-a.rotate(instanceList=('CfWeave-1', 'CfWeave-2', 'CfWeave-3', 'CfWeave-4', 'CfWeave-1-lin-2-1', 'CfWeave-1-lin-3-1', 'CfWeave-1-lin-4-1', 'CfWeave-2-lin-2-1', 'CfWeave-2-lin-3-1', 'CfWeave-2-lin-4-1'), axisPoint=(0.0, 0.0, 0.0), axisDirection=(0.0, 90.0, 0.0), angle=90.0)
+a.rotate(instanceList=('CfWeave-1', 'CfWeave-2', 'CfWeave-3', 'CfWeave-4', 'CfWeave-1-lin-2-1', 'CfWeave-1-lin-3-1', 'CfWeave-2-lin-2-1', 'CfWeave-2-lin-3-1'), axisPoint=(0.0, 0.0, 0.0), axisDirection=(0.0, 90.0, 0.0), angle=90.0)
 a.LinearInstancePattern(instanceList=('CfWeave-4', 'CfWeave-3'), direction1=(1.0, 0.0, 0.0), direction2=(0.0, 1.0, 0.0), number1=int(pi_len / 4), number2=1, spacing1=(period * 2), spacing2=1)
-a.rotate(instanceList=('CfWeave-1', 'CfWeave-2', 'CfWeave-3', 'CfWeave-4', 'CfWeave-1-lin-2-1', 'CfWeave-1-lin-3-1', 'CfWeave-1-lin-4-1', 'CfWeave-2-lin-2-1', 'CfWeave-2-lin-3-1', 'CfWeave-2-lin-4-1',
-                       'CfWeave-4-lin-2-1', 'CfWeave-4-lin-3-1', 'CfWeave-4-lin-4-1', 'CfWeave-3-lin-2-1', 'CfWeave-3-lin-3-1', 'CfWeave-3-lin-4-1'), axisPoint=(0.0, 0.0, 0.0), axisDirection=(0.0, -90.0, 0.0), angle=90.0)
-a.InstanceFromBooleanMerge(name='Fibers', instances=(a.instances['CfWeave-1'], a.instances['CfWeave-2'], a.instances['CfWeave-3'], a.instances['CfWeave-4'], a.instances['CfWeave-1-lin-2-1'], a.instances['CfWeave-1-lin-3-1'], a.instances['CfWeave-1-lin-4-1'],
-                                                     a.instances['CfWeave-2-lin-2-1'], a.instances['CfWeave-2-lin-3-1'], a.instances['CfWeave-2-lin-4-1'], a.instances['CfWeave-4-lin-2-1'], a.instances['CfWeave-4-lin-3-1'], a.instances['CfWeave-4-lin-4-1'], a.instances['CfWeave-3-lin-2-1'], a.instances['CfWeave-3-lin-3-1'],
-                                                     a.instances['CfWeave-3-lin-4-1'], ), originalInstances=DELETE, domain=GEOMETRY)
+a.rotate(instanceList=('CfWeave-1', 'CfWeave-2', 'CfWeave-3', 'CfWeave-4', 'CfWeave-1-lin-2-1', 'CfWeave-1-lin-3-1', 'CfWeave-2-lin-2-1', 'CfWeave-2-lin-3-1',
+                       'CfWeave-4-lin-2-1', 'CfWeave-4-lin-3-1', 'CfWeave-3-lin-2-1', 'CfWeave-3-lin-3-1'), axisPoint=(0.0, 0.0, 0.0), axisDirection=(0.0, -90.0, 0.0), angle=90.0)
+a.InstanceFromBooleanMerge(name='Fibers', instances=(a.instances['CfWeave-1'], a.instances['CfWeave-2'], a.instances['CfWeave-3'], a.instances['CfWeave-4'], a.instances['CfWeave-1-lin-2-1'], a.instances['CfWeave-1-lin-3-1'],
+                                                     a.instances['CfWeave-2-lin-2-1'], a.instances['CfWeave-2-lin-3-1'], a.instances['CfWeave-4-lin-2-1'], a.instances['CfWeave-4-lin-3-1'], a.instances['CfWeave-3-lin-2-1'], a.instances['CfWeave-3-lin-3-1'], ), originalInstances=DELETE, domain=GEOMETRY)
 
 # Delete original weaves:
 del mdb.models['Model-1'].parts['CfWeave']
@@ -168,7 +164,7 @@ p1 = mdb.models['Model-1'].parts['ResinMatrix']
 
 # Section assignment:
 c = p.cells
-cells = c.getSequenceFromMask(mask=('[#ffff ]', ), )
+cells = c.getSequenceFromMask(mask=('[#fff ]', ), )
 region = regionToolset.Region(cells=cells)
 p.SectionAssignment(region=region, sectionName='Cf_sec', offset=0.0, offsetType=MIDDLE_SURFACE, offsetField='', thicknessAssignment=FROM_SECTION)
 c1 = p1.cells
@@ -183,28 +179,31 @@ del mdb.models['Model-1'].parts['ResinMatrix']
 p = mdb.models['Model-1'].parts['Composite']
 
 # Composite specimen creation:
-# f, e = p.faces, p.edges
-# t = p.MakeSketchTransform(sketchPlane=f[4], sketchUpEdge=e[59], sketchPlaneSide=SIDE1, sketchOrientation=RIGHT, origin=((25.132741 / sc), (2.0 / sc), (25.132741 / sc)))
-# s = mdb.models['Model-1'].ConstrainedSketch(name='__profile__', sheetSize=(142.17 / sc), gridSpacing=(3.55 / sc), transform=t)
-# g, v, d, c = s.geometry, s.vertices, s.dimensions, s.constraints
-# s.setPrimaryObject(option=SUPERIMPOSE)
-# p.projectReferencesOntoSketch(sketch=s, filter=COPLANAR_EDGES)
-# s.rectangle(point1=((-28 / sc), (28 / sc)), point2=((28 / sc), (-28 / sc)))
-# s.rectangle(point1=((-22.1875 / sc), (22.1875 / sc)), point2=((22.1875 / sc), (-22.1875 / sc)))
-# p.CutExtrude(sketchPlane=f[4], sketchUpEdge=e[59], sketchPlaneSide=SIDE1, sketchOrientation=RIGHT, sketch=s, flipExtrudeDirection=OFF)
-# s.unsetPrimaryObject()
-# del mdb.models['Model-1'].sketches['__profile__']
-# print('Assembly done!')
+f, e = p.faces, p.edges
+t = p.MakeSketchTransform(sketchPlane=f[4], sketchUpEdge=e[18], sketchPlaneSide=SIDE1, sketchOrientation=RIGHT, origin=((b_width / (2 * sc)), (b_height / (2 * sc)), (b_width / (2 * sc))))
+s = mdb.models['Model-1'].ConstrainedSketch(name='__profile__', sheetSize=0.106, gridSpacing=0.002, transform=t)
+g, v, d, c = s.geometry, s.vertices, s.dimensions, s.constraints
+s.setPrimaryObject(option=SUPERIMPOSE)
+p = mdb.models['Model-1'].parts['Composite']
+p.projectReferencesOntoSketch(sketch=s, filter=COPLANAR_EDGES)
+s.rectangle(point1=(-0.022, 0.022), point2=(0.022, -0.022))
+s.rectangle(point1=(-0.016, 0.016), point2=(0.016, -0.016))
+p = mdb.models['Model-1'].parts['Composite']
+f1, e1 = p.faces, p.edges
+p.CutExtrude(sketchPlane=f1[4], sketchUpEdge=e1[18], sketchPlaneSide=SIDE1, sketchOrientation=RIGHT, sketch=s, flipExtrudeDirection=OFF)
+s.unsetPrimaryObject()
+del mdb.models['Model-1'].sketches['__profile__']
+print('Assembly done!')
 
 # Seeding and meshing:
 # p.seedPart(size=(md / sc), deviationFactor=0.1, minSizeFactor=0.1)
 # c = p.cells
-# pickedRegions = c.getSequenceFromMask(mask=('[#1ffff ]', ), )
+# pickedRegions = c.getSequenceFromMask(mask=('[#1fff ]', ), )
 # p.setMeshControls(regions=pickedRegions, elemShape=TET, technique=FREE)
 # elemType1 = mesh.ElemType(elemCode=C3D20R)
 # elemType2 = mesh.ElemType(elemCode=C3D15)
 # elemType3 = mesh.ElemType(elemCode=C3D10)
-# cells = c.getSequenceFromMask(mask=('[#1ffff ]', ), )
+# cells = c.getSequenceFromMask(mask=('[#1fff ]', ), )
 # pickedRegions = (cells, )
 # p.setElementType(regions=pickedRegions, elemTypes=(elemType1, elemType2, elemType3))
 # p = mdb.models['Model-1'].parts['Composite']
@@ -215,7 +214,7 @@ p = mdb.models['Model-1'].parts['Composite']
 # Static analysis step:
 mdb.models['Model-1'].StaticStep(name='StaticAnalysis', previous='Initial')
 
-# Boundary conditions (x-y supports):
+# Boundary conditions:
 
 # Loads:
 
@@ -225,6 +224,6 @@ mdb.Job(name='Job-1', model='Model-1', description='', type=ANALYSIS, atTime=Non
 # mdb.jobs['Job-1'].submit(consistencyChecking=OFF)
 # print('Job submitted for processing!')
 
-# End:
+# End of script:
 print('*************************')
 print('End of script, no errors!')

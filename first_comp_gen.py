@@ -249,6 +249,6 @@ mdb.Job(name='Job-1', model='Model-1', description='', type=ANALYSIS, atTime=Non
 # mdb.jobs['Job-1'].submit(consistencyChecking=OFF)
 # print('Job submitted for processing!')
 
-# End:
+# End of script:
 print('*************************')
 print('End of script, no errors!')
