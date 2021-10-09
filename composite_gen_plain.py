@@ -215,7 +215,6 @@ print('Assembly done!')
 mdb.models['Model-1'].StaticStep(name='StaticAnalysis', previous='Initial')
 
 # Boundary conditions:
-
 # Loads:
 
 # Job creation:
