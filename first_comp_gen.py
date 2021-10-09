@@ -39,7 +39,7 @@ def find_sin_nodes(sin_x, step, pi_len, sc):
     return points1, points2
 
 
-print('Running script... so gimme a sec, aight?')
+print('Running script...')
 
 # Scale (m -> mm):
 sc = 1000

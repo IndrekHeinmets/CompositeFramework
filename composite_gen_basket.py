@@ -76,7 +76,7 @@ e_width = 4.5
 e_height = 0.6
 
 # Resin block:
-b_width = (pi_len * pi) * 2
+b_width = (pi_len * pi)
 b_height = 4.0
 
 # Fiber prop:
@@ -114,26 +114,26 @@ s1.CoincidentConstraint(entity1=v1[2], entity2=g1[2], addUndoState=False)
 s1.unsetPrimaryObject()
 
 # Resin block profile sketch:
-s2 = mdb.models['Model-1'].ConstrainedSketch(name='__profile1__', sheetSize=1)
-g2, v2, d2, c2 = s2.geometry, s2.vertices, s2.dimensions, s2.constraints
-s2.setPrimaryObject(option=STANDALONE)
-s2.rectangle(point1=(0.0, 0.0), point2=(b_width / sc, b_height / sc))
-s2.unsetPrimaryObject()
-print('Sketching done!')
+# s2 = mdb.models['Model-1'].ConstrainedSketch(name='__profile1__', sheetSize=1)
+# g2, v2, d2, c2 = s2.geometry, s2.vertices, s2.dimensions, s2.constraints
+# s2.setPrimaryObject(option=STANDALONE)
+# s2.rectangle(point1=(0.0, 0.0), point2=(b_width / sc, b_height / sc))
+# s2.unsetPrimaryObject()
+# print('Sketching done!')
 
 # Part creation:
 p = mdb.models['Model-1'].Part(name='CfWeave', dimensionality=THREE_D, type=DEFORMABLE_BODY)
-p1 = mdb.models['Model-1'].Part(name='ResinBlock', dimensionality=THREE_D, type=DEFORMABLE_BODY)
+# p1 = mdb.models['Model-1'].Part(name='ResinBlock', dimensionality=THREE_D, type=DEFORMABLE_BODY)
 p = mdb.models['Model-1'].parts['CfWeave']
-p1 = mdb.models['Model-1'].parts['ResinBlock']
+# p1 = mdb.models['Model-1'].parts['ResinBlock']
 p.BaseSolidSweep(sketch=s1, path=s)
-p1.BaseSolidExtrude(sketch=s2, depth=b_width / sc)
-print('Part creation done!')
+# p1.BaseSolidExtrude(sketch=s2, depth=b_width / sc)
+# print('Part creation done!')
 
 # Delete sketches:
-del mdb.models['Model-1'].sketches['__sweep__']
-del mdb.models['Model-1'].sketches['__profile__']
-del mdb.models['Model-1'].sketches['__profile1__']
+# del mdb.models['Model-1'].sketches['__sweep__']
+# del mdb.models['Model-1'].sketches['__profile__']
+# del mdb.models['Model-1'].sketches['__profile1__']
 
 # Material creation:
 mdb.models['Model-1'].Material(name=f_name)
@@ -152,44 +152,45 @@ a.DatumCsysByDefault(CARTESIAN)
 # Instance creation:
 a.Instance(name='CfWeave-1', part=p, dependent=ON)
 a.Instance(name='CfWeave-2', part=p, dependent=ON)
-a.Instance(name='ResinBlock-1', part=p1, dependent=ON)
+a.Instance(name='CfWeave-3', part=p, dependent=ON)
+a.Instance(name='CfWeave-4', part=p, dependent=ON)
+a.Instance(name='CfWeave-5', part=p, dependent=ON)
+a.Instance(name='CfWeave-6', part=p, dependent=ON)
+a.Instance(name='CfWeave-7', part=p, dependent=ON)
+a.Instance(name='CfWeave-8', part=p, dependent=ON)
+# a.Instance(name='ResinBlock-1', part=p1, dependent=ON)
 
 # Weave arrangement:
-a.rotate(instanceList=('CfWeave-2', ), axisPoint=(0.0, 0.0, 0.0), axisDirection=(180.0, 0.0, 0.0), angle=180.0)
+a.rotate(instanceList=('CfWeave-3', 'CfWeave-4'), axisPoint=(0.0, 0.0, 0.0), axisDirection=(180.0, 0.0, 0.0), angle=180.0)
+a.rotate(instanceList=('CfWeave-5', 'CfWeave-6'), axisPoint=(0.0, 0.0, 0.0), axisDirection=(180.0, 0.0, 0.0), angle=180.0)
+a.translate(instanceList=('CfWeave-2', ), vector=(0.0, 0.0, period))
+a.translate(instanceList=('CfWeave-3', 'CfWeave-4'), vector=(0.0, 0.0, (period * 2)))
+a.translate(instanceList=('CfWeave-4', ), vector=(0.0, 0.0, period))
+a.rotate(instanceList=('CfWeave-1', 'CfWeave-2', 'CfWeave-3', 'CfWeave-4'), axisPoint=(0.0, 0.0, 0.0), axisDirection=(0.0, 90.0, 0.0), angle=90.0)
+a.LinearInstancePattern(instanceList=('CfWeave-1', 'CfWeave-2', 'CfWeave-3', 'CfWeave-4'), direction1=(1.0, 0.0, 0.0), direction2=(0.0, 1.0, 0.0), number1=3, number2=1, spacing1=(period * 4), spacing2=1)
+a.translate(instanceList=('CfWeave-5', 'CfWeave-6', 'CfWeave-7', 'CfWeave-8'), vector=((-period / 2), 0.0, (-period / 2)))
+a.translate(instanceList=('CfWeave-6', ), vector=(0.0, 0.0, -(period)))
+a.translate(instanceList=('CfWeave-7', 'CfWeave-8'), vector=(0.0, 0.0, -(period * 2)))
+a.translate(instanceList=('CfWeave-8', ), vector=(0.0, 0.0, -(period)))
+a.rotate(instanceList=('CfWeave-1', 'CfWeave-2', 'CfWeave-3', 'CfWeave-4', 'CfWeave-5', 'CfWeave-6', 'CfWeave-7', 'CfWeave-8', 'CfWeave-1-lin-2-1', 'CfWeave-1-lin-3-1', 'CfWeave-2-lin-2-1',
+                       'CfWeave-2-lin-3-1', 'CfWeave-4-lin-2-1', 'CfWeave-4-lin-3-1', 'CfWeave-3-lin-2-1', 'CfWeave-3-lin-3-1'), axisPoint=(0.0, 0.0, 0.0), axisDirection=(0.0, -90.0, 0.0), angle=90.0)
+a.LinearInstancePattern(instanceList=('CfWeave-5', 'CfWeave-6', 'CfWeave-7', 'CfWeave-8'), direction1=(1.0, 0.0, 0.0), direction2=(0.0, 1.0, 0.0), number1=3, number2=1, spacing1=(period * 4), spacing2=1)
 
-a.rotate(instanceList=('CfWeave-1', 'CfWeave-2'), axisPoint=(0.0, 0.0, 0.0), axisDirection=(0.0, 90.0, 0.0), angle=90.0)
 
-a.translate(instanceList=('CfWeave-2', ), vector=((period * 2), 0.0, 0.0))
-
-a.LinearInstancePattern(instanceList=('CfWeave-1', 'CfWeave-2'), direction1=(1.0, 0.0, 0.0), direction2=(0.0, 1.0, 0.0), number1=3, number2=1, spacing1=(period * 4), spacing2=1)
-
-a.InstanceFromBooleanMerge(name='Part-1', instances=(a.instances['CfWeave-1'], a.instances['CfWeave-2'], a.instances['CfWeave-1-lin-2-1'], a.instances['CfWeave-1-lin-3-1'], a.instances['CfWeave-2-lin-2-1'], a.instances['CfWeave-2-lin-3-1'], ), originalInstances=DELETE, domain=GEOMETRY)
-
-p2 = mdb.models['Model-1'].parts['Part-1']
-a.Instance(name='Part-1-2', part=p2, dependent=ON)
-a.translate(instanceList=('Part-1-2', ), vector=(period, 0.0, -(period)))
-
-a.Instance(name='CfWeave-1', part=p, dependent=ON)
-a.Instance(name='CfWeave-2', part=p, dependent=ON)
-
-a.rotate(instanceList=('CfWeave-1', ), axisPoint=(0.0, 0.0, 0.0), axisDirection=(180.0, 0.0, 0.0), angle=180.0)
-
-a.translate(instanceList=('CfWeave-1', 'CfWeave-2'), vector=(-(period / 2), 0.0, -(period / 2)))
-
-a.translate(instanceList=('CfWeave-2', ), vector=(0.0, 0.0, -(period * 2)))
-
-a.rotate(instanceList=('Part-1-1', 'Part-1-2', 'CfWeave-1', 'CfWeave-2'), axisPoint=(0.0, 0.0, 0.0), axisDirection=(0.0, -90.0, 0.0), angle=90.0)
-
-a.LinearInstancePattern(instanceList=('CfWeave-1', 'CfWeave-2'), direction1=(1.0, 0.0, 0.0), direction2=(0.0, 1.0, 0.0), number1=3, number2=1, spacing1=(period * 4), spacing2=1)
-
-a.InstanceFromBooleanMerge(name='Part-2', instances=(a.instances['CfWeave-1'], a.instances['CfWeave-2'], a.instances['CfWeave-1-lin-2-1'], a.instances['CfWeave-2-lin-2-1'], a.instances['CfWeave-1-lin-3-1'], a.instances['CfWeave-2-lin-3-1'], ), originalInstances=DELETE, domain=GEOMETRY)
-
-p3 = mdb.models['Model-1'].parts['Part-2']
-a.Instance(name='Part-2-2', part=p3, dependent=ON)
-
-a.translate(instanceList=('Part-2-2', ), vector=(period, 0.0, 0.0))
-
-a.translate(instanceList=('Part-2-1', ), vector=(0.0, 0.0, -(period)))
+# a.rotate(instanceList=('CfWeave-1', 'CfWeave-2'), axisPoint=(0.0, 0.0, 0.0), axisDirection=(0.0, -90.0, 0.0), angle=90.0)
+# a.rotate(instanceList=('CfWeave-2', ), axisPoint=(0.0, 0.0, 0.0), axisDirection=(0.0, 0.0, 180.0), angle=180.0)
+# a.rotate(instanceList=('CfWeave-4', ), axisPoint=(0.0, 0.0, 0.0), axisDirection=(180.0, 0.0, 0.0), angle=180.0)
+# a.translate(instanceList=('CfWeave-2', ), vector=(period, 0.0, 0.0))
+# a.translate(instanceList=('CfWeave-3', ), vector=(0.0, 0.0, period))
+# a.translate(instanceList=('CfWeave-1', 'CfWeave-2'), vector=((period / 2), 0.0, 0.0))
+# a.translate(instanceList=('CfWeave-3', 'CfWeave-4'), vector=(0.0, 0.0, (period / 2)))
+# a.LinearInstancePattern(instanceList=('CfWeave-1', 'CfWeave-2'), direction1=(1.0, 0.0, 0.0), direction2=(0.0, 1.0, 0.0), number1=int(pi_len / 4), number2=1, spacing1=(period * 2), spacing2=1)
+# a.rotate(instanceList=('CfWeave-1', 'CfWeave-2', 'CfWeave-3', 'CfWeave-4', 'CfWeave-1-lin-2-1', 'CfWeave-1-lin-3-1', 'CfWeave-2-lin-2-1', 'CfWeave-2-lin-3-1'), axisPoint=(0.0, 0.0, 0.0), axisDirection=(0.0, 90.0, 0.0), angle=90.0)
+# a.LinearInstancePattern(instanceList=('CfWeave-4', 'CfWeave-3'), direction1=(1.0, 0.0, 0.0), direction2=(0.0, 1.0, 0.0), number1=int(pi_len / 4), number2=1, spacing1=(period * 2), spacing2=1)
+# a.rotate(instanceList=('CfWeave-1', 'CfWeave-2', 'CfWeave-3', 'CfWeave-4', 'CfWeave-1-lin-2-1', 'CfWeave-1-lin-3-1', 'CfWeave-2-lin-2-1', 'CfWeave-2-lin-3-1',
+#                        'CfWeave-4-lin-2-1', 'CfWeave-4-lin-3-1', 'CfWeave-3-lin-2-1', 'CfWeave-3-lin-3-1'), axisPoint=(0.0, 0.0, 0.0), axisDirection=(0.0, -90.0, 0.0), angle=90.0)
+# # a.InstanceFromBooleanMerge(name='Fibers', instances=(a.instances['CfWeave-1'], a.instances['CfWeave-2'], a.instances['CfWeave-3'], a.instances['CfWeave-4'], a.instances['CfWeave-1-lin-2-1'], a.instances['CfWeave-1-lin-3-1'],
+#                                                      a.instances['CfWeave-2-lin-2-1'], a.instances['CfWeave-2-lin-3-1'], a.instances['CfWeave-4-lin-2-1'], a.instances['CfWeave-4-lin-3-1'], a.instances['CfWeave-3-lin-2-1'], a.instances['CfWeave-3-lin-3-1'], ), originalInstances=DELETE, domain=GEOMETRY)
 
 # Delete original weaves:
 # del mdb.models['Model-1'].parts['CfWeave']
