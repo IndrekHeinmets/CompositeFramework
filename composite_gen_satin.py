@@ -58,7 +58,7 @@ Mdb()
 print('Running script...')
 
 # Scale (m -> mm):
-sc = 1
+sc = 1000
 
 # Sin curve:
 sin_x = 0.5
@@ -164,22 +164,23 @@ a.rotate(instanceList=('weaves-2', ), axisPoint=(0.0, 0.0, 0.0), axisDirection=(
 a.translate(instanceList=('weaves-2', ), vector=((period * 2.5), 0.0, (period * 2.5)))
 a.rotate(instanceList=('weaves-1', 'weaves-1-lin-2-1', 'weaves-1-lin-3-1', 'weaves-1-lin-4-1', 'weaves-2'), axisPoint=(0.0, 0.0, 0.0), axisDirection=(0.0, -90.0, 0.0), angle=90.0)
 a.LinearInstancePattern(instanceList=('weaves-2', ), direction1=(1.0, 0.0, 0.0), direction2=(0.0, 1.0, 0.0), number1=4, number2=1, spacing1=(period * 4), spacing2=1)
-
+a.InstanceFromBooleanMerge(name='Fibers', instances=(a.instances['weaves-1'], a.instances['weaves-1-lin-2-1'], a.instances['weaves-1-lin-3-1'], a.instances['weaves-1-lin-4-1'], a.instances['weaves-2'],
+                                                     a.instances['weaves-2-lin-2-1'], a.instances['weaves-2-lin-3-1'], a.instances['weaves-2-lin-4-1'], ), originalInstances=DELETE, domain=GEOMETRY)
 
 # Delete original weaves:
-# del mdb.models['Model-1'].parts['CfWeave']
-# del mdb.models['Model-1'].parts['Part-1']
-# del mdb.models['Model-1'].parts['Part-2']
-# p = mdb.models['Model-1'].parts['Fibers']
+del mdb.models['Model-1'].parts['weaves']
+del mdb.models['Model-1'].parts['CfWeave']
+p = mdb.models['Model-1'].parts['Fibers']
 
 # Resin matrix creation:
-# a.translate(instanceList=('ResinBlock-1', ), vector=(0.0, -(b_height / (2 * sc)), 0.0))
-# a.Instance(name='Fibers-2', part=p, dependent=ON)
-# a.InstanceFromBooleanCut(name='ResinMatrix', instanceToBeCut=mdb.models['Model-1'].rootAssembly.instances['ResinBlock-1'], cuttingInstances=(a.instances['Fibers-2'], ), originalInstances=DELETE)
+a.rotate(instanceList=('ResinBlock-1', ), axisPoint=(0.0, 0.0, 0.0), axisDirection=(0.0, -90.0, 0.0), angle=90.0)
+a.translate(instanceList=('ResinBlock-1', ), vector=(-(period * 2), -(b_height / (2 * sc)), 0.0))
+a.Instance(name='Fibers-2', part=p, dependent=ON)
+a.InstanceFromBooleanCut(name='ResinMatrix', instanceToBeCut=mdb.models['Model-1'].rootAssembly.instances['ResinBlock-1'], cuttingInstances=(a.instances['Fibers-2'], ), originalInstances=DELETE)
 
 # Delete original resin block:
-# del mdb.models['Model-1'].parts['ResinBlock']
-# p1 = mdb.models['Model-1'].parts['ResinMatrix']
+del mdb.models['Model-1'].parts['ResinBlock']
+p1 = mdb.models['Model-1'].parts['ResinMatrix']
 
 # Section assignment:
 # c = p.cells
@@ -199,20 +200,25 @@ a.LinearInstancePattern(instanceList=('weaves-2', ), direction1=(1.0, 0.0, 0.0),
 
 # Composite specimen creation:
 # f, e = p.faces, p.edges
-# t = p.MakeSketchTransform(sketchPlane=f[4], sketchUpEdge=e[40], sketchPlaneSide=SIDE1, sketchOrientation=RIGHT, origin=((b_width / (2 * sc)), (b_height / (2 * sc)), (b_width / (2 * sc))))
-# s = mdb.models['Model-1'].ConstrainedSketch(name='__profile__', sheetSize=0.213, gridSpacing=0.005, transform=t)
+# t = p.MakeSketchTransform(sketchPlane=f[79], sketchUpEdge=e[55],
+#     sketchPlaneSide=SIDE1, sketchOrientation=RIGHT, origin=(34.56389, 2.0,
+#     47.12389))
+# s = mdb.models['Model-1'].ConstrainedSketch(name='__profile__',
+#     sheetSize=266.57, gridSpacing=6.66, transform=t)
 # g, v, d, c = s.geometry, s.vertices, s.dimensions, s.constraints
 # s.setPrimaryObject(option=SUPERIMPOSE)
 # p = mdb.models['Model-1'].parts['Composite']
 # p.projectReferencesOntoSketch(sketch=s, filter=COPLANAR_EDGES)
-# s.rectangle(point1=(-0.045, 0.05375), point2=(0.055, -0.045))
-# s.rectangle(point1=(-0.02875, 0.03125), point2=(0.02875, -0.025))
-# p = mdb.models['Model-1'].parts['Composite']
+# s.rectangle(point1=(-18.315, 21.645), point2=(24.975, -28.305))
+
+# s.rectangle(point1=(-53.28, 53.28), point2=(56.61, -54.945))
+
 # f1, e1 = p.faces, p.edges
-# p.CutExtrude(sketchPlane=f1[4], sketchUpEdge=e1[40], sketchPlaneSide=SIDE1, sketchOrientation=RIGHT, sketch=s, flipExtrudeDirection=OFF)
+# p.CutExtrude(sketchPlane=f1[79], sketchUpEdge=e1[55], sketchPlaneSide=SIDE1,
+#     sketchOrientation=RIGHT, sketch=s, flipExtrudeDirection=OFF)
 # s.unsetPrimaryObject()
 # del mdb.models['Model-1'].sketches['__profile__']
-print('Assembly done!')
+# print('Assembly done!')
 
 # Seeding and meshing:
 # p.seedPart(size=(md / sc), deviationFactor=0.1, minSizeFactor=0.1)
