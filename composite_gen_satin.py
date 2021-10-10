@@ -24,7 +24,7 @@ import connectorBehavior
 
 def find_spline_nodes(sin_x, step, pi_len, sc):
     points = []
-    length = 36
+    length = 51
     offset = 0
     i = 0
 
@@ -42,10 +42,13 @@ def find_spline_nodes(sin_x, step, pi_len, sc):
             points.append((x, y))
 
         else:
-            for j in range(0, length):
-                x += (step * j)
-                offset += (step * j)
+            if y > 0:
                 points.append((x, y))
+            else:
+                for j in range(0, length):
+                    x += (step * j)
+                    offset += (step * j)
+                    points.append((x, y))
 
     return points
 
@@ -55,7 +58,7 @@ Mdb()
 print('Running script...')
 
 # Scale (m -> mm):
-sc = 1000
+sc = 1
 
 # Sin curve:
 sin_x = 0.5
@@ -68,7 +71,7 @@ e_width = 4.5
 e_height = 0.6
 
 # Resin block:
-b_width = (pi_len * pi) * 2
+b_width = (pi_len * pi) * 2.5
 b_height = 4.0
 
 # Fiber prop:
@@ -146,76 +149,69 @@ a.Instance(name='CfWeave-1', part=p, dependent=ON)
 a.Instance(name='CfWeave-2', part=p, dependent=ON)
 a.Instance(name='CfWeave-3', part=p, dependent=ON)
 a.Instance(name='CfWeave-4', part=p, dependent=ON)
-a.Instance(name='CfWeave-5', part=p, dependent=ON)
-a.Instance(name='CfWeave-6', part=p, dependent=ON)
-a.Instance(name='CfWeave-7', part=p, dependent=ON)
-a.Instance(name='CfWeave-8', part=p, dependent=ON)
 a.Instance(name='ResinBlock-1', part=p1, dependent=ON)
 
 # Weave arrangement:
-a.rotate(instanceList=('CfWeave-3', 'CfWeave-4'), axisPoint=(0.0, 0.0, 0.0), axisDirection=(180.0, 0.0, 0.0), angle=180.0)
-a.rotate(instanceList=('CfWeave-5', 'CfWeave-6'), axisPoint=(0.0, 0.0, 0.0), axisDirection=(180.0, 0.0, 0.0), angle=180.0)
-a.translate(instanceList=('CfWeave-2', ), vector=(0.0, 0.0, period))
-a.translate(instanceList=('CfWeave-3', 'CfWeave-4'), vector=(0.0, 0.0, (period * 2)))
-a.translate(instanceList=('CfWeave-4', ), vector=(0.0, 0.0, period))
-a.rotate(instanceList=('CfWeave-1', 'CfWeave-2', 'CfWeave-3', 'CfWeave-4'), axisPoint=(0.0, 0.0, 0.0), axisDirection=(0.0, 90.0, 0.0), angle=90.0)
-a.LinearInstancePattern(instanceList=('CfWeave-1', 'CfWeave-2', 'CfWeave-3', 'CfWeave-4'), direction1=(1.0, 0.0, 0.0), direction2=(0.0, 1.0, 0.0), number1=3, number2=1, spacing1=(period * 4), spacing2=1)
-a.translate(instanceList=('CfWeave-5', 'CfWeave-6', 'CfWeave-7', 'CfWeave-8'), vector=((-period / 2), 0.0, (-period / 2)))
-a.translate(instanceList=('CfWeave-6', ), vector=(0.0, 0.0, -(period)))
-a.translate(instanceList=('CfWeave-7', 'CfWeave-8'), vector=(0.0, 0.0, -(period * 2)))
-a.translate(instanceList=('CfWeave-8', ), vector=(0.0, 0.0, -(period)))
-a.rotate(instanceList=('CfWeave-1', 'CfWeave-2', 'CfWeave-3', 'CfWeave-4', 'CfWeave-5', 'CfWeave-6', 'CfWeave-7', 'CfWeave-8', 'CfWeave-1-lin-2-1', 'CfWeave-1-lin-3-1', 'CfWeave-2-lin-2-1',
-                       'CfWeave-2-lin-3-1', 'CfWeave-4-lin-2-1', 'CfWeave-4-lin-3-1', 'CfWeave-3-lin-2-1', 'CfWeave-3-lin-3-1'), axisPoint=(0.0, 0.0, 0.0), axisDirection=(0.0, -90.0, 0.0), angle=90.0)
-a.LinearInstancePattern(instanceList=('CfWeave-5', 'CfWeave-6', 'CfWeave-7', 'CfWeave-8'), direction1=(1.0, 0.0, 0.0), direction2=(0.0, 1.0, 0.0), number1=3, number2=1, spacing1=(period * 4), spacing2=1)
-a.InstanceFromBooleanMerge(name='Fibers', instances=(a.instances['CfWeave-1'], a.instances['CfWeave-2'], a.instances['CfWeave-3'], a.instances['CfWeave-4'], a.instances['CfWeave-5'], a.instances['CfWeave-6'], a.instances['CfWeave-7'],
-                                                     a.instances['CfWeave-8'], a.instances['CfWeave-1-lin-2-1'], a.instances['CfWeave-1-lin-3-1'], a.instances['CfWeave-2-lin-2-1'], a.instances['CfWeave-2-lin-3-1'], a.instances['CfWeave-4-lin-2-1'], a.instances['CfWeave-4-lin-3-1'],
-                                                     a.instances['CfWeave-3-lin-2-1'], a.instances['CfWeave-3-lin-3-1'], a.instances['CfWeave-5-lin-2-1'], a.instances['CfWeave-5-lin-3-1'], a.instances['CfWeave-6-lin-2-1'], a.instances['CfWeave-6-lin-3-1'], a.instances['CfWeave-8-lin-2-1'],
-                                                     a.instances['CfWeave-8-lin-3-1'], a.instances['CfWeave-7-lin-2-1'], a.instances['CfWeave-7-lin-3-1'], ), originalInstances=DELETE, domain=GEOMETRY)
+a.translate(instanceList=('CfWeave-2', 'CfWeave-3', 'CfWeave-4'), vector=(-(period), 0.0, period))
+a.translate(instanceList=('CfWeave-3', 'CfWeave-4'), vector=(-(period), 0.0, period))
+a.translate(instanceList=('CfWeave-4', ), vector=(-(period), 0.0, period))
+a.InstanceFromBooleanMerge(name='weaves', instances=(a.instances['CfWeave-1'], a.instances['CfWeave-2'], a.instances['CfWeave-3'], a.instances['CfWeave-4'], ), originalInstances=DELETE, domain=GEOMETRY)
+p = mdb.models['Model-1'].parts['weaves']
+a.rotate(instanceList=('ResinBlock-1', 'weaves-1'), axisPoint=(0.0, 0.0, 0.0), axisDirection=(0.0, 90.0, 0.0), angle=90.0)
+a.LinearInstancePattern(instanceList=('weaves-1', ), direction1=(1.0, 0.0, 0.0), direction2=(0.0, 1.0, 0.0), number1=4, number2=1, spacing1=(period * 4), spacing2=1)
+a.Instance(name='weaves-2', part=p, dependent=ON)
+a.rotate(instanceList=('weaves-2', ), axisPoint=(0.0, 0.0, 0.0), axisDirection=(180.0, 0.0, 0.0), angle=180.0)
+a.translate(instanceList=('weaves-2', ), vector=((period * 2.5), 0.0, (period * 2.5)))
+a.rotate(instanceList=('weaves-1', 'weaves-1-lin-2-1', 'weaves-1-lin-3-1', 'weaves-1-lin-4-1', 'weaves-2'), axisPoint=(0.0, 0.0, 0.0), axisDirection=(0.0, -90.0, 0.0), angle=90.0)
+a.LinearInstancePattern(instanceList=('weaves-2', ), direction1=(1.0, 0.0, 0.0), direction2=(0.0, 1.0, 0.0), number1=4, number2=1, spacing1=(period * 4), spacing2=1)
+
 
 # Delete original weaves:
-del mdb.models['Model-1'].parts['CfWeave']
-p = mdb.models['Model-1'].parts['Fibers']
+# del mdb.models['Model-1'].parts['CfWeave']
+# del mdb.models['Model-1'].parts['Part-1']
+# del mdb.models['Model-1'].parts['Part-2']
+# p = mdb.models['Model-1'].parts['Fibers']
 
 # Resin matrix creation:
-a.translate(instanceList=('ResinBlock-1', ), vector=(0.0, -(b_height / (2 * sc)), 0.0))
-a.Instance(name='Fibers-2', part=p, dependent=ON)
-a.InstanceFromBooleanCut(name='ResinMatrix', instanceToBeCut=mdb.models['Model-1'].rootAssembly.instances['ResinBlock-1'], cuttingInstances=(a.instances['Fibers-2'], ), originalInstances=DELETE)
+# a.translate(instanceList=('ResinBlock-1', ), vector=(0.0, -(b_height / (2 * sc)), 0.0))
+# a.Instance(name='Fibers-2', part=p, dependent=ON)
+# a.InstanceFromBooleanCut(name='ResinMatrix', instanceToBeCut=mdb.models['Model-1'].rootAssembly.instances['ResinBlock-1'], cuttingInstances=(a.instances['Fibers-2'], ), originalInstances=DELETE)
 
 # Delete original resin block:
-del mdb.models['Model-1'].parts['ResinBlock']
-p1 = mdb.models['Model-1'].parts['ResinMatrix']
+# del mdb.models['Model-1'].parts['ResinBlock']
+# p1 = mdb.models['Model-1'].parts['ResinMatrix']
 
 # Section assignment:
-c = p.cells
-cells = c.getSequenceFromMask(mask=('[#ffffff ]', ), )
-region = regionToolset.Region(cells=cells)
-p.SectionAssignment(region=region, sectionName='Cf_sec', offset=0.0, offsetType=MIDDLE_SURFACE, offsetField='', thicknessAssignment=FROM_SECTION)
-c1 = p1.cells
-cells = c1.getSequenceFromMask(mask=('[#1 ]', ), )
-region = regionToolset.Region(cells=cells)
-p1.SectionAssignment(region=region, sectionName='Epo_sec', offset=0.0, offsetType=MIDDLE_SURFACE, offsetField='', thicknessAssignment=FROM_SECTION)
+# c = p.cells
+# cells = c.getSequenceFromMask(mask=('[#ffffff ]', ), )
+# region = regionToolset.Region(cells=cells)
+# p.SectionAssignment(region=region, sectionName='Cf_sec', offset=0.0, offsetType=MIDDLE_SURFACE, offsetField='', thicknessAssignment=FROM_SECTION)
+# c1 = p1.cells
+# cells = c1.getSequenceFromMask(mask=('[#1 ]', ), )
+# region = regionToolset.Region(cells=cells)
+# p1.SectionAssignment(region=region, sectionName='Epo_sec', offset=0.0, offsetType=MIDDLE_SURFACE, offsetField='', thicknessAssignment=FROM_SECTION)
 
 # Merge into composite & delete original parts:
-a.InstanceFromBooleanMerge(name='Composite', instances=(a.instances['Fibers-1'], a.instances['ResinMatrix-1'], ), keepIntersections=ON, originalInstances=DELETE, domain=GEOMETRY)
-del mdb.models['Model-1'].parts['Fibers']
-del mdb.models['Model-1'].parts['ResinMatrix']
-p = mdb.models['Model-1'].parts['Composite']
+# a.InstanceFromBooleanMerge(name='Composite', instances=(a.instances['Fibers-1'], a.instances['ResinMatrix-1'], ), keepIntersections=ON, originalInstances=DELETE, domain=GEOMETRY)
+# del mdb.models['Model-1'].parts['Fibers']
+# del mdb.models['Model-1'].parts['ResinMatrix']
+# p = mdb.models['Model-1'].parts['Composite']
 
 # Composite specimen creation:
-f, e = p.faces, p.edges
-t = p.MakeSketchTransform(sketchPlane=f[4], sketchUpEdge=e[64], sketchPlaneSide=SIDE1, sketchOrientation=RIGHT, origin=(0.037699, 0.002, 0.037699))
-s = mdb.models['Model-1'].ConstrainedSketch(name='__profile__', sheetSize=0.213, gridSpacing=0.005, transform=t)
-g, v, d, c = s.geometry, s.vertices, s.dimensions, s.constraints
-s.setPrimaryObject(option=SUPERIMPOSE)
-p = mdb.models['Model-1'].parts['Composite']
-p.projectReferencesOntoSketch(sketch=s, filter=COPLANAR_EDGES)
-s.rectangle(point1=(-0.0225, 0.025), point2=(0.0225, -0.01875))
-s.rectangle(point1=(-0.045, 0.045), point2=(0.045, -0.045))
-p = mdb.models['Model-1'].parts['Composite']
-f1, e1 = p.faces, p.edges
-p.CutExtrude(sketchPlane=f1[4], sketchUpEdge=e1[64], sketchPlaneSide=SIDE1, sketchOrientation=RIGHT, sketch=s, flipExtrudeDirection=OFF)
-s.unsetPrimaryObject()
-del mdb.models['Model-1'].sketches['__profile__']
+# f, e = p.faces, p.edges
+# t = p.MakeSketchTransform(sketchPlane=f[4], sketchUpEdge=e[40], sketchPlaneSide=SIDE1, sketchOrientation=RIGHT, origin=((b_width / (2 * sc)), (b_height / (2 * sc)), (b_width / (2 * sc))))
+# s = mdb.models['Model-1'].ConstrainedSketch(name='__profile__', sheetSize=0.213, gridSpacing=0.005, transform=t)
+# g, v, d, c = s.geometry, s.vertices, s.dimensions, s.constraints
+# s.setPrimaryObject(option=SUPERIMPOSE)
+# p = mdb.models['Model-1'].parts['Composite']
+# p.projectReferencesOntoSketch(sketch=s, filter=COPLANAR_EDGES)
+# s.rectangle(point1=(-0.045, 0.05375), point2=(0.055, -0.045))
+# s.rectangle(point1=(-0.02875, 0.03125), point2=(0.02875, -0.025))
+# p = mdb.models['Model-1'].parts['Composite']
+# f1, e1 = p.faces, p.edges
+# p.CutExtrude(sketchPlane=f1[4], sketchUpEdge=e1[40], sketchPlaneSide=SIDE1, sketchOrientation=RIGHT, sketch=s, flipExtrudeDirection=OFF)
+# s.unsetPrimaryObject()
+# del mdb.models['Model-1'].sketches['__profile__']
 print('Assembly done!')
 
 # Seeding and meshing:
@@ -231,13 +227,14 @@ print('Assembly done!')
 # p.setElementType(regions=pickedRegions, elemTypes=(elemType1, elemType2, elemType3))
 # p = mdb.models['Model-1'].parts['Composite']
 # p.generateMesh()
-# a.regenerate()
-# print('Meshing done!')
+a.regenerate()
+print('Meshing done!')
 
 # Static analysis step:
 mdb.models['Model-1'].StaticStep(name='StaticAnalysis', previous='Initial')
 
 # Boundary conditions:
+
 # Loads:
 
 # Job creation:

@@ -26,8 +26,6 @@ def find_spline_nodes(sin_x, step, pi_len, sc):
     points = []
     length = 36
     offset = 0
-    x_ap = 0
-    y_ap = 0
     i = 0
 
     while i <= int((pi_len * pi) / step):
