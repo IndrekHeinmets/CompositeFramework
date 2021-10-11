@@ -68,7 +68,7 @@ Mdb()
 print('Running script...')
 
 # Scale (m -> mm):
-sc = 1000
+sc = 1
 
 # Sin curve:
 sin_x = 0.5
@@ -99,7 +99,7 @@ md = 0.5
 
 # Sin spline nodes:
 points = find_spline_nodes((sin_x * sc), (step / sc), (pi_len / sc), sc)
-points_l = find_spline_nodes_l((sin_x * sc), (step / sc), (pi_len / sc), sc)
+points_l = find_spline_nodes_l((sin_x * sc), (step / sc), (pi_len / (2 * sc)), sc)
 
 # Sin wave sketch short:
 s = mdb.models['Model-1'].ConstrainedSketch(name='__sweep__', sheetSize=1)
@@ -138,11 +138,11 @@ s3.CoincidentConstraint(entity1=v3[2], entity2=g3[2], addUndoState=False)
 s3.unsetPrimaryObject()
 
 # Resin block profile sketch:
-s2 = mdb.models['Model-1'].ConstrainedSketch(name='__profile2__', sheetSize=1)
-g2, v2, d2, c2 = s2.geometry, s2.vertices, s2.dimensions, s2.constraints
-s2.setPrimaryObject(option=STANDALONE)
-s2.rectangle(point1=(0.0, 0.0), point2=(b_width / sc, b_height / sc))
-s2.unsetPrimaryObject()
+s4 = mdb.models['Model-1'].ConstrainedSketch(name='__profile2__', sheetSize=1)
+g4, v4, d4, c4 = s4.geometry, s4.vertices, s4.dimensions, s4.constraints
+s4.setPrimaryObject(option=STANDALONE)
+s4.rectangle(point1=(0.0, 0.0), point2=(b_width / sc, b_height / sc))
+s4.unsetPrimaryObject()
 print('Sketching done!')
 
 # Part creation:
@@ -153,7 +153,7 @@ p = mdb.models['Model-1'].parts['CfWeave']
 p1 = mdb.models['Model-1'].parts['ResinBlock']
 p2 = mdb.models['Model-1'].parts['CfWeave_l']
 p.BaseSolidSweep(sketch=s1, path=s)
-p1.BaseSolidExtrude(sketch=s2, depth=b_width / sc)
+p1.BaseSolidExtrude(sketch=s4, depth=b_width / sc)
 p2.BaseSolidSweep(sketch=s3, path=s2)
 print('Part creation done!')
 
@@ -181,86 +181,106 @@ a.DatumCsysByDefault(CARTESIAN)
 # Instance creation:
 a.Instance(name='CfWeave-1', part=p, dependent=ON)
 a.Instance(name='CfWeave-2', part=p, dependent=ON)
+a.Instance(name='CfWeave-5', part=p, dependent=ON)
+a.Instance(name='CfWeave-6', part=p, dependent=ON)
+a.Instance(name='CfWeave_l-1', part=p2, dependent=ON)
+a.Instance(name='CfWeave_l-2', part=p2, dependent=ON)
 a.Instance(name='CfWeave-3', part=p, dependent=ON)
 a.Instance(name='CfWeave-4', part=p, dependent=ON)
+a.Instance(name='CfWeave-7', part=p, dependent=ON)
+a.Instance(name='CfWeave-8', part=p, dependent=ON)
+a.Instance(name='CfWeave_l-3', part=p2, dependent=ON)
+a.Instance(name='CfWeave_l-4', part=p2, dependent=ON)
 a.Instance(name='ResinBlock-1', part=p1, dependent=ON)
 
 # Weave arrangement:
-a.rotate(instanceList=('CfWeave-1', 'CfWeave-2'), axisPoint=(0.0, 0.0, 0.0), axisDirection=(0.0, -90.0, 0.0), angle=90.0)
-a.rotate(instanceList=('CfWeave-2', ), axisPoint=(0.0, 0.0, 0.0), axisDirection=(0.0, 0.0, 180.0), angle=180.0)
-a.rotate(instanceList=('CfWeave-4', ), axisPoint=(0.0, 0.0, 0.0), axisDirection=(180.0, 0.0, 0.0), angle=180.0)
+a.rotate(instanceList=('CfWeave-1', 'CfWeave-2', 'CfWeave-5', 'CfWeave-6', 'CfWeave_l-1', 'CfWeave_l-2'), axisPoint=(0.0, 0.0, 0.0), axisDirection=(0.0, -90.0, 0.0), angle=90.0)
+a.rotate(instanceList=('CfWeave-2', 'CfWeave-5', 'CfWeave_l-1'), axisPoint=(0.0, 0.0, 0.0), axisDirection=(0.0, 0.0, 180.0), angle=180.0)
+a.rotate(instanceList=('CfWeave-4', 'CfWeave-8', 'CfWeave_l-3'), axisPoint=(0.0, 0.0, 0.0), axisDirection=(180.0, 0.0, 0.0), angle=180.0)
+a.translate(instanceList=('CfWeave-1', 'CfWeave-2', 'CfWeave-5', 'CfWeave-6', 'CfWeave_l-1', 'CfWeave_l-2'), vector=((period / 2), 0.0, 0.0))
+a.translate(instanceList=('CfWeave-3', 'CfWeave-4', 'CfWeave-7', 'CfWeave-8', 'CfWeave_l-3', 'CfWeave_l-4'), vector=(0.0, 0.0, (period / 2)))
 a.translate(instanceList=('CfWeave-2', ), vector=(period, 0.0, 0.0))
+a.translate(instanceList=('CfWeave_l-2', ), vector=((period * 2), 0.0, 0.0))
+a.translate(instanceList=('CfWeave-5', ), vector=((period * 3), 0.0, 0.0))
+a.translate(instanceList=('CfWeave-6', ), vector=((period * 4), 0.0, 0.0))
+a.translate(instanceList=('CfWeave_l-1', ), vector=((period * 5), 0.0, 0.0))
 a.translate(instanceList=('CfWeave-3', ), vector=(0.0, 0.0, period))
-a.translate(instanceList=('CfWeave-1', 'CfWeave-2'), vector=((period / 2), 0.0, 0.0))
-a.translate(instanceList=('CfWeave-3', 'CfWeave-4'), vector=(0.0, 0.0, (period / 2)))
-a.LinearInstancePattern(instanceList=('CfWeave-1', 'CfWeave-2'), direction1=(1.0, 0.0, 0.0), direction2=(0.0, 1.0, 0.0), number1=int(pi_len / 4), number2=1, spacing1=(period * 2), spacing2=1)
-a.rotate(instanceList=('CfWeave-1', 'CfWeave-2', 'CfWeave-3', 'CfWeave-4', 'CfWeave-1-lin-2-1', 'CfWeave-1-lin-3-1', 'CfWeave-2-lin-2-1', 'CfWeave-2-lin-3-1'), axisPoint=(0.0, 0.0, 0.0), axisDirection=(0.0, 90.0, 0.0), angle=90.0)
-a.LinearInstancePattern(instanceList=('CfWeave-4', 'CfWeave-3'), direction1=(1.0, 0.0, 0.0), direction2=(0.0, 1.0, 0.0), number1=int(pi_len / 4), number2=1, spacing1=(period * 2), spacing2=1)
-a.rotate(instanceList=('CfWeave-1', 'CfWeave-2', 'CfWeave-3', 'CfWeave-4', 'CfWeave-1-lin-2-1', 'CfWeave-1-lin-3-1', 'CfWeave-2-lin-2-1', 'CfWeave-2-lin-3-1',
-                       'CfWeave-4-lin-2-1', 'CfWeave-4-lin-3-1', 'CfWeave-3-lin-2-1', 'CfWeave-3-lin-3-1', 'CfWeave-4-lin-4-1', 'CfWeave-4-lin-5-1',
-                       'CfWeave-4-lin-6-1', 'CfWeave-3-lin-4-1', 'CfWeave-3-lin-5-1', 'CfWeave-3-lin-6-1'), axisPoint=(0.0, 0.0, 0.0), axisDirection=(0.0, -90.0, 0.0), angle=90.0)
+a.translate(instanceList=('CfWeave_l-3', ), vector=(0.0, 0.0, (period * 2)))
+a.translate(instanceList=('CfWeave-7', ), vector=(0.0, 0.0, (period * 3)))
+a.translate(instanceList=('CfWeave-8', ), vector=(0.0, 0.0, (period * 4)))
+a.translate(instanceList=('CfWeave_l-4', ), vector=(0.0, 0.0, (period * 5)))
+a.translate(instanceList=('CfWeave_l-1', 'CfWeave_l-2'), vector=(0.0, 0.0, -(period * 2)))
+a.translate(instanceList=('CfWeave_l-3', 'CfWeave_l-4'), vector=(-(period * 2), 0.0, 0.0))
+a.LinearInstancePattern(instanceList=('CfWeave-1', 'CfWeave-2', 'CfWeave-5', 'CfWeave-6', 'CfWeave_l-1', 'CfWeave_l-2'), direction1=(1.0, 0.0, 0.0), direction2=(0.0, 1.0, 0.0), number1=2, number2=1, spacing1=(period * 6), spacing2=1)
+a.rotate(instanceList=('CfWeave-1', 'CfWeave-2', 'CfWeave-5', 'CfWeave-6', 'CfWeave_l-1', 'CfWeave_l-2', 'CfWeave-3', 'CfWeave-4', 'CfWeave-7', 'CfWeave-8', 'CfWeave_l-3', 'CfWeave_l-4', 'CfWeave-1-lin-2-1',
+                       'CfWeave-2-lin-2-1', 'CfWeave-6-lin-2-1', 'CfWeave_l-2-lin-2-1', 'CfWeave-5-lin-2-1', 'CfWeave_l-1-lin-2-1'), axisPoint=(0.0, 0.0, 0.0), axisDirection=(0.0, -90.0, 0.0), angle=90.0)
+a.LinearInstancePattern(instanceList=('CfWeave_l-4', 'CfWeave-8', 'CfWeave-7', 'CfWeave_l-3', 'CfWeave-3', 'CfWeave-4'), direction1=(-1.0, 0.0, 0.0), direction2=(0.0, 1.0, 0.0), number1=2, number2=1, spacing1=(period * 6), spacing2=1)
+a.rotate(instanceList=('CfWeave-1', 'CfWeave-2', 'CfWeave-5', 'CfWeave-6', 'CfWeave_l-1', 'CfWeave_l-2', 'CfWeave-3', 'CfWeave-4', 'CfWeave-7', 'CfWeave-8', 'CfWeave_l-3', 'CfWeave_l-4', 'CfWeave-1-lin-2-1', 'CfWeave-2-lin-2-1', 'CfWeave-6-lin-2-1', 'CfWeave_l-2-lin-2-1',
+                       'CfWeave-5-lin-2-1', 'CfWeave_l-1-lin-2-1', 'CfWeave_l-4-lin-2-1', 'CfWeave-8-lin-2-1', 'CfWeave-4-lin-2-1', 'CfWeave-7-lin-2-1', 'CfWeave_l-3-lin-2-1', 'CfWeave-3-lin-2-1'), axisPoint=(0.0, 0.0, 0.0), axisDirection=(0.0, 90.0, 0.0), angle=90.0)
+a.InstanceFromBooleanMerge(name='Fibers', instances=(a.instances['CfWeave-1'], a.instances['CfWeave-2'], a.instances['CfWeave-5'], a.instances['CfWeave-6'], a.instances['CfWeave_l-1'], a.instances['CfWeave_l-2'], a.instances['CfWeave-3'], a.instances['CfWeave-4'], a.instances['CfWeave-7'],
+                                                     a.instances['CfWeave-8'], a.instances['CfWeave_l-3'], a.instances['CfWeave_l-4'], a.instances['CfWeave-1-lin-2-1'], a.instances['CfWeave-2-lin-2-1'], a.instances['CfWeave-6-lin-2-1'], a.instances['CfWeave_l-2-lin-2-1'], a.instances['CfWeave-5-lin-2-1'], a.instances['CfWeave_l-1-lin-2-1'], a.instances['CfWeave_l-4-lin-2-1'],
+                                                     a.instances['CfWeave-8-lin-2-1'], a.instances['CfWeave-4-lin-2-1'], a.instances['CfWeave-7-lin-2-1'], a.instances['CfWeave_l-3-lin-2-1'], a.instances['CfWeave-3-lin-2-1'], ), originalInstances=DELETE, domain=GEOMETRY)
 
 # Delete original weaves:
-# del mdb.models['Model-1'].parts['CfWeave']
-# p = mdb.models['Model-1'].parts['Fibers']
+del mdb.models['Model-1'].parts['CfWeave']
+del mdb.models['Model-1'].parts['CfWeave_l']
+p = mdb.models['Model-1'].parts['Fibers']
 
 # Resin matrix creation:
-# a.translate(instanceList=('ResinBlock-1', ), vector=(0.0, -(b_height / (2 * sc)), 0.0))
-# a.Instance(name='Fibers-2', part=p, dependent=ON)
-# a.InstanceFromBooleanCut(name='ResinMatrix', instanceToBeCut=mdb.models['Model-1'].rootAssembly.instances['ResinBlock-1'], cuttingInstances=(a.instances['Fibers-2'], ), originalInstances=DELETE)
+a.translate(instanceList=('ResinBlock-1', ), vector=(0.0, -(b_height / (2 * sc)), 0.0))
+a.Instance(name='Fibers-2', part=p, dependent=ON)
+a.InstanceFromBooleanCut(name='ResinMatrix', instanceToBeCut=mdb.models['Model-1'].rootAssembly.instances['ResinBlock-1'], cuttingInstances=(a.instances['Fibers-2'], ), originalInstances=DELETE)
 
 # Delete original resin block:
-# del mdb.models['Model-1'].parts['ResinBlock']
-# p1 = mdb.models['Model-1'].parts['ResinMatrix']
+del mdb.models['Model-1'].parts['ResinBlock']
+p1 = mdb.models['Model-1'].parts['ResinMatrix']
 
 # Section assignment:
-# c = p.cells
-# cells = c.getSequenceFromMask(mask=('[#fff ]', ), )
-# region = regionToolset.Region(cells=cells)
-# p.SectionAssignment(region=region, sectionName='Cf_sec', offset=0.0, offsetType=MIDDLE_SURFACE, offsetField='', thicknessAssignment=FROM_SECTION)
-# c1 = p1.cells
-# cells = c1.getSequenceFromMask(mask=('[#1 ]', ), )
-# region = regionToolset.Region(cells=cells)
-# p1.SectionAssignment(region=region, sectionName='Epo_sec', offset=0.0, offsetType=MIDDLE_SURFACE, offsetField='', thicknessAssignment=FROM_SECTION)
+c = p.cells
+cells = c.getSequenceFromMask(mask=('[#ffffff ]', ), )
+region = regionToolset.Region(cells=cells)
+p.SectionAssignment(region=region, sectionName='Cf_sec', offset=0.0, offsetType=MIDDLE_SURFACE, offsetField='', thicknessAssignment=FROM_SECTION)
+c1 = p1.cells
+cells = c1.getSequenceFromMask(mask=('[#1 ]', ), )
+region = regionToolset.Region(cells=cells)
+p1.SectionAssignment(region=region, sectionName='Epo_sec', offset=0.0, offsetType=MIDDLE_SURFACE, offsetField='', thicknessAssignment=FROM_SECTION)
 
 # Merge into composite & delete original parts:
-# a.InstanceFromBooleanMerge(name='Composite', instances=(a.instances['Fibers-1'], a.instances['ResinMatrix-1'], ), keepIntersections=ON, originalInstances=DELETE, domain=GEOMETRY)
-# del mdb.models['Model-1'].parts['Fibers']
-# del mdb.models['Model-1'].parts['ResinMatrix']
-# p = mdb.models['Model-1'].parts['Composite']
+a.InstanceFromBooleanMerge(name='Composite', instances=(a.instances['Fibers-1'], a.instances['ResinMatrix-1'], ), keepIntersections=ON, originalInstances=DELETE, domain=GEOMETRY)
+del mdb.models['Model-1'].parts['Fibers']
+del mdb.models['Model-1'].parts['ResinMatrix']
+p = mdb.models['Model-1'].parts['Composite']
 
 # Composite specimen creation:
-# f, e = p.faces, p.edges
-# t = p.MakeSketchTransform(sketchPlane=f[4], sketchUpEdge=e[18], sketchPlaneSide=SIDE1, sketchOrientation=RIGHT, origin=((b_width / (2 * sc)), (b_height / (2 * sc)), (b_width / (2 * sc))))
-# s = mdb.models['Model-1'].ConstrainedSketch(name='__profile__', sheetSize=0.106, gridSpacing=0.002, transform=t)
-# g, v, d, c = s.geometry, s.vertices, s.dimensions, s.constraints
-# s.setPrimaryObject(option=SUPERIMPOSE)
-# p = mdb.models['Model-1'].parts['Composite']
-# p.projectReferencesOntoSketch(sketch=s, filter=COPLANAR_EDGES)
-# s.rectangle(point1=(-0.022, 0.022), point2=(0.022, -0.022))
-# s.rectangle(point1=(-0.016, 0.016), point2=(0.016, -0.016))
-# p = mdb.models['Model-1'].parts['Composite']
-# f1, e1 = p.faces, p.edges
-# p.CutExtrude(sketchPlane=f1[4], sketchUpEdge=e1[18], sketchPlaneSide=SIDE1, sketchOrientation=RIGHT, sketch=s, flipExtrudeDirection=OFF)
-# s.unsetPrimaryObject()
-# del mdb.models['Model-1'].sketches['__profile__']
-# print('Assembly done!')
+f, e = p.faces, p.edges
+t = p.MakeSketchTransform(sketchPlane=f[4], sketchUpEdge=e[71], sketchPlaneSide=SIDE1, sketchOrientation=RIGHT, origin=(37.699112, 2.0, 37.699112))
+s = mdb.models['Model-1'].ConstrainedSketch(name='__profile__', sheetSize=213.25, gridSpacing=5.33, transform=t)
+g, v, d, c = s.geometry, s.vertices, s.dimensions, s.constraints
+s.setPrimaryObject(option=SUPERIMPOSE)
+p.projectReferencesOntoSketch(sketch=s, filter=COPLANAR_EDGES)
+s.rectangle(point1=(-58.63 / sc, 58.63 / sc), point2=(74.62 / sc, -69.29 / sc))
+s.rectangle(point1=(-27.9825 / sc, 27.9825 / sc), point2=(22.6525 / sc, -22.6525 / sc))
+f1, e1 = p.faces, p.edges
+p.CutExtrude(sketchPlane=f1[4], sketchUpEdge=e1[71], sketchPlaneSide=SIDE1, sketchOrientation=RIGHT, sketch=s, flipExtrudeDirection=OFF)
+s.unsetPrimaryObject()
+del mdb.models['Model-1'].sketches['__profile__']
+print('Assembly done!')
 
 # Seeding and meshing:
-# p.seedPart(size=(md / sc), deviationFactor=0.1, minSizeFactor=0.1)
-# c = p.cells
-# pickedRegions = c.getSequenceFromMask(mask=('[#1fff ]', ), )
-# p.setMeshControls(regions=pickedRegions, elemShape=TET, technique=FREE)
-# elemType1 = mesh.ElemType(elemCode=C3D20R)
-# elemType2 = mesh.ElemType(elemCode=C3D15)
-# elemType3 = mesh.ElemType(elemCode=C3D10)
-# cells = c.getSequenceFromMask(mask=('[#1fff ]', ), )
-# pickedRegions = (cells, )
-# p.setElementType(regions=pickedRegions, elemTypes=(elemType1, elemType2, elemType3))
-# p = mdb.models['Model-1'].parts['Composite']
-# p.generateMesh()
-# a.regenerate()
-# print('Meshing done!')
+p.seedPart(size=(md / sc), deviationFactor=0.1, minSizeFactor=0.1)
+c = p.cells
+pickedRegions = c.getSequenceFromMask(mask=('[#7ffff ]', ), )
+p.setMeshControls(regions=pickedRegions, elemShape=TET, technique=FREE)
+elemType1 = mesh.ElemType(elemCode=C3D20R)
+elemType2 = mesh.ElemType(elemCode=C3D15)
+elemType3 = mesh.ElemType(elemCode=C3D10)
+c = p.cells
+cells = c.getSequenceFromMask(mask=('[#7ffff ]', ), )
+pickedRegions =(cells, )
+p.setElementType(regions=pickedRegions, elemTypes=(elemType1, elemType2, elemType3))
+p.generateMesh()
+a.regenerate()
+print('Meshing done!')
 
 # Static analysis step:
 mdb.models['Model-1'].StaticStep(name='StaticAnalysis', previous='Initial')
