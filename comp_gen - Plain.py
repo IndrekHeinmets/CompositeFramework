@@ -187,7 +187,7 @@ s.setPrimaryObject(option=SUPERIMPOSE)
 p = mdb.models['Model-1'].parts['Composite']
 p.projectReferencesOntoSketch(sketch=s, filter=COPLANAR_EDGES)
 s.rectangle(point1=(-0.022, 0.022), point2=(0.022, -0.022))
-s.rectangle(point1=(-0.016, 0.016), point2=(0.016, -0.016))
+s.rectangle(point1=(-0.012, 0.012), point2=(0.012, -0.012))
 p = mdb.models['Model-1'].parts['Composite']
 f1, e1 = p.faces, p.edges
 p.CutExtrude(sketchPlane=f1[4], sketchUpEdge=e1[18], sketchPlaneSide=SIDE1, sketchOrientation=RIGHT, sketch=s, flipExtrudeDirection=OFF)
@@ -196,20 +196,20 @@ del mdb.models['Model-1'].sketches['__profile__']
 print('Assembly done!')
 
 # Seeding and meshing:
-# p.seedPart(size=(md / sc), deviationFactor=0.1, minSizeFactor=0.1)
-# c = p.cells
-# pickedRegions = c.getSequenceFromMask(mask=('[#1fff ]', ), )
-# p.setMeshControls(regions=pickedRegions, elemShape=TET, technique=FREE)
-# elemType1 = mesh.ElemType(elemCode=C3D20R)
-# elemType2 = mesh.ElemType(elemCode=C3D15)
-# elemType3 = mesh.ElemType(elemCode=C3D10)
-# cells = c.getSequenceFromMask(mask=('[#1fff ]', ), )
-# pickedRegions = (cells, )
-# p.setElementType(regions=pickedRegions, elemTypes=(elemType1, elemType2, elemType3))
-# p = mdb.models['Model-1'].parts['Composite']
-# p.generateMesh()
-# a.regenerate()
-# print('Meshing done!')
+p.seedPart(size=(md / sc), deviationFactor=0.1, minSizeFactor=0.1)
+c = p.cells
+pickedRegions = c.getSequenceFromMask(mask=('[#1fff ]', ), )
+p.setMeshControls(regions=pickedRegions, elemShape=TET, technique=FREE)
+elemType1 = mesh.ElemType(elemCode=C3D20R)
+elemType2 = mesh.ElemType(elemCode=C3D15)
+elemType3 = mesh.ElemType(elemCode=C3D10)
+cells = c.getSequenceFromMask(mask=('[#1fff ]', ), )
+pickedRegions = (cells, )
+p.setElementType(regions=pickedRegions, elemTypes=(elemType1, elemType2, elemType3))
+p = mdb.models['Model-1'].parts['Composite']
+p.generateMesh()
+a.regenerate()
+print('Meshing done!')
 
 # Static analysis step:
 mdb.models['Model-1'].StaticStep(name='StaticAnalysis', previous='Initial')

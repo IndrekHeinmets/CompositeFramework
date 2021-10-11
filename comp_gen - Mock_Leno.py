@@ -276,7 +276,7 @@ elemType2 = mesh.ElemType(elemCode=C3D15)
 elemType3 = mesh.ElemType(elemCode=C3D10)
 c = p.cells
 cells = c.getSequenceFromMask(mask=('[#7ffff ]', ), )
-pickedRegions =(cells, )
+pickedRegions = (cells, )
 p.setElementType(regions=pickedRegions, elemTypes=(elemType1, elemType2, elemType3))
 p.generateMesh()
 a.regenerate()
@@ -286,6 +286,7 @@ print('Meshing done!')
 mdb.models['Model-1'].StaticStep(name='StaticAnalysis', previous='Initial')
 
 # Boundary conditions:
+
 # Loads:
 
 # Job creation:
