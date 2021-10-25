@@ -162,8 +162,7 @@ a.LinearInstancePattern(instanceList=('weaves-1', ), direction1=(1.0, 0.0, 0.0),
 a.Instance(name='weaves-2', part=p, dependent=ON)
 a.rotate(instanceList=('weaves-2', ), axisPoint=(0.0, 0.0, 0.0), axisDirection=(180.0, 0.0, 0.0), angle=180.0)
 a.translate(instanceList=('weaves-2', ), vector=((period * 2.5), 0.0, (period * 2.5)))
-a.rotate(instanceList=('weaves-1', 'weaves-1-lin-2-1', 'weaves-1-lin-3-1', 'weaves-1-lin-4-1', 'weaves-2'), axisPoint=(0.0, 0.0, 0.0), axisDirection=(0.0, -90.0, 0.0), angle=90.0)
-a.LinearInstancePattern(instanceList=('weaves-2', ), direction1=(1.0, 0.0, 0.0), direction2=(0.0, 1.0, 0.0), number1=4, number2=1, spacing1=(period * 4), spacing2=1)
+a.LinearInstancePattern(instanceList=('weaves-2', ), direction1=(0.0, 0.0, -1.0), direction2=(0.0, 1.0, 0.0), number1=4, number2=1, spacing1=(period * 4), spacing2=1)
 a.InstanceFromBooleanMerge(name='Fibers', instances=(a.instances['weaves-1'], a.instances['weaves-1-lin-2-1'], a.instances['weaves-1-lin-3-1'], a.instances['weaves-1-lin-4-1'], a.instances['weaves-2'],
                                                      a.instances['weaves-2-lin-2-1'], a.instances['weaves-2-lin-3-1'], a.instances['weaves-2-lin-4-1'], ), originalInstances=DELETE, domain=GEOMETRY)
 
@@ -173,7 +172,6 @@ del mdb.models['Model-1'].parts['CfWeave']
 p = mdb.models['Model-1'].parts['Fibers']
 
 # Resin matrix creation:
-a.rotate(instanceList=('ResinBlock-1', ), axisPoint=(0.0, 0.0, 0.0), axisDirection=(0.0, -90.0, 0.0), angle=90.0)
 a.translate(instanceList=('ResinBlock-1', ), vector=(-(period * 2), -(b_height / (2 * sc)), 0.0))
 a.Instance(name='Fibers-2', part=p, dependent=ON)
 a.InstanceFromBooleanCut(name='ResinMatrix', instanceToBeCut=mdb.models['Model-1'].rootAssembly.instances['ResinBlock-1'], cuttingInstances=(a.instances['Fibers-2'], ), originalInstances=DELETE)

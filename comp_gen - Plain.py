@@ -45,7 +45,7 @@ sc = 1000
 # Sin curve:
 sin_x = 0.5
 step = 0.01
-pi_len = 12.0
+pi_len = 24.0
 period = pi / (sin_x * sc)
 
 # Elipse cs:
@@ -142,12 +142,10 @@ a.translate(instanceList=('CfWeave-3', ), vector=(0.0, 0.0, period))
 a.translate(instanceList=('CfWeave-1', 'CfWeave-2'), vector=((period / 2), 0.0, 0.0))
 a.translate(instanceList=('CfWeave-3', 'CfWeave-4'), vector=(0.0, 0.0, (period / 2)))
 a.LinearInstancePattern(instanceList=('CfWeave-1', 'CfWeave-2'), direction1=(1.0, 0.0, 0.0), direction2=(0.0, 1.0, 0.0), number1=int(pi_len / 4), number2=1, spacing1=(period * 2), spacing2=1)
-a.rotate(instanceList=('CfWeave-1', 'CfWeave-2', 'CfWeave-3', 'CfWeave-4', 'CfWeave-1-lin-2-1', 'CfWeave-1-lin-3-1', 'CfWeave-2-lin-2-1', 'CfWeave-2-lin-3-1'), axisPoint=(0.0, 0.0, 0.0), axisDirection=(0.0, 90.0, 0.0), angle=90.0)
-a.LinearInstancePattern(instanceList=('CfWeave-4', 'CfWeave-3'), direction1=(1.0, 0.0, 0.0), direction2=(0.0, 1.0, 0.0), number1=int(pi_len / 4), number2=1, spacing1=(period * 2), spacing2=1)
-a.rotate(instanceList=('CfWeave-1', 'CfWeave-2', 'CfWeave-3', 'CfWeave-4', 'CfWeave-1-lin-2-1', 'CfWeave-1-lin-3-1', 'CfWeave-2-lin-2-1', 'CfWeave-2-lin-3-1',
-                       'CfWeave-4-lin-2-1', 'CfWeave-4-lin-3-1', 'CfWeave-3-lin-2-1', 'CfWeave-3-lin-3-1'), axisPoint=(0.0, 0.0, 0.0), axisDirection=(0.0, -90.0, 0.0), angle=90.0)
-a.InstanceFromBooleanMerge(name='Fibers', instances=(a.instances['CfWeave-1'], a.instances['CfWeave-2'], a.instances['CfWeave-3'], a.instances['CfWeave-4'], a.instances['CfWeave-1-lin-2-1'], a.instances['CfWeave-1-lin-3-1'],
-                                                     a.instances['CfWeave-2-lin-2-1'], a.instances['CfWeave-2-lin-3-1'], a.instances['CfWeave-4-lin-2-1'], a.instances['CfWeave-4-lin-3-1'], a.instances['CfWeave-3-lin-2-1'], a.instances['CfWeave-3-lin-3-1'], ), originalInstances=DELETE, domain=GEOMETRY)
+a.LinearInstancePattern(instanceList=('CfWeave-4', 'CfWeave-3'), direction1=(0.0, 0.0, 1.0), direction2=(0.0, 1.0, 0.0), number1=int(pi_len / 4), number2=1, spacing1=(period * 2), spacing2=1)
+a.InstanceFromBooleanMerge(name='Fibers', instances=(a.instances['CfWeave-1'], a.instances['CfWeave-2'], a.instances['CfWeave-3'], a.instances['CfWeave-4'],
+                                                     a.instances['CfWeave-1-lin-2-1'], a.instances['CfWeave-1-lin-3-1'], a.instances['CfWeave-1-lin-4-1'], a.instances['CfWeave-1-lin-5-1'], a.instances['CfWeave-1-lin-6-1'], a.instances['CfWeave-2-lin-2-1'], a.instances['CfWeave-2-lin-3-1'], a.instances['CfWeave-2-lin-4-1'], a.instances['CfWeave-2-lin-5-1'], a.instances['CfWeave-2-lin-6-1'],
+                                                     a.instances['CfWeave-4-lin-2-1'], a.instances['CfWeave-4-lin-3-1'], a.instances['CfWeave-4-lin-4-1'], a.instances['CfWeave-4-lin-5-1'], a.instances['CfWeave-4-lin-6-1'], a.instances['CfWeave-3-lin-2-1'], a.instances['CfWeave-3-lin-3-1'], a.instances['CfWeave-3-lin-4-1'], a.instances['CfWeave-3-lin-5-1'], a.instances['CfWeave-3-lin-6-1'], ), originalInstances=DELETE, domain=GEOMETRY)
 
 # Delete original weaves:
 del mdb.models['Model-1'].parts['CfWeave']
@@ -186,8 +184,8 @@ g, v, d, c = s.geometry, s.vertices, s.dimensions, s.constraints
 s.setPrimaryObject(option=SUPERIMPOSE)
 p = mdb.models['Model-1'].parts['Composite']
 p.projectReferencesOntoSketch(sketch=s, filter=COPLANAR_EDGES)
-s.rectangle(point1=(-0.022, 0.022), point2=(0.022, -0.022))
-s.rectangle(point1=(-0.012, 0.012), point2=(0.012, -0.012))
+s.rectangle(point1=(-0.042, 0.042), point2=(0.042, -0.042))
+s.rectangle(point1=(-0.019, 0.019), point2=(0.019, -0.019))
 p = mdb.models['Model-1'].parts['Composite']
 f1, e1 = p.faces, p.edges
 p.CutExtrude(sketchPlane=f1[4], sketchUpEdge=e1[18], sketchPlaneSide=SIDE1, sketchOrientation=RIGHT, sketch=s, flipExtrudeDirection=OFF)

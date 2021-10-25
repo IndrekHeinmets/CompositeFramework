@@ -212,11 +212,7 @@ a.translate(instanceList=('CfWeave_l-4', ), vector=(0.0, 0.0, (period * 5)))
 a.translate(instanceList=('CfWeave_l-1', 'CfWeave_l-2'), vector=(0.0, 0.0, -(period * 2)))
 a.translate(instanceList=('CfWeave_l-3', 'CfWeave_l-4'), vector=(-(period * 2), 0.0, 0.0))
 a.LinearInstancePattern(instanceList=('CfWeave-1', 'CfWeave-2', 'CfWeave-5', 'CfWeave-6', 'CfWeave_l-1', 'CfWeave_l-2'), direction1=(1.0, 0.0, 0.0), direction2=(0.0, 1.0, 0.0), number1=2, number2=1, spacing1=(period * 6), spacing2=1)
-a.rotate(instanceList=('CfWeave-1', 'CfWeave-2', 'CfWeave-5', 'CfWeave-6', 'CfWeave_l-1', 'CfWeave_l-2', 'CfWeave-3', 'CfWeave-4', 'CfWeave-7', 'CfWeave-8', 'CfWeave_l-3', 'CfWeave_l-4', 'CfWeave-1-lin-2-1',
-                       'CfWeave-2-lin-2-1', 'CfWeave-6-lin-2-1', 'CfWeave_l-2-lin-2-1', 'CfWeave-5-lin-2-1', 'CfWeave_l-1-lin-2-1'), axisPoint=(0.0, 0.0, 0.0), axisDirection=(0.0, -90.0, 0.0), angle=90.0)
-a.LinearInstancePattern(instanceList=('CfWeave_l-4', 'CfWeave-8', 'CfWeave-7', 'CfWeave_l-3', 'CfWeave-3', 'CfWeave-4'), direction1=(-1.0, 0.0, 0.0), direction2=(0.0, 1.0, 0.0), number1=2, number2=1, spacing1=(period * 6), spacing2=1)
-a.rotate(instanceList=('CfWeave-1', 'CfWeave-2', 'CfWeave-5', 'CfWeave-6', 'CfWeave_l-1', 'CfWeave_l-2', 'CfWeave-3', 'CfWeave-4', 'CfWeave-7', 'CfWeave-8', 'CfWeave_l-3', 'CfWeave_l-4', 'CfWeave-1-lin-2-1', 'CfWeave-2-lin-2-1', 'CfWeave-6-lin-2-1', 'CfWeave_l-2-lin-2-1',
-                       'CfWeave-5-lin-2-1', 'CfWeave_l-1-lin-2-1', 'CfWeave_l-4-lin-2-1', 'CfWeave-8-lin-2-1', 'CfWeave-4-lin-2-1', 'CfWeave-7-lin-2-1', 'CfWeave_l-3-lin-2-1', 'CfWeave-3-lin-2-1'), axisPoint=(0.0, 0.0, 0.0), axisDirection=(0.0, 90.0, 0.0), angle=90.0)
+a.LinearInstancePattern(instanceList=('CfWeave_l-4', 'CfWeave-8', 'CfWeave-7', 'CfWeave_l-3', 'CfWeave-3', 'CfWeave-4'), direction1=(0.0, 0.0, 1.0), direction2=(0.0, 1.0, 0.0), number1=2, number2=1, spacing1=(period * 6), spacing2=1)
 a.InstanceFromBooleanMerge(name='Fibers', instances=(a.instances['CfWeave-1'], a.instances['CfWeave-2'], a.instances['CfWeave-5'], a.instances['CfWeave-6'], a.instances['CfWeave_l-1'], a.instances['CfWeave_l-2'], a.instances['CfWeave-3'], a.instances['CfWeave-4'], a.instances['CfWeave-7'],
                                                      a.instances['CfWeave-8'], a.instances['CfWeave_l-3'], a.instances['CfWeave_l-4'], a.instances['CfWeave-1-lin-2-1'], a.instances['CfWeave-2-lin-2-1'], a.instances['CfWeave-6-lin-2-1'], a.instances['CfWeave_l-2-lin-2-1'], a.instances['CfWeave-5-lin-2-1'], a.instances['CfWeave_l-1-lin-2-1'], a.instances['CfWeave_l-4-lin-2-1'],
                                                      a.instances['CfWeave-8-lin-2-1'], a.instances['CfWeave-4-lin-2-1'], a.instances['CfWeave-7-lin-2-1'], a.instances['CfWeave_l-3-lin-2-1'], a.instances['CfWeave-3-lin-2-1'], ), originalInstances=DELETE, domain=GEOMETRY)
@@ -253,7 +249,7 @@ p = mdb.models['Model-1'].parts['Composite']
 
 # Composite specimen creation:
 f, e = p.faces, p.edges
-t = p.MakeSketchTransform(sketchPlane=f[4], sketchUpEdge=e[71], sketchPlaneSide=SIDE1, sketchOrientation=RIGHT, origin=(37.699112, 2.0, 37.699112))
+t = p.MakeSketchTransform(sketchPlane=f[4], sketchUpEdge=e[71], sketchPlaneSide=SIDE1, sketchOrientation=RIGHT, origin=((b_width / (2 * sc)), (b_height / (2 * sc)), (b_width / (2 * sc))))
 s = mdb.models['Model-1'].ConstrainedSketch(name='__profile__', sheetSize=213.25, gridSpacing=5.33, transform=t)
 g, v, d, c = s.geometry, s.vertices, s.dimensions, s.constraints
 s.setPrimaryObject(option=SUPERIMPOSE)
@@ -286,8 +282,22 @@ print('Meshing done!')
 mdb.models['Model-1'].StaticStep(name='StaticAnalysis', previous='Initial')
 
 # Boundary conditions:
+f1 = a.instances['Composite-1'].faces
+faces1 = f1.getSequenceFromMask(mask=('[#ffc00000 #3 ]', ), )
+e1 = a.instances['Composite-1'].edges
+edges1 = e1.getSequenceFromMask(mask=('[#0 #40 ]', ), )
+region = regionToolset.Region(edges=edges1, faces=faces1)
+mdb.models['Model-1'].DisplacementBC(name='BC-1', createStepName='StaticAnalysis', region=region, u1=0.0, u2=0.0, u3=0.0, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
+f1 = a.instances['Composite-1'].faces
+faces1 = f1.getSequenceFromMask(mask=('[#0 #3ffc ]', ), )
+region = regionToolset.Region(faces=faces1)
+mdb.models['Model-1'].DisplacementBC(name='BC-2', createStepName='StaticAnalysis', region=region, u1=0.0, u2=0.0, u3=0.0, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
 
 # Loads:
+v1 = a.instances['Composite-1'].vertices
+verts1 = v1.getSequenceFromMask(mask=('[#400 ]', ), )
+region = regionToolset.Region(vertices=verts1)
+mdb.models['Model-1'].ConcentratedForce(name='Load-1', createStepName='StaticAnalysis', region=region, cf2=-5000.0, distributionType=UNIFORM, field='', localCsys=None)
 
 # Job creation:
 mdb.Job(name='Job-1', model='Model-1', description='', type=ANALYSIS, atTime=None, waitMinutes=0, waitHours=0, queue=None, memory=90, memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True,
