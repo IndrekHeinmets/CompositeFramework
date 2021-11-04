@@ -21,24 +21,7 @@ import xyPlot
 import displayGroupOdbToolset as dgo
 import connectorBehavior
 
-
-def find_sin_nodes(sin_x, step, pi_len, sc):
-    points = []
-
-    for i in range(0, int((pi_len * pi) / step)):
-        x = step * i
-        y = (sin(sin_x * x)) / sc
-        points.append((x, y))
-
-    points = tuple(points)
-
-    return points
-
-
-# New model database creation:
-Mdb()
-print('Running script...')
-
+############################# VARIABLES ###################################
 # Scale (m -> mm):
 sc = 1000
 
@@ -68,6 +51,26 @@ m_PsR = 0.35
 
 # Mesh density:
 md = 0.5
+###########################################################################
+
+
+def find_sin_nodes(sin_x, step, pi_len, sc):
+    points = []
+
+    for i in range(0, int((pi_len * pi) / step)):
+        x = step * i
+        y = (sin(sin_x * x)) / sc
+        points.append((x, y))
+
+    points = tuple(points)
+
+    return points
+
+
+# New model database creation:
+Mdb()
+session.journalOptions.setValues(replayGeometry=COORDINATE, recoverGeometry=COORDINATE)
+print('Running script...')
 
 # Sin spline nodes:
 points = find_sin_nodes((sin_x * sc), (step / sc), (pi_len / sc), sc)
@@ -160,16 +163,6 @@ a.InstanceFromBooleanCut(name='ResinMatrix', instanceToBeCut=mdb.models['Model-1
 del mdb.models['Model-1'].parts['ResinBlock']
 p1 = mdb.models['Model-1'].parts['ResinMatrix']
 
-# Section assignment:
-c = p.cells
-cells = c.getSequenceFromMask(mask=('[#fff ]', ), )
-region = regionToolset.Region(cells=cells)
-p.SectionAssignment(region=region, sectionName='Cf_sec', offset=0.0, offsetType=MIDDLE_SURFACE, offsetField='', thicknessAssignment=FROM_SECTION)
-c1 = p1.cells
-cells = c1.getSequenceFromMask(mask=('[#1 ]', ), )
-region = regionToolset.Region(cells=cells)
-p1.SectionAssignment(region=region, sectionName='Epo_sec', offset=0.0, offsetType=MIDDLE_SURFACE, offsetField='', thicknessAssignment=FROM_SECTION)
-
 # Merge into composite & delete original parts:
 a.InstanceFromBooleanMerge(name='Composite', instances=(a.instances['Fibers-1'], a.instances['ResinMatrix-1'], ), keepIntersections=ON, originalInstances=DELETE, domain=GEOMETRY)
 del mdb.models['Model-1'].parts['Fibers']
@@ -191,22 +184,42 @@ f1, e1 = p.faces, p.edges
 p.CutExtrude(sketchPlane=f1[4], sketchUpEdge=e1[18], sketchPlaneSide=SIDE1, sketchOrientation=RIGHT, sketch=s, flipExtrudeDirection=OFF)
 s.unsetPrimaryObject()
 del mdb.models['Model-1'].sketches['__profile__']
+
+# Section assignment:
+c = p.cells
+cells = c.findAt(((0.056699, -7.4e-05, 0.036785), ), ((0.056699, 7.4e-05, 0.038613), ), ((0.036779, -7.4e-05, 0.018699), ), ((0.038619, 7.4e-05, 0.018699), ),
+                 ((0.026053, 7.4e-05, 0.018699), ), ((0.051186, 7.4e-05, 0.018699), ), ((0.024213, -7.4e-05, 0.018699), ), ((0.049345, -7.4e-05, 0.018699), ),
+                 ((0.056699, 7.4e-05, 0.026047), ), ((0.056699, 7.4e-05, 0.051179), ), ((0.056699, -7.4e-05, 0.024219), ), ((0.056699, -7.4e-05, 0.049351), ))
+region = regionToolset.Region(cells=cells)
+p.SectionAssignment(region=region, sectionName='Cf_sec', offset=0.0, offsetType=MIDDLE_SURFACE, offsetField='', thicknessAssignment=FROM_SECTION)
+c = p.cells
+cells = c.findAt(((0.018699, 0.001106, 0.047969), ))
+region = regionToolset.Region(cells=cells)
+p.SectionAssignment(region=region, sectionName='Epo_sec', offset=0.0, offsetType=MIDDLE_SURFACE, offsetField='', thicknessAssignment=FROM_SECTION)
 print('Assembly done!')
 
 # Seeding and meshing:
-p.seedPart(size=(md / sc), deviationFactor=0.1, minSizeFactor=0.1)
 c = p.cells
-pickedRegions = c.getSequenceFromMask(mask=('[#1fff ]', ), )
+pickedRegions = c.findAt(((0.056699, -7.4e-05, 0.036785), ), ((0.056699, 7.4e-05, 0.038613), ), ((0.036779, -7.4e-05, 0.018699), ), ((0.038619, 7.4e-05, 0.018699), ),
+                         ((0.026053, 7.4e-05, 0.018699), ), ((0.051186, 7.4e-05, 0.018699), ), ((0.024213, -7.4e-05, 0.018699), ), ((0.049345, -7.4e-05, 0.018699), ),
+                         ((0.056699, 7.4e-05, 0.026047), ), ((0.056699, 7.4e-05, 0.051179), ), ((0.056699, -7.4e-05, 0.024219), ), ((0.056699, -7.4e-05, 0.049351), ),
+                         ((0.018699, 0.001106, 0.047969), ))
 p.setMeshControls(regions=pickedRegions, elemShape=TET, technique=FREE)
 elemType1 = mesh.ElemType(elemCode=C3D20R)
 elemType2 = mesh.ElemType(elemCode=C3D15)
 elemType3 = mesh.ElemType(elemCode=C3D10)
-cells = c.getSequenceFromMask(mask=('[#1fff ]', ), )
+# c = p.cells
+# cells = c.findAt(((0.056699, -7.4e-05, 0.036785), ), ((0.056699, 7.4e-05,
+#     0.038613), ), ((0.036779, -7.4e-05, 0.018699), ), ((0.038619, 7.4e-05,
+#     0.018699), ), ((0.026053, 7.4e-05, 0.018699), ), ((0.051186, 7.4e-05,
+#     0.018699), ), ((0.024213, -7.4e-05, 0.018699), ), ((0.049345, -7.4e-05,
+#     0.018699), ), ((0.056699, 7.4e-05, 0.026047), ), ((0.056699, 7.4e-05,
+#     0.051179), ), ((0.056699, -7.4e-05, 0.024219), ), ((0.056699, -7.4e-05,
+#     0.049351), ), ((0.018699, 0.001106, 0.047969), ))
 pickedRegions = (cells, )
 p.setElementType(regions=pickedRegions, elemTypes=(elemType1, elemType2, elemType3))
-p = mdb.models['Model-1'].parts['Composite']
+p.seedPart(size=(md / sc), deviationFactor=0.1, minSizeFactor=0.1)
 p.generateMesh()
-a.regenerate()
 print('Meshing done!')
 
 # Static analysis step:

@@ -21,6 +21,38 @@ import xyPlot
 import displayGroupOdbToolset as dgo
 import connectorBehavior
 
+############################# VARIABLES ###################################
+# Scale (m -> mm):
+sc = 1000
+
+# Sin curve:
+sin_x = 0.5
+step = 0.01
+pi_len = 24.0
+period = pi / (sin_x * sc)
+
+# Elipse cs:
+e_width = 4.5
+e_height = 0.6
+
+# Resin block:
+b_width = (pi_len * pi)
+b_height = 4.0
+
+# Fiber prop:
+f_name = 'Carbon Fiber'
+f_YsM = 228000000000.0
+f_PsR = 0.28
+
+# Matrix prop:
+m_name = 'Epoxy Resin'
+m_YsM = 38000000000.0
+m_PsR = 0.35
+
+# Mesh density:
+md = 0.5
+###########################################################################
+
 
 def find_spline_nodes(sin_x, step, pi_len, sc):
     points = []
@@ -65,37 +97,8 @@ def find_spline_nodes_l(sin_x, step, pi_len, sc):
 
 # New model database creation:
 Mdb()
+session.journalOptions.setValues(replayGeometry=COORDINATE, recoverGeometry=COORDINATE)
 print('Running script...')
-
-# Scale (m -> mm):
-sc = 1
-
-# Sin curve:
-sin_x = 0.5
-step = 0.01
-pi_len = 24.0
-period = pi / (sin_x * sc)
-
-# Elipse cs:
-e_width = 4.5
-e_height = 0.6
-
-# Resin block:
-b_width = (pi_len * pi)
-b_height = 4.0
-
-# Fiber prop:
-f_name = 'Carbon Fiber'
-f_YsM = 228000000000.0
-f_PsR = 0.28
-
-# Matrix prop:
-m_name = 'Epoxy Resin'
-m_YsM = 38000000000.0
-m_PsR = 0.35
-
-# Mesh density:
-md = 0.5
 
 # Sin spline nodes:
 points = find_spline_nodes((sin_x * sc), (step / sc), (pi_len / sc), sc)

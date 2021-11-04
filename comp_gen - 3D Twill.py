@@ -21,6 +21,39 @@ import xyPlot
 import displayGroupOdbToolset as dgo
 import connectorBehavior
 
+############################# VARIABLES ###################################
+# Scale (m -> mm):
+sc = 1
+
+# Sin curve:
+sin_x = 0.5
+step = 0.01
+pi_len = 12.0
+period = pi / (sin_x * sc)
+height_mult = 3
+
+# Elipse cs:
+e_width = 4.5
+e_height = 0.6
+
+# Resin block:
+b_width = (pi_len * pi) * 2
+b_height = 3.0 * height_mult
+
+# Fiber prop:
+f_name = 'Carbon Fiber'
+f_YsM = 228000000000.0
+f_PsR = 0.28
+
+# Matrix prop:
+m_name = 'Epoxy Resin'
+m_YsM = 38000000000.0
+m_PsR = 0.35
+
+# Mesh density:
+md = 0.5
+###########################################################################
+
 
 def find_spline_nodes(sin_x, step, pi_len, sc, height_mult):
     points = []
@@ -52,38 +85,8 @@ def find_spline_nodes(sin_x, step, pi_len, sc, height_mult):
 
 # New model database creation:
 Mdb()
+session.journalOptions.setValues(replayGeometry=COORDINATE, recoverGeometry=COORDINATE)
 print('Running script...')
-
-# Scale (m -> mm):
-sc = 1
-
-# Sin curve:
-sin_x = 0.5
-step = 0.01
-pi_len = 12.0
-period = pi / (sin_x * sc)
-height_mult = 3
-
-# Elipse cs:
-e_width = 4.5
-e_height = 0.6
-
-# Resin block:
-b_width = (pi_len * pi) * 2
-b_height = 3.0 * height_mult
-
-# Fiber prop:
-f_name = 'Carbon Fiber'
-f_YsM = 228000000000.0
-f_PsR = 0.28
-
-# Matrix prop:
-m_name = 'Epoxy Resin'
-m_YsM = 38000000000.0
-m_PsR = 0.35
-
-# Mesh density:
-md = 0.5
 
 # Sin spline nodes:
 points = find_spline_nodes((sin_x * sc), (step / sc), (pi_len / sc), sc, height_mult)
@@ -208,17 +211,6 @@ a.InstanceFromBooleanCut(name='ResinMatrix', instanceToBeCut=mdb.models['Model-1
 del mdb.models['Model-1'].parts['ResinBlock']
 p1 = mdb.models['Model-1'].parts['ResinMatrix']
 
-# Section assignment:
-c = p.cells
-cells = c.getSequenceFromMask(mask=('[#ffffffff #3ff ]', ), )
-region = regionToolset.Region(cells=cells)
-p.SectionAssignment(region=region, sectionName='Cf_sec', offset=0.0, offsetType=MIDDLE_SURFACE, offsetField='', thicknessAssignment=FROM_SECTION)
-c1 = p1.cells
-cells = c1.getSequenceFromMask(mask=('[#1 ]', ), )
-region = regionToolset.Region(cells=cells)
-p1.SectionAssignment(region=region, sectionName='Epo_sec', offset=0.0, offsetType=MIDDLE_SURFACE, offsetField='', thicknessAssignment=FROM_SECTION)
-a.regenerate()
-
 # Merge into composite & delete original parts:
 a.InstanceFromBooleanMerge(name='Composite', instances=(a.instances['Fibers-1'], a.instances['ResinMatrix-1'], ), keepIntersections=ON, originalInstances=DELETE, domain=GEOMETRY)
 del mdb.models['Model-1'].parts['Fibers']
@@ -227,18 +219,29 @@ p = mdb.models['Model-1'].parts['Composite']
 
 # Composite specimen creation:
 f, e = p.faces, p.edges
-t = p.MakeSketchTransform(sketchPlane=f[5], sketchUpEdge=e[111], sketchPlaneSide=SIDE1, sketchOrientation=RIGHT, origin=(37.699112, 4.5, 37.699112))
-s = mdb.models['Model-1'].ConstrainedSketch(name='__profile__', sheetSize=213.25, gridSpacing=5.33, transform=t)
+t = p.MakeSketchTransform(sketchPlane=f[4], sketchUpEdge=e[18], sketchPlaneSide=SIDE1, sketchOrientation=RIGHT, origin=((b_width / (2 * sc)), (b_height / (2 * sc)), (b_width / (2 * sc))))
+s = mdb.models['Model-1'].ConstrainedSketch(name='__profile__', sheetSize=0.106, gridSpacing=0.002, transform=t)
 g, v, d, c = s.geometry, s.vertices, s.dimensions, s.constraints
 s.setPrimaryObject(option=SUPERIMPOSE)
+p = mdb.models['Model-1'].parts['Composite']
 p.projectReferencesOntoSketch(sketch=s, filter=COPLANAR_EDGES)
-s.rectangle(point1=(-42.64, 42.64), point2=(53.3, -42.64))
-s.rectangle(point1=(-19.9875, 19.9875), point2=(15.99, -18.655))
+s.rectangle(point1=(-0.042, 0.042), point2=(0.042, -0.042))
+s.rectangle(point1=(-0.019, 0.019), point2=(0.019, -0.019))
 f1, e1 = p.faces, p.edges
-p.CutExtrude(sketchPlane=f1[5], sketchUpEdge=e1[111], sketchPlaneSide=SIDE1, sketchOrientation=RIGHT, sketch=s, flipExtrudeDirection=OFF)
+p.CutExtrude(sketchPlane=f1[4], sketchUpEdge=e1[18], sketchPlaneSide=SIDE1, sketchOrientation=RIGHT, sketch=s, flipExtrudeDirection=OFF)
 s.unsetPrimaryObject()
 del mdb.models['Model-1'].sketches['__profile__']
 
+# Section assignment:
+# c = p.cells
+# cells = c.getSequenceFromMask(mask=('[#ffffffff #3ff ]', ), )
+# region = regionToolset.Region(cells=cells)
+# p.SectionAssignment(region=region, sectionName='Cf_sec', offset=0.0, offsetType=MIDDLE_SURFACE, offsetField='', thicknessAssignment=FROM_SECTION)
+# c1 = p1.cells
+# cells = c1.getSequenceFromMask(mask=('[#1 ]', ), )
+# region = regionToolset.Region(cells=cells)
+# p1.SectionAssignment(region=region, sectionName='Epo_sec', offset=0.0, offsetType=MIDDLE_SURFACE, offsetField='', thicknessAssignment=FROM_SECTION)
+# a.regenerate()
 
 # # Seeding and meshing:
 # # p.seedPart(size=(md / sc), deviationFactor=0.1, minSizeFactor=0.1)
