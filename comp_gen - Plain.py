@@ -208,14 +208,6 @@ p.setMeshControls(regions=pickedRegions, elemShape=TET, technique=FREE)
 elemType1 = mesh.ElemType(elemCode=C3D20R)
 elemType2 = mesh.ElemType(elemCode=C3D15)
 elemType3 = mesh.ElemType(elemCode=C3D10)
-# c = p.cells
-# cells = c.findAt(((0.056699, -7.4e-05, 0.036785), ), ((0.056699, 7.4e-05,
-#     0.038613), ), ((0.036779, -7.4e-05, 0.018699), ), ((0.038619, 7.4e-05,
-#     0.018699), ), ((0.026053, 7.4e-05, 0.018699), ), ((0.051186, 7.4e-05,
-#     0.018699), ), ((0.024213, -7.4e-05, 0.018699), ), ((0.049345, -7.4e-05,
-#     0.018699), ), ((0.056699, 7.4e-05, 0.026047), ), ((0.056699, 7.4e-05,
-#     0.051179), ), ((0.056699, -7.4e-05, 0.024219), ), ((0.056699, -7.4e-05,
-#     0.049351), ), ((0.018699, 0.001106, 0.047969), ))
 pickedRegions = (cells, )
 p.setElementType(regions=pickedRegions, elemTypes=(elemType1, elemType2, elemType3))
 p.seedPart(size=(md / sc), deviationFactor=0.1, minSizeFactor=0.1)
@@ -225,8 +217,54 @@ print('Meshing done!')
 # Static analysis step:
 mdb.models['Model-1'].StaticStep(name='StaticAnalysis', previous='Initial')
 
+# Set Assignment:
+f = p.faces
+faces = f.findAt(((0.018699, 7.4e-05, 0.036779), ), ((0.018699, -7.4e-05, 0.038619), ), ((0.018699, -7.4e-05, 0.026053), ), ((0.018699, -7.4e-05, 0.051186), ),
+                 ((0.018699, 7.4e-05, 0.024213), ), ((0.018699, 7.4e-05, 0.049345), ), ((0.018699, 0.001106, 0.047969), ))
+p.Set(faces=faces, name='XBack')
+f = p.faces
+faces = f.findAt(((0.056699, -7.4e-05, 0.036785), ), ((0.056699, 7.4e-05, 0.038613), ), ((0.056699, 7.4e-05, 0.026047), ), ((0.056699, 7.4e-05, 0.051179), ),
+                 ((0.056699, -7.4e-05, 0.024219), ), ((0.056699, -7.4e-05, 0.049351), ), ((0.056699, 0.001145, 0.025208), ))
+p.Set(faces=faces, name='XFront')
+f = p.faces
+faces = f.findAt(((0.036785, 7.4e-05, 0.056699), ), ((0.038613, -7.4e-05, 0.056699), ), ((0.026047, -7.4e-05, 0.056699), ), ((0.051179, -7.4e-05, 0.056699), ),
+                 ((0.024219, 7.4e-05, 0.056699), ), ((0.049351, 7.4e-05, 0.056699), ), ((0.050191, 0.001145, 0.056699), ))
+p.Set(faces=faces, name='ZFront')
+f = p.faces
+faces = f.findAt(((0.036779, -7.4e-05, 0.018699), ), ((0.038619, 7.4e-05, 0.018699), ), ((0.026053, 7.4e-05, 0.018699), ), ((0.051186, 7.4e-05, 0.018699), ),
+                 ((0.024213, -7.4e-05, 0.018699), ), ((0.049345, -7.4e-05, 0.018699), ), ((0.027429, 0.001106, 0.018699), ))
+p.Set(faces=faces, name='ZBack')
+f = p.faces
+faces = f.findAt(((0.031366, 0.002, 0.044032), ))
+p.Set(faces=faces, name='YTop')
+f = p.faces
+faces = f.findAt(((0.044032, -0.002, 0.044032), ))
+p.Set(faces=faces, name='YBottom')
+a.regenerate()
+
+# Refrence point:
+a.ReferencePoint(point=(0.056699, -0.002, 0.056699))
+r1 = a.referencePoints
+refPoints1 = (r1[60], )
+a.Set(referencePoints=refPoints1, name='RP')
+regionDef = mdb.models['Model-1'].rootAssembly.sets['RP']
+
+# History output:
+mdb.models['Model-1'].HistoryOutputRequest(name='RPHistory', createStepName='StaticAnalysis', variables=('RF1', 'RF2', 'RF3', 'U1', 'U2', 'U3'), region=regionDef, sectionPoints=DEFAULT, rebar=EXCLUDE)
+mdb.models['Model-1'].Equation(name='ConstraintEqn', terms=((1.0, 'Composite-1.XFront', 1), (-1.0, 'RP', 1)))
+
 # Boundary conditions:
+region = a.instances['Composite-1'].sets['XBack']
+mdb.models['Model-1'].DisplacementBC(name='XBackSupport', createStepName='Initial', region=region, u1=SET, u2=UNSET, u3=UNSET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, distributionType=UNIFORM, fieldName='', localCsys=None)
+region = a.instances['Composite-1'].sets['ZBack']
+mdb.models['Model-1'].DisplacementBC(name='ZBackSupport', createStepName='Initial', region=region, u1=UNSET, u2=UNSET, u3=SET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, distributionType=UNIFORM, fieldName='', localCsys=None)
+region = a.instances['Composite-1'].sets['YBottom']
+mdb.models['Model-1'].DisplacementBC(name='YBaseSupport', createStepName='Initial', region=region, u1=UNSET, u2=SET, u3=UNSET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, distributionType=UNIFORM, fieldName='', localCsys=None)
+
 # Loads:
+region = a.sets['RP']
+mdb.models['Model-1'].DisplacementBC(name='Load', createStepName='StaticAnalysis', region=region, u1=15.0, u2=UNSET, u3=UNSET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
+
 
 # Job creation:
 mdb.Job(name='Job-1', model='Model-1', description='', type=ANALYSIS, atTime=None, waitMinutes=0, waitHours=0, queue=None, memory=90, memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True,
