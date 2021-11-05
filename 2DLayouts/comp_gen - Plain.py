@@ -31,7 +31,7 @@ step = 0.01
 pi_len = 24.0
 period = pi / (sin_x * sc)
 
-# Elipse cs:
+# Ellipse cs:
 e_width = 4.5
 e_height = 0.6
 
@@ -171,17 +171,15 @@ p = mdb.models['Model-1'].parts['Composite']
 
 # Composite specimen creation:
 f, e = p.faces, p.edges
-t = p.MakeSketchTransform(sketchPlane=f[4], sketchUpEdge=e[18], sketchPlaneSide=SIDE1, sketchOrientation=RIGHT, origin=((b_width / (2 * sc)), (b_height / (2 * sc)), (b_width / (2 * sc))))
-s = mdb.models['Model-1'].ConstrainedSketch(name='__profile__', sheetSize=0.106, gridSpacing=0.002, transform=t)
+t = p.MakeSketchTransform(sketchPlane=f.findAt(coordinates=(0.025133, 0.002, 0.050265)), sketchUpEdge=e.findAt(coordinates=(0.075398, 0.002, 0.01885)), sketchPlaneSide=SIDE1, sketchOrientation=RIGHT, origin=(0.037699, 0.002, 0.037699))
+s = mdb.models['Model-1'].ConstrainedSketch(name='__profile__', sheetSize=1, gridSpacing=0.002, transform=t)
 g, v, d, c = s.geometry, s.vertices, s.dimensions, s.constraints
 s.setPrimaryObject(option=SUPERIMPOSE)
-p = mdb.models['Model-1'].parts['Composite']
 p.projectReferencesOntoSketch(sketch=s, filter=COPLANAR_EDGES)
-s.rectangle(point1=(-0.042, 0.042), point2=(0.042, -0.042))
+s.rectangle(point1=(-0.041, 0.041), point2=(0.041, -0.041))
 s.rectangle(point1=(-0.019, 0.019), point2=(0.019, -0.019))
-p = mdb.models['Model-1'].parts['Composite']
 f1, e1 = p.faces, p.edges
-p.CutExtrude(sketchPlane=f1[4], sketchUpEdge=e1[18], sketchPlaneSide=SIDE1, sketchOrientation=RIGHT, sketch=s, flipExtrudeDirection=OFF)
+p.CutExtrude(sketchPlane=f1.findAt(coordinates=(0.025133, 0.002, 0.050265)), sketchUpEdge=e1.findAt(coordinates=(0.075398, 0.002, 0.01885)), sketchPlaneSide=SIDE1, sketchOrientation=RIGHT, sketch=s, flipExtrudeDirection=OFF)
 s.unsetPrimaryObject()
 del mdb.models['Model-1'].sketches['__profile__']
 
@@ -264,7 +262,6 @@ mdb.models['Model-1'].DisplacementBC(name='YBaseSupport', createStepName='Initia
 # Loads:
 region = a.sets['RP']
 mdb.models['Model-1'].DisplacementBC(name='Load', createStepName='StaticAnalysis', region=region, u1=15.0, u2=UNSET, u3=UNSET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
-
 
 # Job creation:
 mdb.Job(name='Job-1', model='Model-1', description='', type=ANALYSIS, atTime=None, waitMinutes=0, waitHours=0, queue=None, memory=90, memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True,

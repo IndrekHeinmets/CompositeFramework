@@ -1,7 +1,4 @@
 from math import sin
-from math import cos
-from math import sqrt
-from math import pow
 from math import pi
 import matplotlib.pyplot as plt
 
@@ -11,7 +8,6 @@ def find_spline_nodes(sin_x, step, pi_len, sc):
     y_points = []
     points = []
     length = 36
-    curve_len = 0
     x_ap = 0
     y_ap = 0
     i = 0
@@ -21,7 +17,6 @@ def find_spline_nodes(sin_x, step, pi_len, sc):
 
         x = step * i
         i += 1
-        # curve_len += sqrt(1 + (pow(sin_x, 2) * cos(x)))
 
 
         y_b = (sin(sin_x * (x - step))) / sc
@@ -44,7 +39,7 @@ def find_spline_nodes(sin_x, step, pi_len, sc):
         y_points.append(y_ap)
         points.append((x, y))
 
-    return x_points, y_points, points, curve_len
+    return x_points, y_points, points
 
 
 
@@ -54,9 +49,7 @@ if __name__ == '__main__':
     step = 0.01
     pi_len = 12.0
 
-    x_points, y_points, points, cu_len = find_spline_nodes((sin_x * sc), (step / sc), (pi_len / sc), sc)
-
-    print(cu_len)
+    x_points, y_points, points = find_spline_nodes((sin_x * sc), (step / sc), (pi_len / sc), sc)
 
     plt.plot(x_points, y_points)
     plt.show()

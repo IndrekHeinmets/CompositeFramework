@@ -217,57 +217,9 @@ del mdb.models['Model-1'].parts['Fibers']
 del mdb.models['Model-1'].parts['ResinMatrix']
 p = mdb.models['Model-1'].parts['Composite']
 
-# Composite specimen creation:
-f, e = p.faces, p.edges
-t = p.MakeSketchTransform(sketchPlane=f[4], sketchUpEdge=e[18], sketchPlaneSide=SIDE1, sketchOrientation=RIGHT, origin=((b_width / (2 * sc)), (b_height / (2 * sc)), (b_width / (2 * sc))))
-s = mdb.models['Model-1'].ConstrainedSketch(name='__profile__', sheetSize=0.106, gridSpacing=0.002, transform=t)
-g, v, d, c = s.geometry, s.vertices, s.dimensions, s.constraints
-s.setPrimaryObject(option=SUPERIMPOSE)
-p = mdb.models['Model-1'].parts['Composite']
-p.projectReferencesOntoSketch(sketch=s, filter=COPLANAR_EDGES)
-s.rectangle(point1=(-0.042, 0.042), point2=(0.042, -0.042))
-s.rectangle(point1=(-0.019, 0.019), point2=(0.019, -0.019))
-f1, e1 = p.faces, p.edges
-p.CutExtrude(sketchPlane=f1[4], sketchUpEdge=e1[18], sketchPlaneSide=SIDE1, sketchOrientation=RIGHT, sketch=s, flipExtrudeDirection=OFF)
-s.unsetPrimaryObject()
-del mdb.models['Model-1'].sketches['__profile__']
-
-# Section assignment:
-# c = p.cells
-# cells = c.getSequenceFromMask(mask=('[#ffffffff #3ff ]', ), )
-# region = regionToolset.Region(cells=cells)
-# p.SectionAssignment(region=region, sectionName='Cf_sec', offset=0.0, offsetType=MIDDLE_SURFACE, offsetField='', thicknessAssignment=FROM_SECTION)
-# c1 = p1.cells
-# cells = c1.getSequenceFromMask(mask=('[#1 ]', ), )
-# region = regionToolset.Region(cells=cells)
-# p1.SectionAssignment(region=region, sectionName='Epo_sec', offset=0.0, offsetType=MIDDLE_SURFACE, offsetField='', thicknessAssignment=FROM_SECTION)
-# a.regenerate()
-
-# # Seeding and meshing:
-# # p.seedPart(size=(md / sc), deviationFactor=0.1, minSizeFactor=0.1)
-# # c = p.cells
-# # pickedRegions = c.getSequenceFromMask(mask=('[#1fff ]', ), )
-# # p.setMeshControls(regions=pickedRegions, elemShape=TET, technique=FREE)
-# # elemType1 = mesh.ElemType(elemCode=C3D20R)
-# # elemType2 = mesh.ElemType(elemCode=C3D15)
-# # elemType3 = mesh.ElemType(elemCode=C3D10)
-# # cells = c.getSequenceFromMask(mask=('[#1fff ]', ), )
-# # pickedRegions = (cells, )
-# # p.setElementType(regions=pickedRegions, elemTypes=(elemType1, elemType2, elemType3))
-# # p = mdb.models['Model-1'].parts['Composite']
-# # p.generateMesh()
-# a.regenerate()
-# print('Meshing done!')
-
-# # Static analysis step:
-# mdb.models['Model-1'].StaticStep(name='StaticAnalysis', previous='Initial')
-
-# # Boundary conditions:
-# # Loads:
-
-# # Job creation:
-# mdb.Job(name='Job-1', model='Model-1', description='', type=ANALYSIS, atTime=None, waitMinutes=0, waitHours=0, queue=None, memory=90, memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True,
-#         explicitPrecision=SINGLE, nodalOutputPrecision=SINGLE, echoPrint=OFF, modelPrint=OFF, contactPrint=OFF, historyPrint=OFF, userSubroutine='', scratch='', resultsFormat=ODB)
+# Job creation:
+mdb.Job(name='Job-1', model='Model-1', description='', type=ANALYSIS, atTime=None, waitMinutes=0, waitHours=0, queue=None, memory=90, memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True,
+        explicitPrecision=SINGLE, nodalOutputPrecision=SINGLE, echoPrint=OFF, modelPrint=OFF, contactPrint=OFF, historyPrint=OFF, userSubroutine='', scratch='', resultsFormat=ODB)
 # mdb.jobs['Job-1'].submit(consistencyChecking=OFF)
 # print('Job submitted for processing!')
 

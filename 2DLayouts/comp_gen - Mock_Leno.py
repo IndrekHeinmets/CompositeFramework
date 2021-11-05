@@ -31,7 +31,7 @@ step = 0.01
 pi_len = 24.0
 period = pi / (sin_x * sc)
 
-# Elipse cs:
+# Ellipse cs:
 e_width = 4.5
 e_height = 0.6
 
@@ -234,16 +234,6 @@ a.InstanceFromBooleanCut(name='ResinMatrix', instanceToBeCut=mdb.models['Model-1
 del mdb.models['Model-1'].parts['ResinBlock']
 p1 = mdb.models['Model-1'].parts['ResinMatrix']
 
-# Section assignment:
-c = p.cells
-cells = c.getSequenceFromMask(mask=('[#ffffff ]', ), )
-region = regionToolset.Region(cells=cells)
-p.SectionAssignment(region=region, sectionName='Cf_sec', offset=0.0, offsetType=MIDDLE_SURFACE, offsetField='', thicknessAssignment=FROM_SECTION)
-c1 = p1.cells
-cells = c1.getSequenceFromMask(mask=('[#1 ]', ), )
-region = regionToolset.Region(cells=cells)
-p1.SectionAssignment(region=region, sectionName='Epo_sec', offset=0.0, offsetType=MIDDLE_SURFACE, offsetField='', thicknessAssignment=FROM_SECTION)
-
 # Merge into composite & delete original parts:
 a.InstanceFromBooleanMerge(name='Composite', instances=(a.instances['Fibers-1'], a.instances['ResinMatrix-1'], ), keepIntersections=ON, originalInstances=DELETE, domain=GEOMETRY)
 del mdb.models['Model-1'].parts['Fibers']
@@ -252,55 +242,99 @@ p = mdb.models['Model-1'].parts['Composite']
 
 # Composite specimen creation:
 f, e = p.faces, p.edges
-t = p.MakeSketchTransform(sketchPlane=f[4], sketchUpEdge=e[71], sketchPlaneSide=SIDE1, sketchOrientation=RIGHT, origin=((b_width / (2 * sc)), (b_height / (2 * sc)), (b_width / (2 * sc))))
-s = mdb.models['Model-1'].ConstrainedSketch(name='__profile__', sheetSize=213.25, gridSpacing=5.33, transform=t)
+t = p.MakeSketchTransform(sketchPlane=f.findAt(coordinates=(0.025133, 0.002, 0.050265)), sketchUpEdge=e.findAt(coordinates=(0.075398, 0.002, 0.01885)), sketchPlaneSide=SIDE1, sketchOrientation=RIGHT, origin=(0.037699, 0.002, 0.037699))
+s = mdb.models['Model-1'].ConstrainedSketch(name='__profile__', sheetSize=1, gridSpacing=0.002, transform=t)
 g, v, d, c = s.geometry, s.vertices, s.dimensions, s.constraints
 s.setPrimaryObject(option=SUPERIMPOSE)
 p.projectReferencesOntoSketch(sketch=s, filter=COPLANAR_EDGES)
-s.rectangle(point1=(-58.63 / sc, 58.63 / sc), point2=(74.62 / sc, -69.29 / sc))
-s.rectangle(point1=(-27.9825 / sc, 27.9825 / sc), point2=(22.6525 / sc, -22.6525 / sc))
+s.rectangle(point1=(-0.07, 0.07), point2=(0.07, -0.07))
+s.rectangle(point1=(-0.019, 0.019), point2=(0.019, -0.019))
+p = mdb.models['Model-1'].parts['Composite']
 f1, e1 = p.faces, p.edges
-p.CutExtrude(sketchPlane=f1[4], sketchUpEdge=e1[71], sketchPlaneSide=SIDE1, sketchOrientation=RIGHT, sketch=s, flipExtrudeDirection=OFF)
+p.CutExtrude(sketchPlane=f1.findAt(coordinates=(0.025133, 0.002, 0.050265)), sketchUpEdge=e1.findAt(coordinates=(0.075398, 0.002, 0.01885)), sketchPlaneSide=SIDE1, sketchOrientation=RIGHT, sketch=s, flipExtrudeDirection=OFF)
 s.unsetPrimaryObject()
 del mdb.models['Model-1'].sketches['__profile__']
+
+# Section assignment:
+c = p.cells
+cells = c.findAt(((0.056699, -7.4e-05, 0.036785), ), ((0.056699, 7.4e-05, 0.038613), ), ((0.036779, -7.4e-05, 0.018699), ), ((0.038619, 7.4e-05, 0.018699), ),
+                 ((0.026053, 7.4e-05, 0.018699), ), ((0.051186, 7.4e-05, 0.018699), ), ((0.024213, -7.4e-05, 0.018699), ), ((0.049345, -7.4e-05, 0.018699), ),
+                 ((0.056699, 7.4e-05, 0.026047), ), ((0.056699, 7.4e-05, 0.051179), ), ((0.056699, -7.4e-05, 0.024219), ), ((0.056699, -7.4e-05, 0.049351), ))
+region = regionToolset.Region(cells=cells)
+p.SectionAssignment(region=region, sectionName='Cf_sec', offset=0.0, offsetType=MIDDLE_SURFACE, offsetField='', thicknessAssignment=FROM_SECTION)
+c = p.cells
+cells = c.findAt(((0.018699, 0.001106, 0.047969), ))
+region = regionToolset.Region(cells=cells)
+p.SectionAssignment(region=region, sectionName='Epo_sec', offset=0.0, offsetType=MIDDLE_SURFACE, offsetField='', thicknessAssignment=FROM_SECTION)
 print('Assembly done!')
 
 # Seeding and meshing:
-p.seedPart(size=(md / sc), deviationFactor=0.1, minSizeFactor=0.1)
 c = p.cells
-pickedRegions = c.getSequenceFromMask(mask=('[#7ffff ]', ), )
+pickedRegions = c.findAt(((0.056699, -7.4e-05, 0.036785), ), ((0.056699, 7.4e-05, 0.038613), ), ((0.036779, -7.4e-05, 0.018699), ), ((0.038619, 7.4e-05, 0.018699), ),
+                         ((0.026053, 7.4e-05, 0.018699), ), ((0.051186, 7.4e-05, 0.018699), ), ((0.024213, -7.4e-05, 0.018699), ), ((0.049345, -7.4e-05, 0.018699), ),
+                         ((0.056699, 7.4e-05, 0.026047), ), ((0.056699, 7.4e-05, 0.051179), ), ((0.056699, -7.4e-05, 0.024219), ), ((0.056699, -7.4e-05, 0.049351), ),
+                         ((0.018699, 0.001106, 0.047969), ))
 p.setMeshControls(regions=pickedRegions, elemShape=TET, technique=FREE)
 elemType1 = mesh.ElemType(elemCode=C3D20R)
 elemType2 = mesh.ElemType(elemCode=C3D15)
 elemType3 = mesh.ElemType(elemCode=C3D10)
-c = p.cells
-cells = c.getSequenceFromMask(mask=('[#7ffff ]', ), )
 pickedRegions = (cells, )
 p.setElementType(regions=pickedRegions, elemTypes=(elemType1, elemType2, elemType3))
+p.seedPart(size=(md / sc), deviationFactor=0.1, minSizeFactor=0.1)
 p.generateMesh()
-a.regenerate()
 print('Meshing done!')
 
 # Static analysis step:
 mdb.models['Model-1'].StaticStep(name='StaticAnalysis', previous='Initial')
 
-# Boundary conditions:
-f1 = a.instances['Composite-1'].faces
-faces1 = f1.getSequenceFromMask(mask=('[#ffc00000 #3 ]', ), )
-e1 = a.instances['Composite-1'].edges
-edges1 = e1.getSequenceFromMask(mask=('[#0 #40 ]', ), )
-region = regionToolset.Region(edges=edges1, faces=faces1)
-mdb.models['Model-1'].DisplacementBC(name='BC-1', createStepName='StaticAnalysis', region=region, u1=0.0, u2=0.0, u3=0.0, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
-f1 = a.instances['Composite-1'].faces
-faces1 = f1.getSequenceFromMask(mask=('[#0 #3ffc ]', ), )
-region = regionToolset.Region(faces=faces1)
-mdb.models['Model-1'].DisplacementBC(name='BC-2', createStepName='StaticAnalysis', region=region, u1=0.0, u2=0.0, u3=0.0, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
+# Set Assignment:
+# f = p.faces
+# faces = f.findAt(((0.018699, 7.4e-05, 0.036779), ), ((0.018699, -7.4e-05, 0.038619), ), ((0.018699, -7.4e-05, 0.026053), ), ((0.018699, -7.4e-05, 0.051186), ),
+#                  ((0.018699, 7.4e-05, 0.024213), ), ((0.018699, 7.4e-05, 0.049345), ), ((0.018699, 0.001106, 0.047969), ))
+# p.Set(faces=faces, name='XBack')
+# f = p.faces
+# faces = f.findAt(((0.056699, -7.4e-05, 0.036785), ), ((0.056699, 7.4e-05, 0.038613), ), ((0.056699, 7.4e-05, 0.026047), ), ((0.056699, 7.4e-05, 0.051179), ),
+#                  ((0.056699, -7.4e-05, 0.024219), ), ((0.056699, -7.4e-05, 0.049351), ), ((0.056699, 0.001145, 0.025208), ))
+# p.Set(faces=faces, name='XFront')
+# f = p.faces
+# faces = f.findAt(((0.036785, 7.4e-05, 0.056699), ), ((0.038613, -7.4e-05, 0.056699), ), ((0.026047, -7.4e-05, 0.056699), ), ((0.051179, -7.4e-05, 0.056699), ),
+#                  ((0.024219, 7.4e-05, 0.056699), ), ((0.049351, 7.4e-05, 0.056699), ), ((0.050191, 0.001145, 0.056699), ))
+# p.Set(faces=faces, name='ZFront')
+# f = p.faces
+# faces = f.findAt(((0.036779, -7.4e-05, 0.018699), ), ((0.038619, 7.4e-05, 0.018699), ), ((0.026053, 7.4e-05, 0.018699), ), ((0.051186, 7.4e-05, 0.018699), ),
+#                  ((0.024213, -7.4e-05, 0.018699), ), ((0.049345, -7.4e-05, 0.018699), ), ((0.027429, 0.001106, 0.018699), ))
+# p.Set(faces=faces, name='ZBack')
+# f = p.faces
+# faces = f.findAt(((0.031366, 0.002, 0.044032), ))
+# p.Set(faces=faces, name='YTop')
+# f = p.faces
+# faces = f.findAt(((0.044032, -0.002, 0.044032), ))
+# p.Set(faces=faces, name='YBottom')
+# a.regenerate()
 
-# Loads:
-v1 = a.instances['Composite-1'].vertices
-verts1 = v1.getSequenceFromMask(mask=('[#400 ]', ), )
-region = regionToolset.Region(vertices=verts1)
-mdb.models['Model-1'].ConcentratedForce(name='Load-1', createStepName='StaticAnalysis', region=region, cf2=-5000.0, distributionType=UNIFORM, field='', localCsys=None)
+# Refrence point:
+# a.ReferencePoint(point=(0.056699, -0.002, 0.056699))
+# r1 = a.referencePoints
+# refPoints1 = (r1[60], )
+# a.Set(referencePoints=refPoints1, name='RP')
+# regionDef = mdb.models['Model-1'].rootAssembly.sets['RP']
+
+# History output:
+# mdb.models['Model-1'].HistoryOutputRequest(name='RPHistory', createStepName='StaticAnalysis', variables=('RF1', 'RF2', 'RF3', 'U1', 'U2', 'U3'), region=regionDef, sectionPoints=DEFAULT, rebar=EXCLUDE)
+# mdb.models['Model-1'].Equation(name='ConstraintEqn', terms=((1.0, 'Composite-1.XFront', 1), (-1.0, 'RP', 1)))
+
+# Boundary conditions:
+# region = a.instances['Composite-1'].sets['XBack']
+# mdb.models['Model-1'].DisplacementBC(name='XBackSupport', createStepName='Initial', region=region, u1=SET, u2=UNSET, u3=UNSET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, distributionType=UNIFORM, fieldName='', localCsys=None)
+# region = a.instances['Composite-1'].sets['ZBack']
+# mdb.models['Model-1'].DisplacementBC(name='ZBackSupport', createStepName='Initial', region=region, u1=UNSET, u2=UNSET, u3=SET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, distributionType=UNIFORM, fieldName='', localCsys=None)
+# region = a.instances['Composite-1'].sets['YBottom']
+# mdb.models['Model-1'].DisplacementBC(name='YBaseSupport', createStepName='Initial', region=region, u1=UNSET, u2=SET, u3=UNSET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, distributionType=UNIFORM, fieldName='', localCsys=None)
+
+# # Loads:
+# region = a.sets['RP']
+# mdb.models['Model-1'].DisplacementBC(name='Load', createStepName='StaticAnalysis', region=region, u1=15.0, u2=UNSET, u3=UNSET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
+
 
 # Job creation:
 mdb.Job(name='Job-1', model='Model-1', description='', type=ANALYSIS, atTime=None, waitMinutes=0, waitHours=0, queue=None, memory=90, memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True,
