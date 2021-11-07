@@ -18,7 +18,6 @@ def find_spline_nodes(sin_x, step, pi_len, sc):
         x = step * i
         i += 1
 
-
         y_b = (sin(sin_x * (x - step))) / sc
         y = (sin(sin_x * x)) / sc
         y_a = (sin(sin_x * (x + step))) / sc
@@ -40,7 +39,6 @@ def find_spline_nodes(sin_x, step, pi_len, sc):
         points.append((x, y))
 
     return x_points, y_points, points
-
 
 
 if __name__ == '__main__':

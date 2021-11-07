@@ -228,61 +228,61 @@ p = mdb.models['Model-1'].parts['Fibers']
 # Resin matrix creation:
 a.translate(instanceList=('ResinBlock-1', ), vector=(0.0, -(b_height / (2 * sc)), 0.0))
 a.Instance(name='Fibers-2', part=p, dependent=ON)
-a.InstanceFromBooleanCut(name='ResinMatrix', instanceToBeCut=mdb.models['Model-1'].rootAssembly.instances['ResinBlock-1'], cuttingInstances=(a.instances['Fibers-2'], ), originalInstances=DELETE)
+# a.InstanceFromBooleanCut(name='ResinMatrix', instanceToBeCut=mdb.models['Model-1'].rootAssembly.instances['ResinBlock-1'], cuttingInstances=(a.instances['Fibers-2'], ), originalInstances=DELETE)
 
 # Delete original resin block:
-del mdb.models['Model-1'].parts['ResinBlock']
-p1 = mdb.models['Model-1'].parts['ResinMatrix']
+# del mdb.models['Model-1'].parts['ResinBlock']
+# p1 = mdb.models['Model-1'].parts['ResinMatrix']
 
 # Merge into composite & delete original parts:
-a.InstanceFromBooleanMerge(name='Composite', instances=(a.instances['Fibers-1'], a.instances['ResinMatrix-1'], ), keepIntersections=ON, originalInstances=DELETE, domain=GEOMETRY)
-del mdb.models['Model-1'].parts['Fibers']
-del mdb.models['Model-1'].parts['ResinMatrix']
-p = mdb.models['Model-1'].parts['Composite']
+# a.InstanceFromBooleanMerge(name='Composite', instances=(a.instances['Fibers-1'], a.instances['ResinMatrix-1'], ), keepIntersections=ON, originalInstances=DELETE, domain=GEOMETRY)
+# del mdb.models['Model-1'].parts['Fibers']
+# del mdb.models['Model-1'].parts['ResinMatrix']
+# p = mdb.models['Model-1'].parts['Composite']
 
 # Composite specimen creation:
-f, e = p.faces, p.edges
-t = p.MakeSketchTransform(sketchPlane=f.findAt(coordinates=(0.025133, 0.002, 0.050265)), sketchUpEdge=e.findAt(coordinates=(0.075398, 0.002, 0.01885)), sketchPlaneSide=SIDE1, sketchOrientation=RIGHT, origin=(0.037699, 0.002, 0.037699))
-s = mdb.models['Model-1'].ConstrainedSketch(name='__profile__', sheetSize=1, gridSpacing=0.002, transform=t)
-g, v, d, c = s.geometry, s.vertices, s.dimensions, s.constraints
-s.setPrimaryObject(option=SUPERIMPOSE)
-p.projectReferencesOntoSketch(sketch=s, filter=COPLANAR_EDGES)
-s.rectangle(point1=(-0.07, 0.07), point2=(0.07, -0.07))
-s.rectangle(point1=(-0.019, 0.019), point2=(0.019, -0.019))
-p = mdb.models['Model-1'].parts['Composite']
-f1, e1 = p.faces, p.edges
-p.CutExtrude(sketchPlane=f1.findAt(coordinates=(0.025133, 0.002, 0.050265)), sketchUpEdge=e1.findAt(coordinates=(0.075398, 0.002, 0.01885)), sketchPlaneSide=SIDE1, sketchOrientation=RIGHT, sketch=s, flipExtrudeDirection=OFF)
-s.unsetPrimaryObject()
-del mdb.models['Model-1'].sketches['__profile__']
+# f, e = p.faces, p.edges
+# t = p.MakeSketchTransform(sketchPlane=f.findAt(coordinates=(0.025133, 0.002, 0.050265)), sketchUpEdge=e.findAt(coordinates=(0.075398, 0.002, 0.01885)), sketchPlaneSide=SIDE1, sketchOrientation=RIGHT, origin=(0.037699, 0.002, 0.037699))
+# s = mdb.models['Model-1'].ConstrainedSketch(name='__profile__', sheetSize=1, gridSpacing=0.002, transform=t)
+# g, v, d, c = s.geometry, s.vertices, s.dimensions, s.constraints
+# s.setPrimaryObject(option=SUPERIMPOSE)
+# p.projectReferencesOntoSketch(sketch=s, filter=COPLANAR_EDGES)
+# s.rectangle(point1=(-0.07, 0.07), point2=(0.07, -0.07))
+# s.rectangle(point1=(-0.019, 0.019), point2=(0.019, -0.019))
+# p = mdb.models['Model-1'].parts['Composite']
+# f1, e1 = p.faces, p.edges
+# p.CutExtrude(sketchPlane=f1.findAt(coordinates=(0.025133, 0.002, 0.050265)), sketchUpEdge=e1.findAt(coordinates=(0.075398, 0.002, 0.01885)), sketchPlaneSide=SIDE1, sketchOrientation=RIGHT, sketch=s, flipExtrudeDirection=OFF)
+# s.unsetPrimaryObject()
+# del mdb.models['Model-1'].sketches['__profile__']
 
 # Section assignment:
-c = p.cells
-cells = c.findAt(((0.056699, -7.4e-05, 0.036785), ), ((0.056699, 7.4e-05, 0.038613), ), ((0.036779, -7.4e-05, 0.018699), ), ((0.038619, 7.4e-05, 0.018699), ),
-                 ((0.026053, 7.4e-05, 0.018699), ), ((0.051186, 7.4e-05, 0.018699), ), ((0.024213, -7.4e-05, 0.018699), ), ((0.049345, -7.4e-05, 0.018699), ),
-                 ((0.056699, 7.4e-05, 0.026047), ), ((0.056699, 7.4e-05, 0.051179), ), ((0.056699, -7.4e-05, 0.024219), ), ((0.056699, -7.4e-05, 0.049351), ))
-region = regionToolset.Region(cells=cells)
-p.SectionAssignment(region=region, sectionName='Cf_sec', offset=0.0, offsetType=MIDDLE_SURFACE, offsetField='', thicknessAssignment=FROM_SECTION)
-c = p.cells
-cells = c.findAt(((0.018699, 0.001106, 0.047969), ))
-region = regionToolset.Region(cells=cells)
-p.SectionAssignment(region=region, sectionName='Epo_sec', offset=0.0, offsetType=MIDDLE_SURFACE, offsetField='', thicknessAssignment=FROM_SECTION)
-print('Assembly done!')
+# c = p.cells
+# cells = c.findAt(((0.056699, -7.4e-05, 0.036785), ), ((0.056699, 7.4e-05, 0.038613), ), ((0.036779, -7.4e-05, 0.018699), ), ((0.038619, 7.4e-05, 0.018699), ),
+#                  ((0.026053, 7.4e-05, 0.018699), ), ((0.051186, 7.4e-05, 0.018699), ), ((0.024213, -7.4e-05, 0.018699), ), ((0.049345, -7.4e-05, 0.018699), ),
+#                  ((0.056699, 7.4e-05, 0.026047), ), ((0.056699, 7.4e-05, 0.051179), ), ((0.056699, -7.4e-05, 0.024219), ), ((0.056699, -7.4e-05, 0.049351), ))
+# region = regionToolset.Region(cells=cells)
+# p.SectionAssignment(region=region, sectionName='Cf_sec', offset=0.0, offsetType=MIDDLE_SURFACE, offsetField='', thicknessAssignment=FROM_SECTION)
+# c = p.cells
+# cells = c.findAt(((0.018699, 0.001106, 0.047969), ))
+# region = regionToolset.Region(cells=cells)
+# p.SectionAssignment(region=region, sectionName='Epo_sec', offset=0.0, offsetType=MIDDLE_SURFACE, offsetField='', thicknessAssignment=FROM_SECTION)
+# print('Assembly done!')
 
 # Seeding and meshing:
-c = p.cells
-pickedRegions = c.findAt(((0.056699, -7.4e-05, 0.036785), ), ((0.056699, 7.4e-05, 0.038613), ), ((0.036779, -7.4e-05, 0.018699), ), ((0.038619, 7.4e-05, 0.018699), ),
-                         ((0.026053, 7.4e-05, 0.018699), ), ((0.051186, 7.4e-05, 0.018699), ), ((0.024213, -7.4e-05, 0.018699), ), ((0.049345, -7.4e-05, 0.018699), ),
-                         ((0.056699, 7.4e-05, 0.026047), ), ((0.056699, 7.4e-05, 0.051179), ), ((0.056699, -7.4e-05, 0.024219), ), ((0.056699, -7.4e-05, 0.049351), ),
-                         ((0.018699, 0.001106, 0.047969), ))
-p.setMeshControls(regions=pickedRegions, elemShape=TET, technique=FREE)
-elemType1 = mesh.ElemType(elemCode=C3D20R)
-elemType2 = mesh.ElemType(elemCode=C3D15)
-elemType3 = mesh.ElemType(elemCode=C3D10)
-pickedRegions = (cells, )
-p.setElementType(regions=pickedRegions, elemTypes=(elemType1, elemType2, elemType3))
-p.seedPart(size=(md / sc), deviationFactor=0.1, minSizeFactor=0.1)
-p.generateMesh()
-print('Meshing done!')
+# c = p.cells
+# pickedRegions = c.findAt(((0.056699, -7.4e-05, 0.036785), ), ((0.056699, 7.4e-05, 0.038613), ), ((0.036779, -7.4e-05, 0.018699), ), ((0.038619, 7.4e-05, 0.018699), ),
+#                          ((0.026053, 7.4e-05, 0.018699), ), ((0.051186, 7.4e-05, 0.018699), ), ((0.024213, -7.4e-05, 0.018699), ), ((0.049345, -7.4e-05, 0.018699), ),
+#                          ((0.056699, 7.4e-05, 0.026047), ), ((0.056699, 7.4e-05, 0.051179), ), ((0.056699, -7.4e-05, 0.024219), ), ((0.056699, -7.4e-05, 0.049351), ),
+#                          ((0.018699, 0.001106, 0.047969), ))
+# p.setMeshControls(regions=pickedRegions, elemShape=TET, technique=FREE)
+# elemType1 = mesh.ElemType(elemCode=C3D20R)
+# elemType2 = mesh.ElemType(elemCode=C3D15)
+# elemType3 = mesh.ElemType(elemCode=C3D10)
+# pickedRegions = (cells, )
+# p.setElementType(regions=pickedRegions, elemTypes=(elemType1, elemType2, elemType3))
+# p.seedPart(size=(md / sc), deviationFactor=0.1, minSizeFactor=0.1)
+# p.generateMesh()
+# print('Meshing done!')
 
 # Static analysis step:
 mdb.models['Model-1'].StaticStep(name='StaticAnalysis', previous='Initial')
