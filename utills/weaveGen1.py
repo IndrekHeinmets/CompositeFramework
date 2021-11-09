@@ -7,7 +7,7 @@ def find_spline_nodes(sin_x, step, pi_len, sc):
     x_points = []
     y_points = []
     points = []
-    length = 0
+    length = 51
     x_ap = 0
     y_ap = 0
     i = 0
@@ -18,9 +18,9 @@ def find_spline_nodes(sin_x, step, pi_len, sc):
         x = step * i
         i += 1
 
-        y_b = (sin(sin_x * (x - step))) / sc
-        y = (sin(sin_x * x)) / sc
-        y_a = (sin(sin_x * (x + step))) / sc
+        y_b = sin(sin_x * (x - step)) / sc
+        y = sin(sin_x * x) / sc
+        y_a = sin(sin_x * (x + step)) / sc
         x += offset
 
         if y_b < y < y_a or y_b > y > y_a:
@@ -33,6 +33,7 @@ def find_spline_nodes(sin_x, step, pi_len, sc):
                 offset += (step * j)
                 x_ap = x
                 y_ap = y
+
 
         x_points.append(x_ap)
         y_points.append(y_ap)

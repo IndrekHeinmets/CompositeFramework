@@ -3,39 +3,41 @@ from math import pi
 import matplotlib.pyplot as plt
 
 
-def find_spline_nodes(sin_x, step, pi_len, sc):
-    x_points = []
-    y_points = []
+def find_spline_nodes_l(sin_x, step, pi_len, overlap_pi_len, sc):
+    x_points, y_points = [], []
     points = []
-    len_overlap = 41
+    i, offset = 0, 0
 
-    # Fill x values:
-    for i in range(0, int((pi_len * pi) / step)):
+    while i <= int((pi_len * pi) / step):
         x = step * i
-        x_points.append(x)
+        i += 1
 
-    # Fill y values:
-    for x in x_points:
-        y = sin(sin_x * x) / sc
-        y_points.append(y)
+        y_b = (sin(sin_x * (x - step))) / sc
+        y = (sin(sin_x * x)) / sc
+        y_a = (sin(sin_x * (x + step))) / sc
+        x += offset
 
-    for i in range(len(y_points)):
-        try:
-            if y_points[i - 1] < y_points[i] < y_points[i + 1] or y_points[i - 1] > y_points[i] > y_points[i + 1]:
-                points.append((x_points[i], y_points[i]))
-            else:
-                for j in range(0, int(len_overlap / step)):
-                    x = step * j
-                    points.append((x, y_points[i]))
+        if y_b < y < y_a or y_b > y > y_a:
+            points.append((x, y))
+            x_points.append(x)
+            y_points.append(y)
 
-        except IndexError:
-            points.append((x_points[i], y_points[i]))
+        else:
+            j = 0
+            while j <= int((overlap_pi_len * pi) / step):
+                j += 1
+                x += (step * j)
+                offset += (step * j)
+                points.append((x, y))
+                x_points.append(x)
+                y_points.append(y)
 
 
-    points = tuple(points)
+    print(len(points))
+    print(len(x_points))
+    print(len(y_points))
 
     return x_points, y_points, points
-
 
 
 if __name__ == '__main__':
@@ -43,19 +45,21 @@ if __name__ == '__main__':
     # Scale (m -> mm):
     sc = 1000
 
-    len_fibre = 75
-    step = 0.05
+    # Sin curve:
     sin_x = 0.5
-    pi_len = len_fibre // pi
+    step = 0.01
+    pi_len = 24.0
     period = pi / (sin_x * sc)
 
+    # Overlap
+    overlap_pi_len = (period * 24) / pi
 
     # Ellipse cs:
     e_width = 4.5
     e_height = 0.6
 
     # Resin block:
-    b_width = len_fibre
+    b_width = (pi_len * pi)
     b_height = 4.0
 
     # Fiber prop:
@@ -72,9 +76,9 @@ if __name__ == '__main__':
     md = 0.5
     ###########################################################################
 
-    x, y, p = find_spline_nodes((sin_x * sc), (step / sc), (pi_len / sc), sc)
-    print(p)
-    print(len(p))
+    x, y, p = find_spline_nodes_l((sin_x * sc), (step / sc), (pi_len / sc), (overlap_pi_len / sc), sc)
+    # print(p)
+    # print(len(p))
 
     plt.plot(x, y)
     plt.show()
