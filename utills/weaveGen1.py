@@ -7,7 +7,7 @@ def find_spline_nodes(sin_x, step, pi_len, sc):
     x_points = []
     y_points = []
     points = []
-    length = 36
+    length = 0
     x_ap = 0
     y_ap = 0
     i = 0

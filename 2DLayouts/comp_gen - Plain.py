@@ -259,14 +259,30 @@ mdb.models['Model-1'].DisplacementBC(name='ZBackSupport', createStepName='Initia
 region = a.instances['Composite-1'].sets['YBottom']
 mdb.models['Model-1'].DisplacementBC(name='YBaseSupport', createStepName='Initial', region=region, u1=UNSET, u2=SET, u3=UNSET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, distributionType=UNIFORM, fieldName='', localCsys=None)
 
-# Loads:
+# Refrence point displacement:
 region = a.sets['RP']
-mdb.models['Model-1'].DisplacementBC(name='Load', createStepName='StaticAnalysis', region=region, u1=15.0, u2=UNSET, u3=UNSET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
+mdb.models['Model-1'].DisplacementBC(name='Load', createStepName='StaticAnalysis', region=region, u1=UNSET, u2=UNSET, u3=UNSET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
+
+# Load case creation:
+mdb.models.changeKey(fromName='Model-1', toName='TensCase')
+mdb.Model(name='CompCase', objectToCopy=mdb.models['TensCase'])
+mdb.Model(name='ShearCase', objectToCopy=mdb.models['TensCase'])
+
+# Loading magnitudes:
+mdb.models['XTensCase'].boundaryConditions['Load'].setValues(u1=15.0)
+mdb.models['XCompCase'].boundaryConditions['Load'].setValues(u1=-15.0)
+mdb.models['YShearCase'].boundaryConditions['Load'].setValues(u1=UNSET, u2=15.0)
 
 # Job creation:
-mdb.Job(name='Job-1', model='Model-1', description='', type=ANALYSIS, atTime=None, waitMinutes=0, waitHours=0, queue=None, memory=90, memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True,
+mdb.Job(name='TensionAnalysis', model='XTensCase', description='', type=ANALYSIS, atTime=None, waitMinutes=0, waitHours=0, queue=None, memory=90, memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True,
         explicitPrecision=SINGLE, nodalOutputPrecision=SINGLE, echoPrint=OFF, modelPrint=OFF, contactPrint=OFF, historyPrint=OFF, userSubroutine='', scratch='', resultsFormat=ODB)
-# mdb.jobs['Job-1'].submit(consistencyChecking=OFF)
+mdb.Job(name='CompressionAnalysis', model='TensCase', description='', type=ANALYSIS, atTime=None, waitMinutes=0, waitHours=0, queue=None, memory=90, memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True,
+        explicitPrecision=SINGLE, nodalOutputPrecision=SINGLE, echoPrint=OFF, modelPrint=OFF, contactPrint=OFF, historyPrint=OFF, userSubroutine='', scratch='', resultsFormat=ODB)
+mdb.Job(name='ShearAnalysis', model='ShearCase', description='', type=ANALYSIS, atTime=None, waitMinutes=0, waitHours=0, queue=None, memory=90, memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True,
+        explicitPrecision=SINGLE, nodalOutputPrecision=SINGLE, echoPrint=OFF, modelPrint=OFF, contactPrint=OFF, historyPrint=OFF, userSubroutine='', scratch='', resultsFormat=ODB)
+# mdb.jobs['TensionAnalysis'].submit(consistencyChecking=OFF)
+# mdb.jobs['ShearAnalysis'].submit(consistencyChecking=OFF)
+# mdb.jobs['CompressionAnalysis'].submit(consistencyChecking=OFF)
 # print('Job submitted for processing!')
 
 # End of script:
