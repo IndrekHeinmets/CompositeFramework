@@ -55,16 +55,16 @@ md = 0.5
 
 
 def find_sin_nodes(sin_x, step, pi_len, sc):
-    points = []
+        points = []
 
-    for i in range(0, int((pi_len * pi) / step)):
-        x = step * i
-        y = (sin(sin_x * x)) / sc
-        points.append((x, y))
+        for i in range(0, int((pi_len * pi) / step)):
+                x = step * i
+                y = (sin(sin_x * x)) / sc
+                points.append((x, y))
 
-    points = tuple(points)
+        points = tuple(points)
 
-    return points
+        return points
 
 
 # New model database creation:
@@ -149,24 +149,16 @@ a.LinearInstancePattern(instanceList=('CfWeave-4', 'CfWeave-3'), direction1=(0.0
 a.InstanceFromBooleanMerge(name='Fibers', instances=(a.instances['CfWeave-1'], a.instances['CfWeave-2'], a.instances['CfWeave-3'], a.instances['CfWeave-4'],
                                                      a.instances['CfWeave-1-lin-2-1'], a.instances['CfWeave-1-lin-3-1'], a.instances['CfWeave-1-lin-4-1'], a.instances['CfWeave-1-lin-5-1'], a.instances['CfWeave-1-lin-6-1'], a.instances['CfWeave-2-lin-2-1'], a.instances['CfWeave-2-lin-3-1'], a.instances['CfWeave-2-lin-4-1'], a.instances['CfWeave-2-lin-5-1'], a.instances['CfWeave-2-lin-6-1'],
                                                      a.instances['CfWeave-4-lin-2-1'], a.instances['CfWeave-4-lin-3-1'], a.instances['CfWeave-4-lin-4-1'], a.instances['CfWeave-4-lin-5-1'], a.instances['CfWeave-4-lin-6-1'], a.instances['CfWeave-3-lin-2-1'], a.instances['CfWeave-3-lin-3-1'], a.instances['CfWeave-3-lin-4-1'], a.instances['CfWeave-3-lin-5-1'], a.instances['CfWeave-3-lin-6-1'], ), originalInstances=DELETE, domain=GEOMETRY)
+a.translate(instanceList=('ResinBlock-1', ), vector=(0.0, -(b_height / (2 * sc)), 0.0))
 
 # Delete original weaves:
 del mdb.models['Model-1'].parts['CfWeave']
 p = mdb.models['Model-1'].parts['Fibers']
 
-# Resin matrix creation:
-a.translate(instanceList=('ResinBlock-1', ), vector=(0.0, -(b_height / (2 * sc)), 0.0))
-a.Instance(name='Fibers-2', part=p, dependent=ON)
-a.InstanceFromBooleanCut(name='ResinMatrix', instanceToBeCut=mdb.models['Model-1'].rootAssembly.instances['ResinBlock-1'], cuttingInstances=(a.instances['Fibers-2'], ), originalInstances=DELETE)
-
-# Delete original resin block:
-del mdb.models['Model-1'].parts['ResinBlock']
-p1 = mdb.models['Model-1'].parts['ResinMatrix']
-
 # Merge into composite & delete original parts:
-a.InstanceFromBooleanMerge(name='Composite', instances=(a.instances['Fibers-1'], a.instances['ResinMatrix-1'], ), keepIntersections=ON, originalInstances=DELETE, domain=GEOMETRY)
+a.InstanceFromBooleanMerge(name='Composite', instances=(a.instances['Fibers-1'], a.instances['ResinBlock-1'], ), keepIntersections=ON, originalInstances=DELETE, domain=GEOMETRY)
 del mdb.models['Model-1'].parts['Fibers']
-del mdb.models['Model-1'].parts['ResinMatrix']
+del mdb.models['Model-1'].parts['ResinBlock']
 p = mdb.models['Model-1'].parts['Composite']
 
 # Composite specimen creation:
@@ -243,7 +235,7 @@ a.regenerate()
 # Refrence point:
 a.ReferencePoint(point=(0.056699, -0.002, 0.056699))
 r1 = a.referencePoints
-refPoints1 = (r1[60], )
+refPoints1 = (r1[56], )
 a.Set(referencePoints=refPoints1, name='RP')
 regionDef = mdb.models['Model-1'].rootAssembly.sets['RP']
 
