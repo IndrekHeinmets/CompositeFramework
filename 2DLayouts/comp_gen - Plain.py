@@ -54,7 +54,7 @@ md = 0.5
 ###########################################################################
 
 
-def find_sin_nodes(sin_x, step, pi_len, sc):
+def find_spline_nodes(sin_x, step, pi_len, sc):
         points = []
 
         for i in range(0, int((pi_len * pi) / step)):
@@ -73,7 +73,7 @@ session.journalOptions.setValues(replayGeometry=COORDINATE, recoverGeometry=COOR
 print('Running script...')
 
 # Sin spline nodes:
-points = find_sin_nodes((sin_x * sc), (step / sc), (pi_len / sc), sc)
+points = find_spline_nodes((sin_x * sc), (step / sc), (pi_len / sc), sc)
 
 # Sin wave sketch:
 s = mdb.models['Model-1'].ConstrainedSketch(name='__sweep__', sheetSize=1)
@@ -230,16 +230,15 @@ p.Set(faces=faces, name='YTop')
 f = p.faces
 faces = f.findAt(((0.044032, -0.002, 0.044032), ))
 p.Set(faces=faces, name='YBottom')
-a.regenerate()
 
 # Refrence point:
 a.ReferencePoint(point=(0.056699, -0.002, 0.056699))
 r1 = a.referencePoints
 refPoints1 = (r1[56], )
 a.Set(referencePoints=refPoints1, name='RP')
-regionDef = mdb.models['Model-1'].rootAssembly.sets['RP']
 
 # History output:
+regionDef = mdb.models['Model-1'].rootAssembly.sets['RP']
 mdb.models['Model-1'].HistoryOutputRequest(name='RPHistory', createStepName='StaticAnalysis', variables=('RF1', 'RF2', 'RF3', 'U1', 'U2', 'U3'), region=regionDef, sectionPoints=DEFAULT, rebar=EXCLUDE)
 mdb.models['Model-1'].Equation(name='ConstraintEqn', terms=((1.0, 'Composite-1.XFront', 1), (-1.0, 'RP', 1)))
 
@@ -264,6 +263,7 @@ mdb.Model(name='YShearCase', objectToCopy=mdb.models['XTensCase'])
 mdb.models['XTensCase'].boundaryConditions['Load'].setValues(u1=15.0)
 mdb.models['XCompCase'].boundaryConditions['Load'].setValues(u1=-15.0)
 mdb.models['YShearCase'].boundaryConditions['Load'].setValues(u1=UNSET, u2=15.0)
+print('Constraining and Loading done!')
 
 # Job creation:
 mdb.Job(name='TensionAnalysis', model='XTensCase', description='', type=ANALYSIS, atTime=None, waitMinutes=0, waitHours=0, queue=None, memory=90, memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True,
