@@ -56,7 +56,7 @@ def run(sin_x, f, x_beg, x_end, e_width, e_height, b_width, b_height, fibre_coun
 def f(sin_x, x):
     return sin(sin_x * x)
 
-
+########################################################
 # Scale
 sc = 1000
 

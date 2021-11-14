@@ -62,10 +62,8 @@ def find_spline_nodes(sin_x, step, pi_len, sc):
 
     for i in range(0, int((pi_len * pi) / step)):
         x = step * i
-        y = (sin(sin_x * x)) / sc
+        y = sin(sin_x * x) / sc
         points.append((x, y))
-
-    points = tuple(points)
 
     return points
 
@@ -76,9 +74,9 @@ def find_spline_nodes_l(sin_x, step, pi_len, overlap_pi_len, sc):
 
     for i in range(0, int((pi_len * pi) / step)):
         x = step * i
-        y_b = (sin(sin_x * (x - step))) / sc
-        y = (sin(sin_x * x)) / sc
-        y_a = (sin(sin_x * (x + step))) / sc
+        y_b = sin(sin_x * (x - step)) / sc
+        y = sin(sin_x * x) / sc
+        y_a = sin(sin_x * (x + step)) / sc
         x += offset
 
         if y_b < y < y_a or y_b > y > y_a:
@@ -238,7 +236,6 @@ s.setPrimaryObject(option=SUPERIMPOSE)
 p.projectReferencesOntoSketch(sketch=s, filter=COPLANAR_EDGES)
 s.rectangle(point1=(-0.07, 0.07), point2=(0.07, -0.07))
 s.rectangle(point1=(-0.019, 0.019), point2=(0.019, -0.019))
-p = mdb.models['Model-1'].parts['Composite']
 f1, e1 = p.faces, p.edges
 p.CutExtrude(sketchPlane=f1.findAt(coordinates=(0.025133, 0.002, 0.050265)), sketchUpEdge=e1.findAt(coordinates=(0.075398, 0.002, 0.01885)), sketchPlaneSide=SIDE1, sketchOrientation=RIGHT, sketch=s, flipExtrudeDirection=OFF)
 s.unsetPrimaryObject()

@@ -3,18 +3,16 @@ from math import pi
 import matplotlib.pyplot as plt
 
 
-def find_spline_nodes_l(sin_x, step, pi_len, overlap_pi_len, sc):
+def find_spline_nodes(sin_x, step, pi_len, overlap_pi_len, sc):
     x_points, y_points = [], []
     points = []
-    i, offset = 0, 0
+    offset = 0
 
-    while i <= int((pi_len * pi) / step):
+    for i in range(0, int((pi_len * pi) / step)):
         x = step * i
-        i += 1
-
-        y_b = (sin(sin_x * (x - step))) / sc
-        y = (sin(sin_x * x)) / sc
-        y_a = (sin(sin_x * (x + step))) / sc
+        y_b = sin(sin_x * (x - step)) / sc
+        y = sin(sin_x * x) / sc
+        y_a = sin(sin_x * (x + step)) / sc
         x += offset
 
         if y_b < y < y_a or y_b > y > y_a:
@@ -23,15 +21,12 @@ def find_spline_nodes_l(sin_x, step, pi_len, overlap_pi_len, sc):
             y_points.append(y)
 
         else:
-            j = 0
-            while j <= int((overlap_pi_len * pi) / step):
-                j += 1
-                x += (step * j)
-                offset += (step * j)
+            for j in range(0, int((overlap_pi_len * pi) / step)):
+                x += step * j
+                offset += step * j
                 points.append((x, y))
                 x_points.append(x)
                 y_points.append(y)
-
 
     print(len(points))
     print(len(x_points))
@@ -76,7 +71,7 @@ if __name__ == '__main__':
     md = 0.5
     ###########################################################################
 
-    x, y, p = find_spline_nodes_l((sin_x * sc), (step / sc), (pi_len / sc), (overlap_pi_len / sc), sc)
+    x, y, p = find_spline_nodes((sin_x * sc), (step / sc), (pi_len / sc), (overlap_pi_len / sc), sc)
     # print(p)
     # print(len(p))
 
