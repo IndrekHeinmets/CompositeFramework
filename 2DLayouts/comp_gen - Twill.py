@@ -180,48 +180,48 @@ del mdb.models['Model-1'].parts['ResinBlock']
 p = mdb.models['Model-1'].parts['Composite']
 
 # Composite specimen creation:
-# f, e = p.faces, p.edges
-# t = p.MakeSketchTransform(sketchPlane=f.findAt(coordinates=(0.025133, 0.002, 0.050265)), sketchUpEdge=e.findAt(coordinates=(0.075398, 0.002, 0.01885)), sketchPlaneSide=SIDE1, sketchOrientation=RIGHT, origin=(0.037699, 0.002, 0.037699))
-# s = mdb.models['Model-1'].ConstrainedSketch(name='__profile__', sheetSize=1, gridSpacing=0.002, transform=t)
-# g, v, d, c = s.geometry, s.vertices, s.dimensions, s.constraints
-# s.setPrimaryObject(option=SUPERIMPOSE)
-# p.projectReferencesOntoSketch(sketch=s, filter=COPLANAR_EDGES)
-# s.rectangle(point1=(-0.05, 0.06), point2=(0.06, -0.05))
-# s.rectangle(point1=(-0.019, 0.016), point2=(0.019, -0.022))
-# f1, e1 = p.faces, p.edges
-# p.CutExtrude(sketchPlane=f1.findAt(coordinates=(0.025133, 0.002, 0.050265)), sketchUpEdge=e1.findAt(coordinates=(0.075398, 0.002, 0.01885)), sketchPlaneSide=SIDE1, sketchOrientation=RIGHT, sketch=s, flipExtrudeDirection=OFF)
-# s.unsetPrimaryObject()
-# del mdb.models['Model-1'].sketches['__profile__']
+f, e = p.faces, p.edges
+t = p.MakeSketchTransform(sketchPlane=f.findAt(coordinates=(0.025133, 0.002, 0.050265)), sketchUpEdge=e.findAt(coordinates=(0.075398, 0.002, 0.01885)), sketchPlaneSide=SIDE1, sketchOrientation=RIGHT, origin=(0.037699, 0.002, 0.037699))
+s = mdb.models['Model-1'].ConstrainedSketch(name='__profile__', sheetSize=1, gridSpacing=0.002, transform=t)
+g, v, d, c = s.geometry, s.vertices, s.dimensions, s.constraints
+s.setPrimaryObject(option=SUPERIMPOSE)
+p.projectReferencesOntoSketch(sketch=s, filter=COPLANAR_EDGES)
+s.rectangle(point1=(-0.05, 0.06), point2=(0.06, -0.05))
+s.rectangle(point1=(-0.019, 0.016), point2=(0.019, -0.022))
+f1, e1 = p.faces, p.edges
+p.CutExtrude(sketchPlane=f1.findAt(coordinates=(0.025133, 0.002, 0.050265)), sketchUpEdge=e1.findAt(coordinates=(0.075398, 0.002, 0.01885)), sketchPlaneSide=SIDE1, sketchOrientation=RIGHT, sketch=s, flipExtrudeDirection=OFF)
+s.unsetPrimaryObject()
+del mdb.models['Model-1'].sketches['__profile__']
 
 # Section assignment:
-# c = p.cells
-# cells = c.findAt(((0.036792, 0.000163, 0.021699), ), ((0.019757, -0.000163, 0.021699), ), ((0.044889, -0.000163, 0.021699), ), ((0.038612, 0.001033, 0.021699), ),
-#                  ((0.030503, -0.001033, 0.021699), ), ((0.055636, -0.001033, 0.021699), ), ((0.018699, -0.000968, 0.052482), ), ((0.018699, -0.000968, 0.027349), ),
-#                  ((0.018699, 0.000968, 0.035483), ), ((0.018699, 8e-05, 0.058774), ), ((0.018699, 8e-05, 0.033641), ), ((0.018699, -8e-05, 0.041757), ))
-# region = regionToolset.Region(cells=cells)
-# p.SectionAssignment(region=region, sectionName='Cf_sec', offset=0.0, offsetType=MIDDLE_SURFACE, offsetField='', thicknessAssignment=FROM_SECTION)
-# c = p.cells
-# cells = c.findAt(((0.018699, -0.001461, 0.054611), ))
-# region = regionToolset.Region(cells=cells)
-# p = mdb.models['Model-1'].parts['Composite']
-# p.SectionAssignment(region=region, sectionName='Epo_sec', offset=0.0, offsetType=MIDDLE_SURFACE, offsetField='', thicknessAssignment=FROM_SECTION)
-# print('Assembly done!')
+c = p.cells
+cells = c.findAt(((0.036792, 0.000163, 0.021699), ), ((0.019757, -0.000163, 0.021699), ), ((0.044889, -0.000163, 0.021699), ), ((0.038612, 0.001033, 0.021699), ),
+                 ((0.030503, -0.001033, 0.021699), ), ((0.055636, -0.001033, 0.021699), ), ((0.018699, -0.000968, 0.052482), ), ((0.018699, -0.000968, 0.027349), ),
+                 ((0.018699, 0.000968, 0.035483), ), ((0.018699, 8e-05, 0.058774), ), ((0.018699, 8e-05, 0.033641), ), ((0.018699, -8e-05, 0.041757), ))
+region = regionToolset.Region(cells=cells)
+p.SectionAssignment(region=region, sectionName='Cf_sec', offset=0.0, offsetType=MIDDLE_SURFACE, offsetField='', thicknessAssignment=FROM_SECTION)
+c = p.cells
+cells = c.findAt(((0.018699, -0.001461, 0.054611), ))
+region = regionToolset.Region(cells=cells)
+p = mdb.models['Model-1'].parts['Composite']
+p.SectionAssignment(region=region, sectionName='Epo_sec', offset=0.0, offsetType=MIDDLE_SURFACE, offsetField='', thicknessAssignment=FROM_SECTION)
+print('Assembly done!')
 
 # Seeding and meshing:
-# c = p.cells
-# pickedRegions = c.findAt(((0.036792, 0.000163, 0.021699), ), ((0.019757, -0.000163, 0.021699), ), ((0.044889, -0.000163, 0.021699), ), ((0.038612, 0.001033, 0.021699), ),
-#                          ((0.030503, -0.001033, 0.021699), ), ((0.055636, -0.001033, 0.021699), ), ((0.018699, -0.000968, 0.052482), ), ((0.018699, -0.000968, 0.027349), ),
-#                          ((0.018699, 0.000968, 0.035483), ), ((0.018699, 8e-05, 0.058774), ), ((0.018699, 8e-05, 0.033641), ), ((0.018699, -8e-05, 0.041757), ),
-#                          ((0.018699, -0.001461, 0.054611), ))
-# p.setMeshControls(regions=pickedRegions, elemShape=TET, technique=FREE)
-# elemType1 = mesh.ElemType(elemCode=C3D20R)
-# elemType2 = mesh.ElemType(elemCode=C3D15)
-# elemType3 = mesh.ElemType(elemCode=C3D10)
-# pickedRegions = (cells, )
-# p.setElementType(regions=pickedRegions, elemTypes=(elemType1, elemType2, elemType3))
-# p.seedPart(size=(md / sc), deviationFactor=0.1, minSizeFactor=0.1)
-# p.generateMesh()
-# print('Meshing done!')
+c = p.cells
+pickedRegions = c.findAt(((0.036792, 0.000163, 0.021699), ), ((0.019757, -0.000163, 0.021699), ), ((0.044889, -0.000163, 0.021699), ), ((0.038612, 0.001033, 0.021699), ),
+                         ((0.030503, -0.001033, 0.021699), ), ((0.055636, -0.001033, 0.021699), ), ((0.018699, -0.000968, 0.052482), ), ((0.018699, -0.000968, 0.027349), ),
+                         ((0.018699, 0.000968, 0.035483), ), ((0.018699, 8e-05, 0.058774), ), ((0.018699, 8e-05, 0.033641), ), ((0.018699, -8e-05, 0.041757), ),
+                         ((0.018699, -0.001461, 0.054611), ))
+p.setMeshControls(regions=pickedRegions, elemShape=TET, technique=FREE)
+elemType1 = mesh.ElemType(elemCode=C3D20R)
+elemType2 = mesh.ElemType(elemCode=C3D15)
+elemType3 = mesh.ElemType(elemCode=C3D10)
+pickedRegions = (cells, )
+p.setElementType(regions=pickedRegions, elemTypes=(elemType1, elemType2, elemType3))
+p.seedPart(size=(md / sc), deviationFactor=0.1, minSizeFactor=0.1)
+p.generateMesh()
+print('Meshing done!')
 
 # Static analysis step:
 mdb.models['Model-1'].StaticStep(name='StaticAnalysis', previous='Initial')
@@ -285,12 +285,12 @@ mdb.models['Model-1'].StaticStep(name='StaticAnalysis', previous='Initial')
 # print('Constraining and Loading done!')
 
 # Job creation:
-mdb.Job(name='TensionAnalysis', model='XTensCase', description='', type=ANALYSIS, atTime=None, waitMinutes=0, waitHours=0, queue=None, memory=90, memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True,
-        explicitPrecision=SINGLE, nodalOutputPrecision=SINGLE, echoPrint=OFF, modelPrint=OFF, contactPrint=OFF, historyPrint=OFF, userSubroutine='', scratch='', resultsFormat=ODB)
-mdb.Job(name='CompressionAnalysis', model='XCompCase', description='', type=ANALYSIS, atTime=None, waitMinutes=0, waitHours=0, queue=None, memory=90, memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True,
-        explicitPrecision=SINGLE, nodalOutputPrecision=SINGLE, echoPrint=OFF, modelPrint=OFF, contactPrint=OFF, historyPrint=OFF, userSubroutine='', scratch='', resultsFormat=ODB)
-mdb.Job(name='ShearAnalysis', model='YShearCase', description='', type=ANALYSIS, atTime=None, waitMinutes=0, waitHours=0, queue=None, memory=90, memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True,
-        explicitPrecision=SINGLE, nodalOutputPrecision=SINGLE, echoPrint=OFF, modelPrint=OFF, contactPrint=OFF, historyPrint=OFF, userSubroutine='', scratch='', resultsFormat=ODB)
+# mdb.Job(name='TensionAnalysis', model='XTensCase', description='', type=ANALYSIS, atTime=None, waitMinutes=0, waitHours=0, queue=None, memory=90, memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True,
+#         explicitPrecision=SINGLE, nodalOutputPrecision=SINGLE, echoPrint=OFF, modelPrint=OFF, contactPrint=OFF, historyPrint=OFF, userSubroutine='', scratch='', resultsFormat=ODB)
+# mdb.Job(name='CompressionAnalysis', model='XCompCase', description='', type=ANALYSIS, atTime=None, waitMinutes=0, waitHours=0, queue=None, memory=90, memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True,
+#         explicitPrecision=SINGLE, nodalOutputPrecision=SINGLE, echoPrint=OFF, modelPrint=OFF, contactPrint=OFF, historyPrint=OFF, userSubroutine='', scratch='', resultsFormat=ODB)
+# mdb.Job(name='ShearAnalysis', model='YShearCase', description='', type=ANALYSIS, atTime=None, waitMinutes=0, waitHours=0, queue=None, memory=90, memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True,
+#         explicitPrecision=SINGLE, nodalOutputPrecision=SINGLE, echoPrint=OFF, modelPrint=OFF, contactPrint=OFF, historyPrint=OFF, userSubroutine='', scratch='', resultsFormat=ODB)
 # mdb.jobs['TensionAnalysis'].submit(consistencyChecking=OFF)
 # mdb.jobs['ShearAnalysis'].submit(consistencyChecking=OFF)
 # mdb.jobs['CompressionAnalysis'].submit(consistencyChecking=OFF)
