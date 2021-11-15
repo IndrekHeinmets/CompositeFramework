@@ -31,9 +31,6 @@ step = 0.01
 pi_len = 12.0
 period = pi / (sin_x * sc)
 
-# Overlap:
-overlap_pi_len = period * 26
-
 # Ellipse cs:
 e_width = 4.5
 e_height = 0.6
@@ -54,27 +51,36 @@ m_PsR = 0.35
 
 # Mesh density:
 md = 0.5
-######################################################################################################################################################
+###########################################################################
 
 
-def find_spline_nodes(sin_x, step, pi_len, overlap_pi_len, sc):
+def find_spline_nodes(sin_x, step, pi_len, sc):
     points = []
+    length = 51
     offset = 0
+    i = 0
 
-    for i in range(0, int((pi_len * pi) / step)):
+    while i <= int((pi_len * pi) / step):
+
         x = step * i
-        y_b = sin(sin_x * (x - step)) / sc
-        y = sin(sin_x * x) / sc
-        y_a = sin(sin_x * (x + step)) / sc
+        i += 1
+
+        y_b = (sin(sin_x * (x - step))) / sc
+        y = (sin(sin_x * x)) / sc
+        y_a = (sin(sin_x * (x + step))) / sc
         x += offset
 
-        if y_b < y < y_a or y_b > y > y_a or y > 0:
+        if y_b < y < y_a or y_b > y > y_a:
             points.append((x, y))
+
         else:
-            for j in range(0, int((overlap_pi_len * pi) / step)):
-                x += step * j
-                offset += step * j
+            if y > 0:
                 points.append((x, y))
+            else:
+                for j in range(0, length):
+                    x += (step * j)
+                    offset += (step * j)
+                    points.append((x, y))
 
     return points
 
@@ -85,7 +91,7 @@ session.journalOptions.setValues(replayGeometry=COORDINATE, recoverGeometry=COOR
 print('Running script...')
 
 # Sin spline nodes:
-points = find_spline_nodes((sin_x * sc), (step / sc), (pi_len / sc), (overlap_pi_len / sc), sc)
+points = find_spline_nodes((sin_x * sc), (step / sc), (pi_len / sc), sc)
 
 # Sin wave sketch:
 s = mdb.models['Model-1'].ConstrainedSketch(name='__sweep__', sheetSize=1)
@@ -164,23 +170,21 @@ a.LinearInstancePattern(instanceList=('weaves-2', ), direction1=(0.0, 0.0, -1.0)
 #                                                      a.instances['weaves-2-lin-2-1'], a.instances['weaves-2-lin-3-1'], a.instances['weaves-2-lin-4-1'], ), originalInstances=DELETE, domain=GEOMETRY)
 a.translate(instanceList=('ResinBlock-1', ), vector=(0.0, -(b_height / (2 * sc)), 0.02))
 
-# # Delete original weaves:
+# Merge into composite & delete original parts:
+# a.InstanceFromBooleanMerge(name='Composite', instances=(a.instances['Fibers-1'], a.instances['ResinBlock-1'], ), keepIntersections=ON, originalInstances=DELETE, domain=GEOMETRY)
 # del mdb.models['Model-1'].parts['weaves']
 # del mdb.models['Model-1'].parts['CfWeave']
-# p = mdb.models['Model-1'].parts['Fibers']
-
-# # Merge into composite & delete original parts:
-# a.InstanceFromBooleanMerge(name='Composite', instances=(a.instances['Fibers-1'], a.instances['ResinBlock-1'], ), keepIntersections=ON, originalInstances=DELETE, domain=GEOMETRY)
 # del mdb.models['Model-1'].parts['Fibers']
 # del mdb.models['Model-1'].parts['ResinBlock']
 # p = mdb.models['Model-1'].parts['Composite']
 
-# # Composite specimen creation:
+# Composite specimen creation:
 # f, e = p.faces, p.edges
 # t = p.MakeSketchTransform(sketchPlane=f.findAt(coordinates=(0.062832, 0.002, -0.011416)), sketchUpEdge=e.findAt(coordinates=(0.094248, 0.002, -0.003562)), sketchPlaneSide=SIDE1, sketchOrientation=RIGHT, origin=(0.047124, 0.002, -0.027124))
 # s = mdb.models['Model-1'].ConstrainedSketch(name='__profile__', sheetSize=1, gridSpacing=0.002, transform=t)
 # g, v, d, c = s.geometry, s.vertices, s.dimensions, s.constraints
 # s.setPrimaryObject(option=SUPERIMPOSE)
+# p = mdb.models['Model-1'].parts['Composite']
 # p.projectReferencesOntoSketch(sketch=s, filter=COPLANAR_EDGES)
 # s.rectangle(point1=(-0.06, 0.06), point2=(0.06, -0.06))
 # s.rectangle(point1=(-0.019, 0.023), point2=(0.019, -0.015))
@@ -200,7 +204,7 @@ a.translate(instanceList=('ResinBlock-1', ), vector=(0.0, -(b_height / (2 * sc))
 # cells = c.findAt(((0.028124, -0.001078, -0.020467), ))
 # region = regionToolset.Region(cells=cells)
 # p.SectionAssignment(region=region, sectionName='Epo_sec', offset=0.0, offsetType=MIDDLE_SURFACE, offsetField='', thicknessAssignment=FROM_SECTION)
-print('Assembly done!')
+# print('Assembly done!')
 
 # # Seeding and meshing:
 # c = p.cells

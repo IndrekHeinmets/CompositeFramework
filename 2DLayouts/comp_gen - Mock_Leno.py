@@ -216,13 +216,10 @@ a.InstanceFromBooleanMerge(name='Fibers', instances=(a.instances['CfWeave-1'], a
                                                      a.instances['CfWeave-8-lin-2-1'], a.instances['CfWeave-4-lin-2-1'], a.instances['CfWeave-7-lin-2-1'], a.instances['CfWeave_l-3-lin-2-1'], a.instances['CfWeave-3-lin-2-1'], ), originalInstances=DELETE, domain=GEOMETRY)
 a.translate(instanceList=('ResinBlock-1', ), vector=(0.0, -(b_height / (2 * sc)), 0.0))
 
-# Delete original weaves:
-del mdb.models['Model-1'].parts['CfWeave']
-del mdb.models['Model-1'].parts['CfWeave_l']
-p = mdb.models['Model-1'].parts['Fibers']
-
 # Merge into composite & delete original parts:
 a.InstanceFromBooleanMerge(name='Composite', instances=(a.instances['Fibers-1'], a.instances['ResinBlock-1'], ), keepIntersections=ON, originalInstances=DELETE, domain=GEOMETRY)
+del mdb.models['Model-1'].parts['CfWeave']
+del mdb.models['Model-1'].parts['CfWeave_l']
 del mdb.models['Model-1'].parts['Fibers']
 del mdb.models['Model-1'].parts['ResinBlock']
 p = mdb.models['Model-1'].parts['Composite']

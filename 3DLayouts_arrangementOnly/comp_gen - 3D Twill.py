@@ -195,24 +195,13 @@ a.LinearInstancePattern(instanceList=('CfWeave-1', 'CfWeave-2'), direction1=(0.0
 
 a.InstanceFromBooleanMerge(name='Fibers', instances=(a.instances['CfWeave-1'], a.instances['CfWeave-2'], a.instances['Straigth_fibers-1'], a.instances['CfWeave-1-lin-2-1'], a.instances['CfWeave-1-lin-3-1'], a.instances['CfWeave-1-lin-4-1'], a.instances['CfWeave-1-lin-5-1'],
                                                      a.instances['CfWeave-1-lin-6-1'], a.instances['CfWeave-2-lin-2-1'], a.instances['CfWeave-2-lin-3-1'], a.instances['CfWeave-2-lin-4-1'], a.instances['CfWeave-2-lin-5-1'], a.instances['CfWeave-2-lin-6-1'], ), originalInstances=DELETE, domain=GEOMETRY)
+a.translate(instanceList=('ResinBlock-1', ), vector=(0.0, -(b_height / (2 * sc)), 0.0))
 
-# Delete original weaves:
+# Merge into composite & delete original parts:
+a.InstanceFromBooleanMerge(name='Composite', instances=(a.instances['Fibers-1'], a.instances['ResinBlock-1'], ), keepIntersections=ON, originalInstances=DELETE, domain=GEOMETRY)
 del mdb.models['Model-1'].parts['CfWeave']
 del mdb.models['Model-1'].parts['CfWeave_s']
 del mdb.models['Model-1'].parts['Straigth_fibers']
-p = mdb.models['Model-1'].parts['Fibers']
-
-# Resin matrix creation:
-a.translate(instanceList=('ResinBlock-1', ), vector=(0.0, -(b_height / (2 * sc)), 0.0))
-a.Instance(name='Fibers-2', part=p, dependent=ON)
-a.InstanceFromBooleanCut(name='ResinMatrix', instanceToBeCut=mdb.models['Model-1'].rootAssembly.instances['ResinBlock-1'], cuttingInstances=(a.instances['Fibers-2'], ), originalInstances=DELETE)
-
-# Delete original resin block:
-del mdb.models['Model-1'].parts['ResinBlock']
-p1 = mdb.models['Model-1'].parts['ResinMatrix']
-
-# Merge into composite & delete original parts:
-a.InstanceFromBooleanMerge(name='Composite', instances=(a.instances['Fibers-1'], a.instances['ResinMatrix-1'], ), keepIntersections=ON, originalInstances=DELETE, domain=GEOMETRY)
 del mdb.models['Model-1'].parts['Fibers']
 del mdb.models['Model-1'].parts['ResinMatrix']
 p = mdb.models['Model-1'].parts['Composite']
