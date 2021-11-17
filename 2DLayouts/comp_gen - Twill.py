@@ -61,7 +61,7 @@ def find_spline_nodes(sin_x, step, pi_len, overlap_pi_len, sc):
     points = []
     offset = 0
 
-    for i in range(0, int((pi_len * pi) / step)):
+    for i in range(int((pi_len * pi) / step)):
         x = step * i
         y_b = sin(sin_x * (x - step)) / sc
         y = sin(sin_x * x) / sc
@@ -71,7 +71,7 @@ def find_spline_nodes(sin_x, step, pi_len, overlap_pi_len, sc):
         if y_b < y < y_a or y_b > y > y_a:
             points.append((x, y))
         else:
-            for j in range(0, int((overlap_pi_len * pi) / step)):
+            for j in range(int((overlap_pi_len * pi) / step)):
                 x += step * j
                 offset += step * j
                 points.append((x, y))

@@ -6,11 +6,10 @@ import sympy as sym
 
 x, y = sym.symbols('x y')
 x_beg, x_end = 0, 10
-curve_len = 0
 exp = sym.sin(0.5 * x)
 print(exp)
 
-curve_len = sym.integrate(sqrt(1 + sym.diff(exp, x)^2), (x, x_beg, x_end))
+curve_len = sym.integrate(sqrt(1 + (sym.diff(exp, x)) ** 2), (x, x_beg, x_end))
 print(curve_len)
 
 

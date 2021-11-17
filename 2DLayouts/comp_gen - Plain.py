@@ -57,7 +57,7 @@ md = 0.5
 def find_spline_nodes(sin_x, step, pi_len, sc):
         points = []
 
-        for i in range(0, int((pi_len * pi) / step)):
+        for i in range(int((pi_len * pi) / step)):
                 x = step * i
                 y = sin(sin_x * x) / sc
                 points.append((x, y))

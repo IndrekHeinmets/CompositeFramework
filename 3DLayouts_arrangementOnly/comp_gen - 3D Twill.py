@@ -75,7 +75,7 @@ def find_spline_nodes(sin_x, step, pi_len, sc, height_mult):
             points.append((x, y * height_mult))
 
         else:
-            for j in range(0, length):
+            for j in range(length):
                 x += (step * j)
                 offset += (step * j)
                 points.append((x, y * height_mult))
