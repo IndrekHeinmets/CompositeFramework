@@ -170,6 +170,24 @@ p.CutExtrude(sketchPlane=f1.findAt(coordinates=(0.025133, 0.002, 0.050265)), ske
 s.unsetPrimaryObject()
 del mdb.models['Model-1'].sketches['__profile__']
 
+# Fibre orientation assignment:
+e = p.edges
+p.DatumCsysByThreePoints(name='Datum csys-1', coordSysType=CARTESIAN, origin=p.InterestingPoint(edge=e.findAt(coordinates=(0.018699, 0.000596, 0.053407)), rule=MIDDLE), point1=p.InterestingPoint(edge=e.findAt(coordinates=(0.056699, -0.000596, 0.053407)), rule=MIDDLE), point2=p.InterestingPoint(edge=e.findAt(coordinates=(0.028034, -0.000993, 0.051157)), rule=MIDDLE))
+c = p.cells
+cells = c.findAt(((0.018699, 7.4e-05, 0.036779), ), ((0.018699, -7.4e-05, 0.038619), ), ((0.018699, -7.4e-05, 0.026053), ), ((0.018699, -7.4e-05, 0.051186), ),
+                 ((0.018699, 7.4e-05, 0.024213), ), ((0.018699, 7.4e-05, 0.049345), ))
+region = regionToolset.Region(cells=cells)
+orientation = mdb.models['Model-1'].parts['Composite'].datums[3]
+mdb.models['Model-1'].parts['Composite'].MaterialOrientation(region=region, orientationType=SYSTEM, axis=AXIS_3, localCsys=orientation, fieldName='', additionalRotationType=ROTATION_NONE, angle=0.0, additionalRotationField='', stackDirection=STACK_3)
+e2 = p.edges
+p.DatumCsysByThreePoints(name='Datum csys-2', coordSysType=CARTESIAN, origin=p.InterestingPoint(edge=e2.findAt(coordinates=(0.021991, -0.000596, 0.056699)), rule=MIDDLE), point1=p.InterestingPoint(edge=e2.findAt(coordinates=(0.021991, 0.000596, 0.018699)), rule=MIDDLE), point2=p.InterestingPoint(edge=e2.findAt(coordinates=(0.024241, -0.000993, 0.028034)), rule=MIDDLE))
+c = p.cells
+cells = c.findAt(((0.036779, -7.4e-05, 0.018699), ), ((0.038619, 7.4e-05, 0.018699), ), ((0.026053, 7.4e-05, 0.018699), ), ((0.051186, 7.4e-05, 0.018699), ),
+                 ((0.024213, -7.4e-05, 0.018699), ), ((0.049345, -7.4e-05, 0.018699), ))
+region = regionToolset.Region(cells=cells)
+orientation = mdb.models['Model-1'].parts['Composite'].datums[5]
+mdb.models['Model-1'].parts['Composite'].MaterialOrientation(region=region, orientationType=SYSTEM, axis=AXIS_3, localCsys=orientation, fieldName='', additionalRotationType=ROTATION_NONE, angle=0.0, additionalRotationField='', stackDirection=STACK_3)
+
 # Section assignment:
 c = p.cells
 cells = c.findAt(((0.056699, -7.4e-05, 0.036785), ), ((0.056699, 7.4e-05, 0.038613), ), ((0.036779, -7.4e-05, 0.018699), ), ((0.038619, 7.4e-05, 0.018699), ),
