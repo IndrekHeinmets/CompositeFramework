@@ -2,6 +2,7 @@ from math import sin
 from math import pi
 import matplotlib.pyplot as plt
 
+
 def add_straight(x, y, overlap_len, step, points, x_points, y_points, offset):
     for i in range(int(overlap_len / step)):
         x += step
