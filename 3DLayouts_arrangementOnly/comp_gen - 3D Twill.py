@@ -27,10 +27,13 @@ sc = 1
 
 # Sin curve:
 sin_x = 0.5
-step = 0.01
+step = 0.1
 pi_len = 12.0
 period = pi / (sin_x * sc)
 height_mult = 3
+
+# Overlap:
+overlap_len = period * 1.3
 
 # Elipse cs:
 e_width = 4.5
@@ -55,30 +58,31 @@ md = 0.5
 ###########################################################################
 
 
-def find_spline_nodes(sin_x, step, pi_len, sc, height_mult):
+def add_straight(x, y, overlap_len, step, points, offset, height_mult):
+    for i in range(int(overlap_len / step)):
+        x += step
+        offset += step
+        points.append((x, y * height_mult))
+
+    return x, offset, points
+
+
+def find_spline_nodes(sin_x, step, pi_len, overlap_len, height_mult, sc):
     points = []
-    length = 41
     offset = 0
-    i = 0
 
-    while i <= int((pi_len * pi) / step):
-
+    for i in range(int((pi_len * pi) / step)):
         x = step * i
-        i += 1
-
-        y_b = (sin(sin_x * (x - step))) / sc
-        y = (sin(sin_x * x)) / sc
-        y_a = (sin(sin_x * (x + step))) / sc
+        y_b = sin(sin_x * (x - step)) / sc
+        y = sin(sin_x * x) / sc
+        y_a = sin(sin_x * (x + step)) / sc
         x += offset
 
         if y_b < y < y_a or y_b > y > y_a:
             points.append((x, y * height_mult))
 
         else:
-            for j in range(length):
-                x += (step * j)
-                offset += (step * j)
-                points.append((x, y * height_mult))
+            x, offset, points = add_straight(x, y, overlap_len, step, points, offset, height_mult)
 
     return points
 
@@ -89,7 +93,7 @@ session.journalOptions.setValues(replayGeometry=COORDINATE, recoverGeometry=COOR
 print('Running script...')
 
 # Sin spline nodes:
-points = find_spline_nodes((sin_x * sc), (step / sc), (pi_len / sc), sc, height_mult)
+points = find_spline_nodes((sin_x * sc), (step / sc), (pi_len / sc), overlap_len, height_mult, sc)
 
 # Sin wave sketch:
 s = mdb.models['Model-1'].ConstrainedSketch(name='__sweep__', sheetSize=1)
@@ -182,33 +186,34 @@ a.LinearInstancePattern(instanceList=('CfWeave_s-1', 'CfWeave_s-1-lin-2-1'), dir
 a.LinearInstancePattern(instanceList=('CfWeave_s-1', 'CfWeave_s-1-lin-2-1'), direction1=(1.0, 0.0, 0.0), direction2=(0.0, -1.0, 0.0), number1=1, number2=2, spacing1=10.7832, spacing2=1.4)
 a.LinearInstancePattern(instanceList=('CfWeave_s-1', 'CfWeave_s-1-lin-2-1', 'CfWeave_s-1-lin-1-2', 'CfWeave_s-1-lin-2-1-lin-1-2',
                                       'CfWeave_s-1-lin-1-2-1', 'CfWeave_s-1-lin-2-1-lin-1-2-1'), direction1=(1.0, 0.0, 0.0), direction2=(0.0, 1.0, 0.0), number1=5, number2=1, spacing1=14.52, spacing2=4.0)
-a.InstanceFromBooleanMerge(name='Straigth_fibers', instances=(a.instances['CfWeave_s-1'], a.instances['CfWeave_s-1-lin-2-1'], a.instances['CfWeave_s-1-lin-1-2'], a.instances['CfWeave_s-1-lin-2-1-lin-1-2'], a.instances['CfWeave_s-1-lin-1-2-1'], a.instances['CfWeave_s-1-lin-2-1-lin-1-2-1'], a.instances['CfWeave_s-1-lin-2-1-1'],
-                                                              a.instances['CfWeave_s-1-lin-3-1'], a.instances['CfWeave_s-1-lin-4-1'], a.instances['CfWeave_s-1-lin-5-1'], a.instances['CfWeave_s-1-lin-2-1-lin-2-1'], a.instances['CfWeave_s-1-lin-2-1-lin-3-1'],
-                                                              a.instances['CfWeave_s-1-lin-2-1-lin-4-1'], a.instances['CfWeave_s-1-lin-2-1-lin-5-1'], a.instances['CfWeave_s-1-lin-1-2-lin-2-1'], a.instances['CfWeave_s-1-lin-1-2-lin-3-1'], a.instances['CfWeave_s-1-lin-1-2-lin-4-1'],
-                                                              a.instances['CfWeave_s-1-lin-1-2-lin-5-1'], a.instances['CfWeave_s-1-lin-2-1-lin-1-2-lin-2-1'], a.instances['CfWeave_s-1-lin-2-1-lin-1-2-lin-3-1'],
-                                                              a.instances['CfWeave_s-1-lin-2-1-lin-1-2-lin-4-1'], a.instances['CfWeave_s-1-lin-2-1-lin-1-2-lin-5-1'], a.instances['CfWeave_s-1-lin-1-2-1-lin-2-1'],
-                                                              a.instances['CfWeave_s-1-lin-1-2-1-lin-3-1'], a.instances['CfWeave_s-1-lin-1-2-1-lin-4-1'], a.instances['CfWeave_s-1-lin-1-2-1-lin-5-1'],
-                                                              a.instances['CfWeave_s-1-lin-2-1-lin-1-2-1-lin-2-1'], a.instances['CfWeave_s-1-lin-2-1-lin-1-2-1-lin-3-1'], a.instances['CfWeave_s-1-lin-2-1-lin-1-2-1-lin-4-1'], a.instances['CfWeave_s-1-lin-2-1-lin-1-2-1-lin-5-1'], ), originalInstances=DELETE, domain=GEOMETRY)
-a.rotate(instanceList=('CfWeave-2', ), axisPoint=(0.0, 0.0, 0.0), axisDirection=(180.0, 0.0, 0.0), angle=180.0)
-a.translate(instanceList=('CfWeave-1', ), vector=(0.0, 0.0, 6.28))
-a.LinearInstancePattern(instanceList=('CfWeave-1', 'CfWeave-2'), direction1=(0.0, 0.0, 1.0), direction2=(0.0, 1.0, 0.0), number1=6, number2=1, spacing1=12.56, spacing2=1)
+# a.InstanceFromBooleanMerge(name='Straigth_fibers', instances=(a.instances['CfWeave_s-1'], a.instances['CfWeave_s-1-lin-2-1'], a.instances['CfWeave_s-1-lin-1-2'], a.instances['CfWeave_s-1-lin-2-1-lin-1-2'], a.instances['CfWeave_s-1-lin-1-2-1'], a.instances['CfWeave_s-1-lin-2-1-lin-1-2-1'], a.instances['CfWeave_s-1-lin-2-1-1'],
+#                                                               a.instances['CfWeave_s-1-lin-3-1'], a.instances['CfWeave_s-1-lin-4-1'], a.instances['CfWeave_s-1-lin-5-1'], a.instances['CfWeave_s-1-lin-2-1-lin-2-1'], a.instances['CfWeave_s-1-lin-2-1-lin-3-1'],
+#                                                               a.instances['CfWeave_s-1-lin-2-1-lin-4-1'], a.instances['CfWeave_s-1-lin-2-1-lin-5-1'], a.instances['CfWeave_s-1-lin-1-2-lin-2-1'], a.instances['CfWeave_s-1-lin-1-2-lin-3-1'], a.instances['CfWeave_s-1-lin-1-2-lin-4-1'],
+#                                                               a.instances['CfWeave_s-1-lin-1-2-lin-5-1'], a.instances['CfWeave_s-1-lin-2-1-lin-1-2-lin-2-1'], a.instances['CfWeave_s-1-lin-2-1-lin-1-2-lin-3-1'],
+#                                                               a.instances['CfWeave_s-1-lin-2-1-lin-1-2-lin-4-1'], a.instances['CfWeave_s-1-lin-2-1-lin-1-2-lin-5-1'], a.instances['CfWeave_s-1-lin-1-2-1-lin-2-1'],
+#                                                               a.instances['CfWeave_s-1-lin-1-2-1-lin-3-1'], a.instances['CfWeave_s-1-lin-1-2-1-lin-4-1'], a.instances['CfWeave_s-1-lin-1-2-1-lin-5-1'],
+#                                                               a.instances['CfWeave_s-1-lin-2-1-lin-1-2-1-lin-2-1'], a.instances['CfWeave_s-1-lin-2-1-lin-1-2-1-lin-3-1'], a.instances['CfWeave_s-1-lin-2-1-lin-1-2-1-lin-4-1'], a.instances['CfWeave_s-1-lin-2-1-lin-1-2-1-lin-5-1'], ), originalInstances=DELETE, domain=GEOMETRY)
+# a.rotate(instanceList=('CfWeave-2', ), axisPoint=(0.0, 0.0, 0.0), axisDirection=(180.0, 0.0, 0.0), angle=180.0)
+# a.translate(instanceList=('CfWeave-1', ), vector=(0.0, 0.0, 6.28))
+# a.LinearInstancePattern(instanceList=('CfWeave-1', 'CfWeave-2'), direction1=(0.0, 0.0, 1.0), direction2=(0.0, 1.0, 0.0), number1=6, number2=1, spacing1=12.56, spacing2=1)
 
-a.InstanceFromBooleanMerge(name='Fibers', instances=(a.instances['CfWeave-1'], a.instances['CfWeave-2'], a.instances['Straigth_fibers-1'], a.instances['CfWeave-1-lin-2-1'], a.instances['CfWeave-1-lin-3-1'], a.instances['CfWeave-1-lin-4-1'], a.instances['CfWeave-1-lin-5-1'],
-                                                     a.instances['CfWeave-1-lin-6-1'], a.instances['CfWeave-2-lin-2-1'], a.instances['CfWeave-2-lin-3-1'], a.instances['CfWeave-2-lin-4-1'], a.instances['CfWeave-2-lin-5-1'], a.instances['CfWeave-2-lin-6-1'], ), originalInstances=DELETE, domain=GEOMETRY)
-a.translate(instanceList=('ResinBlock-1', ), vector=(0.0, -(b_height / (2 * sc)), 0.0))
+# a.InstanceFromBooleanMerge(name='Fibers', instances=(a.instances['CfWeave-1'], a.instances['CfWeave-2'], a.instances['Straigth_fibers-1'], a.instances['CfWeave-1-lin-2-1'], a.instances['CfWeave-1-lin-3-1'], a.instances['CfWeave-1-lin-4-1'], a.instances['CfWeave-1-lin-5-1'],
+#                                                      a.instances['CfWeave-1-lin-6-1'], a.instances['CfWeave-2-lin-2-1'], a.instances['CfWeave-2-lin-3-1'], a.instances['CfWeave-2-lin-4-1'], a.instances['CfWeave-2-lin-5-1'], a.instances['CfWeave-2-lin-6-1'], ), originalInstances=DELETE, domain=GEOMETRY)
 
-# Merge into composite & delete original parts:
-a.InstanceFromBooleanMerge(name='Composite', instances=(a.instances['Fibers-1'], a.instances['ResinBlock-1'], ), keepIntersections=ON, originalInstances=DELETE, domain=GEOMETRY)
-del mdb.models['Model-1'].parts['CfWeave']
-del mdb.models['Model-1'].parts['CfWeave_s']
-del mdb.models['Model-1'].parts['Straigth_fibers']
-del mdb.models['Model-1'].parts['Fibers']
-del mdb.models['Model-1'].parts['ResinMatrix']
-p = mdb.models['Model-1'].parts['Composite']
+# a.translate(instanceList=('ResinBlock-1', ), vector=(0.0, -(b_height / (2 * sc)), 0.0))
+
+# # Merge into composite & delete original parts:
+# a.InstanceFromBooleanMerge(name='Composite', instances=(a.instances['Fibers-1'], a.instances['ResinBlock-1'], ), keepIntersections=ON, originalInstances=DELETE, domain=GEOMETRY)
+# del mdb.models['Model-1'].parts['CfWeave']
+# del mdb.models['Model-1'].parts['CfWeave_s']
+# del mdb.models['Model-1'].parts['Straigth_fibers']
+# del mdb.models['Model-1'].parts['Fibers']
+# del mdb.models['Model-1'].parts['ResinMatrix']
+# p = mdb.models['Model-1'].parts['Composite']
 
 # Job creation:
-mdb.Job(name='Job-1', model='Model-1', description='', type=ANALYSIS, atTime=None, waitMinutes=0, waitHours=0, queue=None, memory=90, memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True,
-        explicitPrecision=SINGLE, nodalOutputPrecision=SINGLE, echoPrint=OFF, modelPrint=OFF, contactPrint=OFF, historyPrint=OFF, userSubroutine='', scratch='', resultsFormat=ODB)
+# mdb.Job(name='Job-1', model='Model-1', description='', type=ANALYSIS, atTime=None, waitMinutes=0, waitHours=0, queue=None, memory=90, memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True,
+#         explicitPrecision=SINGLE, nodalOutputPrecision=SINGLE, echoPrint=OFF, modelPrint=OFF, contactPrint=OFF, historyPrint=OFF, userSubroutine='', scratch='', resultsFormat=ODB)
 # mdb.jobs['Job-1'].submit(consistencyChecking=OFF)
 # print('Job submitted for processing!')
 

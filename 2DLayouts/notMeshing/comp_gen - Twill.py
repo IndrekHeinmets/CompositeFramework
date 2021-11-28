@@ -151,36 +151,31 @@ a.DatumCsysByDefault(CARTESIAN)
 # Instance creation:
 a.Instance(name='CfWeave-1', part=p, dependent=ON)
 a.Instance(name='CfWeave-2', part=p, dependent=ON)
+a.Instance(name='CfWeave-3', part=p, dependent=ON)
+a.Instance(name='CfWeave-4', part=p, dependent=ON)
 a.Instance(name='ResinBlock-1', part=p1, dependent=ON)
 
 # Weave arrangement:
-a.rotate(instanceList=('CfWeave-2', ), axisPoint=(0.0, 0.0, 0.0), axisDirection=(180.0, 0.0, 0.0), angle=180.0)
-a.rotate(instanceList=('CfWeave-1', 'CfWeave-2'), axisPoint=(0.0, 0.0, 0.0), axisDirection=(0.0, 90.0, 0.0), angle=90.0)
-a.translate(instanceList=('CfWeave-2', ), vector=((period * 2), 0.0, 0.0))
-a.LinearInstancePattern(instanceList=('CfWeave-1', 'CfWeave-2'), direction1=(1.0, 0.0, 0.0), direction2=(0.0, 1.0, 0.0), number1=3, number2=1, spacing1=(period * 4), spacing2=1)
-a.InstanceFromBooleanMerge(name='Part-1', instances=(a.instances['CfWeave-1'], a.instances['CfWeave-2'], a.instances['CfWeave-1-lin-2-1'], a.instances['CfWeave-1-lin-3-1'], a.instances['CfWeave-2-lin-2-1'], a.instances['CfWeave-2-lin-3-1'], ), originalInstances=DELETE, domain=GEOMETRY)
-p2 = mdb.models['Model-1'].parts['Part-1']
-a.Instance(name='Part-1-2', part=p2, dependent=ON)
-a.translate(instanceList=('Part-1-2', ), vector=(period, 0.0, -(period)))
-a.Instance(name='CfWeave-1', part=p, dependent=ON)
-a.Instance(name='CfWeave-2', part=p, dependent=ON)
-a.rotate(instanceList=('CfWeave-1', ), axisPoint=(0.0, 0.0, 0.0), axisDirection=(180.0, 0.0, 0.0), angle=180.0)
-a.translate(instanceList=('CfWeave-1', 'CfWeave-2'), vector=(-(period / 2), 0.0, -(period / 2)))
-a.translate(instanceList=('CfWeave-2', ), vector=(0.0, 0.0, -(period * 2)))
-a.rotate(instanceList=('Part-1-1', 'Part-1-2', 'CfWeave-1', 'CfWeave-2'), axisPoint=(0.0, 0.0, 0.0), axisDirection=(0.0, -90.0, 0.0), angle=90.0)
-a.LinearInstancePattern(instanceList=('CfWeave-1', 'CfWeave-2'), direction1=(1.0, 0.0, 0.0), direction2=(0.0, 1.0, 0.0), number1=3, number2=1, spacing1=(period * 4), spacing2=1)
-a.InstanceFromBooleanMerge(name='Part-2', instances=(a.instances['CfWeave-1'], a.instances['CfWeave-2'], a.instances['CfWeave-1-lin-2-1'], a.instances['CfWeave-2-lin-2-1'], a.instances['CfWeave-1-lin-3-1'], a.instances['CfWeave-2-lin-3-1'], ), originalInstances=DELETE, domain=GEOMETRY)
-p3 = mdb.models['Model-1'].parts['Part-2']
-a.Instance(name='Part-2-2', part=p3, dependent=ON)
-a.translate(instanceList=('Part-2-2', ), vector=(period, 0.0, 0.0))
-a.translate(instanceList=('Part-2-1', ), vector=(0.0, 0.0, -(period)))
+a.rotate(instanceList=('CfWeave-2', 'CfWeave-4'), axisPoint=(0.0, 0.0, 0.0), axisDirection=(180.0, 0.0, 0.0), angle=180.0)
+a.rotate(instanceList=('CfWeave-3', 'CfWeave-4'), axisPoint=(0.0, 0.0, 0.0), axisDirection=(0.0, -90.0, 0.0), angle=90.0)
+a.translate(instanceList=('CfWeave-2', ), vector=(0.0, 0.0, (period * 2)))
+a.LinearInstancePattern(instanceList=('CfWeave-1', 'CfWeave-2'), direction1=(0.0, 0.0, 1.0), direction2=(0.0, 1.0, 0.0), number1=3, number2=1, spacing1=(period * 4), spacing2=1)
+a.LinearInstancePattern(instanceList=('CfWeave-1', 'CfWeave-2', 'CfWeave-1-lin-2-1', 'CfWeave-1-lin-3-1', 'CfWeave-2-lin-2-1', 'CfWeave-2-lin-3-1'), direction1=(0.0, 0.0, 1.0), direction2=(1.0, 0.0, 0.0), number1=2, number2=1, spacing1=period, spacing2=1)
+a.translate(instanceList=('CfWeave-1-lin-2-1-1', 'CfWeave-2-lin-2-1-1', 'CfWeave-1-lin-2-1-lin-2-1', 'CfWeave-2-lin-2-1-lin-2-1', 'CfWeave-1-lin-3-1-lin-2-1', 'CfWeave-2-lin-3-1-lin-2-1'), vector=(period, 0.0, 0.0))
+a.translate(instanceList=('CfWeave-3', 'CfWeave-4'), vector=((period * 1.5), 0.0, -(period / 2)))
+a.translate(instanceList=('CfWeave-3', ), vector=((period * 2), 0.0, 0.0))
+a.LinearInstancePattern(instanceList=('CfWeave-3', 'CfWeave-4'), direction1=(1.0, 0.0, 0.0), direction2=(0.0, 1.0, 0.0), number1=3, number2=1, spacing1=(period * 4), spacing2=1)
+a.LinearInstancePattern(instanceList=('CfWeave-4', 'CfWeave-3', 'CfWeave-4-lin-2-1', 'CfWeave-3-lin-2-1', 'CfWeave-4-lin-3-1'), direction1=(1.0, 0.0, 0.0), direction2=(0.0, 1.0, 0.0), number1=2, number2=1, spacing1=period, spacing2=1)
+a.translate(instanceList=('CfWeave-4-lin-2-1-1', 'CfWeave-3-lin-2-1-1', 'CfWeave-4-lin-2-1-lin-2-1', 'CfWeave-3-lin-2-1-lin-2-1', 'CfWeave-4-lin-3-1-lin-2-1', 'CfWeave-3-lin-3-1-lin-2-1'), vector=(0.0, 0.0, period))
 a.translate(instanceList=('ResinBlock-1', ), vector=(0.0, -(b_height / (2 * sc)), 0.0))
 
 # Merge into composite & delete original parts:
-a.InstanceFromBooleanMerge(name='Composite', instances=(a.instances['ResinBlock-1'], a.instances['Part-1-1'], a.instances['Part-1-2'], a.instances['Part-2-1'], a.instances['Part-2-2'], ), keepIntersections=ON, originalInstances=DELETE, domain=GEOMETRY)
+a.InstanceFromBooleanMerge(name='Composite', instances=(a.instances['CfWeave-1'], a.instances['CfWeave-2'], a.instances['CfWeave-3'], a.instances['CfWeave-4'], a.instances['ResinBlock-1'], a.instances['CfWeave-1-lin-2-1'],
+                                                        a.instances['CfWeave-1-lin-3-1'], a.instances['CfWeave-2-lin-2-1'], a.instances['CfWeave-2-lin-3-1'], a.instances['CfWeave-1-lin-2-1-1'], a.instances['CfWeave-2-lin-2-1-1'],
+                                                        a.instances['CfWeave-1-lin-2-1-lin-2-1'], a.instances['CfWeave-1-lin-3-1-lin-2-1'], a.instances['CfWeave-2-lin-2-1-lin-2-1'], a.instances['CfWeave-2-lin-3-1-lin-2-1'],
+                                                        a.instances['CfWeave-3-lin-2-1'], a.instances['CfWeave-3-lin-3-1'], a.instances['CfWeave-4-lin-2-1'], a.instances['CfWeave-4-lin-3-1'], a.instances['CfWeave-4-lin-2-1-1'],
+                                                        a.instances['CfWeave-3-lin-2-1-1'], a.instances['CfWeave-4-lin-2-1-lin-2-1'], a.instances['CfWeave-3-lin-2-1-lin-2-1'], a.instances['CfWeave-4-lin-3-1-lin-2-1'], ), keepIntersections=ON, originalInstances=DELETE, domain=GEOMETRY)
 del mdb.models['Model-1'].parts['CfWeave']
-del mdb.models['Model-1'].parts['Part-1']
-del mdb.models['Model-1'].parts['Part-2']
 del mdb.models['Model-1'].parts['ResinBlock']
 p = mdb.models['Model-1'].parts['Composite']
 
