@@ -58,7 +58,7 @@ md = 0.5
 
 
 def add_straight(x, y, overlap_len, step, points, offset):
-    for i in range(int(overlap_len / step)):
+    for i in range(int((overlap_len / step) + step)):
         x += step
         offset += step
         points.append((x, y))

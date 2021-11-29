@@ -57,7 +57,7 @@ md = 0.5
 ###########################################################################
 
 
-def find_spline_nodes(sin_x, step, pi_len, sc):
+def find_spline_nodes(sin_x, step=0.01, pi_len, sc):
     points = []
 
     for i in range(int((pi_len * pi) / step)):
@@ -69,7 +69,7 @@ def find_spline_nodes(sin_x, step, pi_len, sc):
 
 
 def add_straight(x, y, overlap_len, step, points, offset):
-    for i in range(int(overlap_len / step)):
+    for i in range(int((overlap_len / step) + step)):
         x += step
         offset += step
         points.append((x, y))
