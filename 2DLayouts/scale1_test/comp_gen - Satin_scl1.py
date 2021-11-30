@@ -299,8 +299,14 @@ mdb.Model(name='YShearCase', objectToCopy=mdb.models['XTensCase'])
 
 # Loading magnitudes:
 mdb.models['XTensCase'].boundaryConditions['Load'].setValues(u1=15.0)
+a = mdb.models['XTensCase'].rootAssembly
+a.regenerate()
 mdb.models['XCompCase'].boundaryConditions['Load'].setValues(u1=-15.0)
+a = mdb.models['XCompCase'].rootAssembly
+a.regenerate()
 mdb.models['YShearCase'].boundaryConditions['Load'].setValues(u1=UNSET, u2=15.0)
+a = mdb.models['YShearCase'].rootAssembly
+a.regenerate()
 print('Constraining and Loading done!')
 
 # Job creation:
@@ -310,6 +316,7 @@ mdb.Job(name='CompressionAnalysis', model='XCompCase', description='', type=ANAL
         explicitPrecision=SINGLE, nodalOutputPrecision=SINGLE, echoPrint=OFF, modelPrint=OFF, contactPrint=OFF, historyPrint=OFF, userSubroutine='', scratch='', resultsFormat=ODB)
 mdb.Job(name='ShearAnalysis', model='YShearCase', description='', type=ANALYSIS, atTime=None, waitMinutes=0, waitHours=0, queue=None, memory=90, memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True,
         explicitPrecision=SINGLE, nodalOutputPrecision=SINGLE, echoPrint=OFF, modelPrint=OFF, contactPrint=OFF, historyPrint=OFF, userSubroutine='', scratch='', resultsFormat=ODB)
+
 # # mdb.jobs['TensionAnalysis'].submit(consistencyChecking=OFF)
 # # mdb.jobs['ShearAnalysis'].submit(consistencyChecking=OFF)
 # # mdb.jobs['CompressionAnalysis'].submit(consistencyChecking=OFF)

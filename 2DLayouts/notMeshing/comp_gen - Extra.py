@@ -298,8 +298,14 @@ mdb.models['Model-1'].StaticStep(name='StaticAnalysis', previous='Initial')
 
 # # Loading magnitudes:
 # mdb.models['XTensCase'].boundaryConditions['Load'].setValues(u1=15.0)
+# a = mdb.models['XTensCase'].rootAssembly
+# a.regenerate()
 # mdb.models['XCompCase'].boundaryConditions['Load'].setValues(u1=-15.0)
+# a = mdb.models['XCompCase'].rootAssembly
+# a.regenerate()
 # mdb.models['YShearCase'].boundaryConditions['Load'].setValues(u1=UNSET, u2=15.0)
+# a = mdb.models['YShearCase'].rootAssembly
+# a.regenerate()
 # print('Constraining and Loading done!')
 
 # # Job creation:
