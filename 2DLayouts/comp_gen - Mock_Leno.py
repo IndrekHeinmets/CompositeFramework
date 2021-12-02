@@ -23,7 +23,7 @@ import connectorBehavior
 
 ############################# VARIABLES ###################################
 # Scale (m -> mm):
-sc = 1000
+sc = 1
 
 # Sin curve:
 sin_x = 0.5
@@ -57,7 +57,7 @@ md = 0.5
 ###########################################################################
 
 
-def find_spline_nodes(sin_x, step=0.01, pi_len, sc):
+def find_spline_nodes(sin_x, step, pi_len, sc):
     points = []
 
     for i in range(int((pi_len * pi) / step)):
@@ -231,55 +231,55 @@ p = mdb.models['Model-1'].parts['Composite']
 
 # Composite specimen creation:
 f, e = p.faces, p.edges
-t = p.MakeSketchTransform(sketchPlane=f.findAt(coordinates=(0.025133, 0.002, 0.050265)), sketchUpEdge=e.findAt(coordinates=(0.075398, 0.002, 0.01885)), sketchPlaneSide=SIDE1, sketchOrientation=RIGHT, origin=(0.037699, 0.002, 0.037699))
+t = p.MakeSketchTransform(sketchPlane=f.findAt(coordinates=(25.132741, 2.0, 50.265483)), sketchUpEdge=e.findAt(coordinates=(75.398224, 2.0, 18.849556)), sketchPlaneSide=SIDE1, sketchOrientation=RIGHT, origin=(37.699112, 2.0, 37.699112))
 s = mdb.models['Model-1'].ConstrainedSketch(name='__profile__', sheetSize=1, gridSpacing=0.002, transform=t)
 g, v, d, c = s.geometry, s.vertices, s.dimensions, s.constraints
 s.setPrimaryObject(option=SUPERIMPOSE)
 p.projectReferencesOntoSketch(sketch=s, filter=COPLANAR_EDGES)
-s.rectangle(point1=(-0.07, 0.07), point2=(0.07, -0.07))
-s.rectangle(point1=(-0.019, 0.019), point2=(0.019, -0.019))
+s.rectangle(point1=((19.0 / sc), (19.0 / sc)), point2=(-(19.0 / sc), -(19.0 / sc)))
+s.rectangle(point1=(-(70.0 / sc), -(70.0 / sc)), point2=((70.0 / sc), (70.0 / sc)))
 f1, e1 = p.faces, p.edges
-p.CutExtrude(sketchPlane=f1.findAt(coordinates=(0.025133, 0.002, 0.050265)), sketchUpEdge=e1.findAt(coordinates=(0.075398, 0.002, 0.01885)), sketchPlaneSide=SIDE1, sketchOrientation=RIGHT, sketch=s, flipExtrudeDirection=OFF)
+p.CutExtrude(sketchPlane=f1.findAt(coordinates=(25.132741, 2.0, 50.265483)), sketchUpEdge=e1.findAt(coordinates=(75.398224, 2.0, 18.849556)), sketchPlaneSide=SIDE1, sketchOrientation=RIGHT, sketch=s, flipExtrudeDirection=OFF)
 s.unsetPrimaryObject()
 del mdb.models['Model-1'].sketches['__profile__']
 
 # Fibre orientation assignment:
 v1 = p.vertices
-p.DatumCsysByThreePoints(origin=v1.findAt(coordinates=(0.018699, -0.002, 0.018699)), point1=v1.findAt(coordinates=(0.018699, -0.002, 0.056699)), point2=v1.findAt(coordinates=(0.018699, 0.002, 0.056699)), name='Datum csys-1', coordSysType=CARTESIAN)
+p.DatumCsysByThreePoints(origin=v1.findAt(coordinates=(56.699112, -2.0, 56.699112)), point1=v1.findAt(coordinates=(56.699112, -2.0, 18.699112)), point2=v1.findAt(coordinates=(56.699112, 2.0, 18.699112)), name='Datum csys-1', coordSysType=CARTESIAN)
 v2 = p.vertices
-p.DatumCsysByThreePoints(origin=v2.findAt(coordinates=(0.018699, -0.002, 0.018699)), point1=v2.findAt(coordinates=(0.056699, -0.002, 0.018699)), point2=v2.findAt(coordinates=(0.056699, 0.002, 0.018699)), name='Datum csys-2', coordSysType=CARTESIAN)
+p.DatumCsysByThreePoints(origin=v2.findAt(coordinates=(56.699112, -2.0, 56.699112)), point1=v2.findAt(coordinates=(18.699112, -2.0, 56.699112)), point2=v2.findAt(coordinates=(18.699112, 2.0, 56.699112)), name='Datum csys-2', coordSysType=CARTESIAN)
 c = p.cells
-cells = c.findAt(((0.018699, -7.4e-05, 0.026053), ), ((0.018699, -7.4e-05, 0.038619), ), ((0.018699, -7.4e-05, 0.051186), ), ((0.018699, 7.4e-05, 0.024213), ),
-                 ((0.018699, 7.4e-05, 0.036779), ), ((0.018699, 7.4e-05, 0.049345), ))
-region = regionToolset.Region(cells=cells)
-orientation = mdb.models['Model-1'].parts['Composite'].datums[4]
-mdb.models['Model-1'].parts['Composite'].MaterialOrientation(region=region, orientationType=SYSTEM, axis=AXIS_3, localCsys=orientation, fieldName='', additionalRotationType=ROTATION_NONE, angle=0.0, additionalRotationField='', stackDirection=STACK_3)
-c = p.cells
-cells = c.findAt(((0.026053, 7.4e-05, 0.018699), ), ((0.038619, 7.4e-05, 0.018699), ), ((0.051186, 7.4e-05, 0.018699), ), ((0.024213, -7.4e-05, 0.018699), ),
-                 ((0.036779, -7.4e-05, 0.018699), ), ((0.049345, -7.4e-05, 0.018699), ))
+cells = c.findAt(((38.598564, 0.07419, 18.699112), ), ((49.366029, -0.07419, 18.699112), ), ((51.164355, -0.999926, 18.699112), ), ((36.800237, 0.999926, 18.699112), ),
+                 ((24.233288, -0.07419, 18.699112), ), ((26.032194, 0.07419, 18.699112), ))
 region = regionToolset.Region(cells=cells)
 orientation = mdb.models['Model-1'].parts['Composite'].datums[3]
+mdb.models['Model-1'].parts['Composite'].MaterialOrientation(region=region, orientationType=SYSTEM, axis=AXIS_3, localCsys=orientation, fieldName='', additionalRotationType=ROTATION_NONE, angle=0.0, additionalRotationField='', stackDirection=STACK_3)
+c = p.cells
+cells = c.findAt(((18.699112, -0.07419, 38.598564), ), ((18.699112, 0.999926, 51.164355), ), ((18.699112, 0.07419, 49.366029), ), ((18.699112, -0.999926, 36.800237), ),
+                 ((18.699112, 0.07419, 24.233288), ), ((18.699112, -0.07419, 26.032194), ))
+region = regionToolset.Region(cells=cells)
+orientation = mdb.models['Model-1'].parts['Composite'].datums[4]
 mdb.models['Model-1'].parts['Composite'].MaterialOrientation(region=region, orientationType=SYSTEM, axis=AXIS_3, localCsys=orientation, fieldName='', additionalRotationType=ROTATION_NONE, angle=0.0, additionalRotationField='', stackDirection=STACK_3)
 
 # Section assignment:
 c = p.cells
-cells = cells = c.findAt(((0.018699, -0.001061, 0.036786), ), ((0.051178, -0.001061, 0.018699), ), ((0.036786, 0.001061, 0.018699), ), ((0.018699, 0.001061, 0.051178), ),
-                         ((0.018699, -7.4e-05, 0.038619), ), ((0.038619, 7.4e-05, 0.018699), ), ((0.018699, 7.4e-05, 0.024213), ), ((0.024213, -7.4e-05, 0.018699), ),
-                         ((0.026053, 7.4e-05, 0.018699), ), ((0.018699, -7.4e-05, 0.026053), ), ((0.049345, -7.4e-05, 0.018699), ), ((0.018699, 7.4e-05, 0.049345), ))
+cells = c.findAt(((38.598564, 0.07419, 18.699112), ), ((49.366029, -0.07419, 18.699112), ), ((51.164355, -0.999926, 18.699112), ), ((18.699112, -0.07419, 38.598564), ),
+                 ((18.699112, 0.999926, 51.164355), ), ((18.699112, 0.07419, 49.366029), ), ((18.699112, -0.999926, 36.800237), ), ((36.800237, 0.999926, 18.699112), ),
+                 ((18.699112, 0.07419, 24.233288), ), ((24.233288, -0.07419, 18.699112), ), ((26.032194, 0.07419, 18.699112), ), ((18.699112, -0.07419, 26.032194), ))
 region = regionToolset.Region(cells=cells)
 p.SectionAssignment(region=region, sectionName='Cf_sec', offset=0.0, offsetType=MIDDLE_SURFACE, offsetField='', thicknessAssignment=FROM_SECTION)
 c = p.cells
-cells = c.findAt(((0.018699, -0.000501, 0.038054), ))
+cells = c.findAt(((18.699112, -0.659536, 43.275667), ))
 region = regionToolset.Region(cells=cells)
 p.SectionAssignment(region=region, sectionName='Epo_sec', offset=0.0, offsetType=MIDDLE_SURFACE, offsetField='', thicknessAssignment=FROM_SECTION)
 print('Assembly done!')
 
 # Seeding and meshing:
 c = p.cells
-pickedRegions = c.findAt(((0.018699, -0.001061, 0.036786), ), ((0.051178, -0.001061, 0.018699), ), ((0.036786, 0.001061, 0.018699), ), ((0.018699, 0.001061, 0.051178), ),
-                         ((0.018699, -7.4e-05, 0.038619), ), ((0.038619, 7.4e-05, 0.018699), ), ((0.018699, 7.4e-05, 0.024213), ), ((0.024213, -7.4e-05, 0.018699), ),
-                         ((0.026053, 7.4e-05, 0.018699), ), ((0.018699, -7.4e-05, 0.026053), ), ((0.049345, -7.4e-05, 0.018699), ), ((0.018699, 7.4e-05, 0.049345), ),
-                         ((0.018699, -0.000501, 0.038054), ))
+pickedRegions = c.findAt(((38.598564, 0.07419, 18.699112), ), ((49.366029, -0.07419, 18.699112), ), ((51.164355, -0.999926, 18.699112), ), ((18.699112, -0.07419, 38.598564), ),
+                         ((18.699112, 0.999926, 51.164355), ), ((18.699112, 0.07419, 49.366029), ), ((18.699112, -0.999926, 36.800237), ), ((36.800237, 0.999926, 18.699112), ),
+                         ((18.699112, 0.07419, 24.233288), ), ((24.233288, -0.07419, 18.699112), ), ((26.032194, 0.07419, 18.699112), ), ((18.699112, -0.07419, 26.032194), ),
+                         ((18.699112, -0.659536, 43.275667), ))
 p.setMeshControls(regions=pickedRegions, elemShape=TET, technique=FREE)
 elemType1 = mesh.ElemType(elemCode=C3D20R)
 elemType2 = mesh.ElemType(elemCode=C3D15)
@@ -295,25 +295,26 @@ mdb.models['Model-1'].StaticStep(name='StaticAnalysis', previous='Initial')
 
 # Set Assignment:
 f = p.faces
-faces = f.findAt(((0.018699, -7.4e-05, 0.038619), ), ((0.018699, -0.001061, 0.036786), ), ((0.018699, 0.001061, 0.051178), ), ((0.018699, 7.4e-05, 0.024213), ),
-                 ((0.018699, -7.4e-05, 0.026053), ), ((0.018699, 7.4e-05, 0.049345), ), ((0.018699, -0.000501, 0.038054), ))
+faces = f.findAt(((18.699112, 0.07419, 24.233288), ), ((18.699112, -0.07419, 26.032194), ), ((18.699112, -0.999926, 36.800237), ), ((18.699112, -0.07419, 38.598564), ),
+                 ((18.699112, 0.999926, 51.164355), ), ((18.699112, 0.07419, 49.366029), ), ((18.699112, -0.659536, 43.275667), ))
 p.Set(faces=faces, name='XBack')
-faces = f.findAt(((0.056699, 7.3e-05, 0.038613), ), ((0.056699, -0.001001, 0.036774), ), ((0.056699, 0.001001, 0.051191), ), ((0.056699, -7.3e-05, 0.024219), ),
-                 ((0.056699, 7.3e-05, 0.026047), ), ((0.056699, -0.001447, 0.02807), ), ((0.022259, -0.000924, 0.04936), ))
+faces = f.findAt(((56.699112, -0.075227, 24.238169), ), ((56.699112, 0.075227, 26.027313), ), ((56.699112, -0.99999, 36.800237), ), ((56.699112, 0.075227, 38.593684), ),
+                 ((56.699112, 0.99999, 51.164355), ), ((56.699112, -0.075227, 49.370911), ), ((56.699112, -0.774314, 31.613679), ))
 p.Set(faces=faces, name='XFront')
-faces = f.findAt(((0.038619, 7.4e-05, 0.018699), ), ((0.024213, -7.4e-05, 0.018699), ), ((0.026053, 7.4e-05, 0.018699), ), ((0.049345, -7.4e-05, 0.018699), ),
-                 ((0.051178, -0.001061, 0.018699), ), ((0.036786, 0.001061, 0.018699), ), ((0.038054, 0.000501, 0.018699), ))
+faces = f.findAt(((36.800237, 0.999926, 18.699112), ), ((24.233288, -0.07419, 18.699112), ), ((26.032194, 0.07419, 18.699112), ), ((38.598564, 0.07419, 18.699112), ),
+                 ((49.366029, -0.07419, 18.699112), ), ((51.164355, -0.999926, 18.699112), ), ((44.688925, -0.659536, 18.699112), ))
 p.Set(faces=faces, name='ZBack')
-faces = f.findAt(((0.038613, -7.3e-05, 0.056699), ), ((0.024219, 7.3e-05, 0.056699), ), ((0.026047, -7.3e-05, 0.056699), ), ((0.049351, 7.3e-05, 0.056699), ),
-                 ((0.051191, -0.001001, 0.056699), ), ((0.036774, 0.001001, 0.056699), ), ((0.055706, -0.001447, 0.056699), ))
+faces = f.findAt(((36.800237, 0.99999, 56.699112), ), ((24.238169, 0.075227, 56.699112), ), ((26.027313, -0.075227, 56.699112), ), ((38.593684, -0.075227, 56.699112), ),
+                 ((49.370911, 0.075227, 56.699112), ), ((51.164355, -0.99999, 56.699112), ), ((55.72765, -1.551284, 56.699112), ))
 p.Set(faces=faces, name='ZFront')
-faces = f.findAt(((0.044032, 0.002, 0.031366), ))
+faces = f.findAt(((44.032445, 2.0, 31.365779), ))
 p.Set(faces=faces, name='YTop')
-faces = f.findAt(((0.044032, -0.002, 0.044032), ))
+faces = f.findAt(((44.032445, -2.0, 44.032445), ))
 p.Set(faces=faces, name='YBottom')
 
 # Refrence point:
-a.ReferencePoint(point=(0.056699, -0.002, 0.056699))
+v1, e1, d1, n = p.vertices, p.edges, p.datums, p.nodes
+a.ReferencePoint(point=(60.0, -2.0, 60.0))
 r1 = a.referencePoints
 refPoints1 = (r1[54], )
 a.Set(referencePoints=refPoints1, name='RP')

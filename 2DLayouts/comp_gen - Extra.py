@@ -23,7 +23,7 @@ import connectorBehavior
 
 ############################# VARIABLES ###################################
 # Scale (m -> mm):
-sc = 1000
+sc = 1
 
 # Sin curve:
 sin_x = 0.5
@@ -164,11 +164,11 @@ a.rotate(instanceList=('CfWeave-5', 'CfWeave-6', 'CfWeave-7', 'CfWeave-8'), axis
 a.rotate(instanceList=('CfWeave-5', 'CfWeave-6', 'CfWeave-7', 'CfWeave-8'), axisPoint=(0.0, 0.0, 0.0), axisDirection=(0.0, -90.0, 0.0), angle=90.0)
 a.translate(instanceList=('CfWeave-5', 'CfWeave-6', 'CfWeave-7', 'CfWeave-8'), vector=((period / 2), 0.0, -(period / 2)))
 a.translate(instanceList=('CfWeave-2', ), vector=(period, 0.0, period))
-a.translate(instanceList=('CfWeave-3', ), vector=((3 * period), 0.0, (2 * period)))
-a.translate(instanceList=('CfWeave-4', ), vector=((2 * period), 0.0, (3 * period)))
+a.translate(instanceList=('CfWeave-3', ), vector=((2 * period), 0.0, (2 * period)))
+a.translate(instanceList=('CfWeave-4', ), vector=((3 * period), 0.0, (3 * period)))
 a.translate(instanceList=('CfWeave-6', ), vector=(period, 0.0, period))
-a.translate(instanceList=('CfWeave-7', ), vector=((2 * period), 0.0, (3 * period)))
-a.translate(instanceList=('CfWeave-8', ), vector=((3 * period), 0.0, (2 * period)))
+a.translate(instanceList=('CfWeave-7', ), vector=((2 * period), 0.0, (2 * period)))
+a.translate(instanceList=('CfWeave-8', ), vector=((3 * period), 0.0, (3 * period)))
 a.LinearInstancePattern(instanceList=('CfWeave-1', 'CfWeave-2', 'CfWeave-3', 'CfWeave-4'), direction1=(0.0, 0.0, 1.0), direction2=(0.0, 1.0, 0.0), number1=3, number2=1, spacing1=(period * 4), spacing2=1)
 a.LinearInstancePattern(instanceList=('CfWeave-5', 'CfWeave-6', 'CfWeave-7', 'CfWeave-8'), direction1=(1.0, 0.0, 0.0), direction2=(0.0, 1.0, 0.0), number1=3, number2=1, spacing1=(period * 4), spacing2=1)
 a.translate(instanceList=('ResinBlock-1', ), vector=(0.0, -(b_height / (2 * sc)), -(period / 1.8)))
@@ -185,56 +185,55 @@ p = mdb.models['Model-1'].parts['Composite']
 
 # Composite specimen creation:
 f, e = p.faces, p.edges
-t = p.MakeSketchTransform(sketchPlane=f.findAt(coordinates=(0.025133, 0.002, 0.046775)), sketchUpEdge=e.findAt(coordinates=(0.01885, 0.002, -0.003491)), sketchPlaneSide=SIDE1, sketchOrientation=RIGHT, origin=(0.037699, 0.002, 0.034208))
+t = p.MakeSketchTransform(sketchPlane=f.findAt(coordinates=(25.132741, 2.0, 46.774822)), sketchUpEdge=e.findAt(coordinates=(59.690272, 0.399774, 71.907565)), sketchPlaneSide=SIDE1, sketchOrientation=RIGHT, origin=(37.699112, 2.0, 34.208453))
 s = mdb.models['Model-1'].ConstrainedSketch(name='__profile__', sheetSize=1, gridSpacing=0.002, transform=t)
 g, v, d, c = s.geometry, s.vertices, s.dimensions, s.constraints
 s.setPrimaryObject(option=SUPERIMPOSE)
-p = mdb.models['Model-1'].parts['Composite']
 p.projectReferencesOntoSketch(sketch=s, filter=COPLANAR_EDGES)
-s.rectangle(point1=(0.06, 0.06), point2=(-0.06, -0.06))
-s.rectangle(point1=(-0.026, 0.013), point2=(0.012, -0.025))
+s.rectangle(point1=((25.0 / sc), (25.0 / sc)), point2=(-(13.0 / sc), -(13.0 / sc)))
+s.rectangle(point1=(-(60.0 / sc), -(60.0 / sc)), point2=((60.0 / sc), (60.0 / sc)))
 f1, e1 = p.faces, p.edges
-p.CutExtrude(sketchPlane=f1.findAt(coordinates=(0.025133, 0.002, 0.046775)), sketchUpEdge=e1.findAt(coordinates=(0.01885, 0.002, -0.003491)), sketchPlaneSide=SIDE1, sketchOrientation=RIGHT, sketch=s, flipExtrudeDirection=OFF)
+p.CutExtrude(sketchPlane=f1.findAt(coordinates=(25.132741, 2.0, 46.774822)), sketchUpEdge=e1.findAt(coordinates=(59.690272, 0.399774, 71.907565)), sketchPlaneSide=SIDE1, sketchOrientation=RIGHT, sketch=s, flipExtrudeDirection=OFF)
 s.unsetPrimaryObject()
 del mdb.models['Model-1'].sketches['__profile__']
 
 # Fibre orientation assignment:
 v = p.vertices
-p.DatumCsysByThreePoints(origin=v.findAt(coordinates=(0.062699, -0.002, 0.060208)), point1=v.findAt(coordinates=(0.062699, -0.002, 0.022208)), point2=v.findAt(coordinates=(0.062699, 0.002, 0.022208)), name='Datum csys-1', coordSysType=CARTESIAN)
+p.DatumCsysByThreePoints(origin=v.findAt(coordinates=(62.699112, -2.0, 59.208453)), point1=v.findAt(coordinates=(62.699112, -2.0, 21.208453)), point2=v.findAt(coordinates=(62.699112, 2.0, 21.208453)), name='Datum csys-1', coordSysType=CARTESIAN)
 v1 = p.vertices
-p.DatumCsysByThreePoints(origin=v1.findAt(coordinates=(0.062699, -0.002, 0.060208)), point1=v1.findAt(coordinates=(0.024699, -0.002, 0.060208)), point2=v1.findAt(coordinates=(0.024699, 0.002, 0.060208)), name='Datum csys-2', coordSysType=CARTESIAN)
+p.DatumCsysByThreePoints(origin=v1.findAt(coordinates=(62.699112, -2.0, 59.208453)), point1=v1.findAt(coordinates=(24.699112, -2.0, 59.208453)), point2=v1.findAt(coordinates=(24.699112, 2.0, 59.208453)), name='Datum csys-2', coordSysType=CARTESIAN)
 c = p.cells
-cells = c.findAt(((0.024699, -0.000185, 0.02735), ), ((0.024699, -0.000185, 0.052483), ), ((0.024699, -0.001019, 0.033632), ), ((0.024699, -0.001019, 0.058765), ),
-                 ((0.024699, -0.00123, 0.045933), ), ((0.024699, 0.000216, 0.039923), ))
-region = regionToolset.Region(cells=cells)
-orientation = mdb.models['Model-1'].parts['Composite'].datums[4]
-mdb.models['Model-1'].parts['Composite'].MaterialOrientation(region=region, orientationType=SYSTEM, axis=AXIS_3, localCsys=orientation, fieldName='', additionalRotationType=ROTATION_NONE, angle=0.0, additionalRotationField='', stackDirection=STACK_3)
-c = p.cells
-cells = c.findAt(((0.030491, 0.000993, 0.060208), ), ((0.055623, 0.000993, 0.060208), ), ((0.036765, 0.000321, 0.060208), ), ((0.061897, 0.000321, 0.060208), ),
-                 ((0.049347, -0.000316, 0.060208), ), ((0.043057, 0.000994, 0.060208), ))
+cells = c.findAt(((30.516722, 0.350936, 21.208453), ), ((55.649464, 0.350936, 21.208453), ), ((36.800237, 0.999924, 21.208453), ), ((61.932981, 0.999924, 21.208453), ),
+                 ((49.367701, -0.381862, 21.208453), ), ((43.083425, 0.999927, 21.208453), ))
 region = regionToolset.Region(cells=cells)
 orientation = mdb.models['Model-1'].parts['Composite'].datums[3]
+mdb.models['Model-1'].parts['Composite'].MaterialOrientation(region=region, orientationType=SYSTEM, axis=AXIS_3, localCsys=orientation, fieldName='', additionalRotationType=ROTATION_NONE, angle=0.0, additionalRotationField='', stackDirection=STACK_3)
+c = p.cells
+cells = c.findAt(((62.699112, -0.999767, 27.375461), ), ((62.699112, -0.999767, 52.508203), ), ((62.699112, -0.000389, 33.658504), ), ((62.699112, -0.000389, 58.791246), ),
+                 ((62.699112, -0.99999, 46.225015), ), ((62.699112, 0.00107, 39.938972), ))
+region = regionToolset.Region(cells=cells)
+orientation = mdb.models['Model-1'].parts['Composite'].datums[4]
 mdb.models['Model-1'].parts['Composite'].MaterialOrientation(region=region, orientationType=SYSTEM, axis=AXIS_3, localCsys=orientation, fieldName='', additionalRotationType=ROTATION_NONE, angle=0.0, additionalRotationField='', stackDirection=STACK_3)
 
 # Section assignment:
 c = p.cells
-cells = c.findAt(((0.024699, -0.000185, 0.02735), ), ((0.024699, -0.000185, 0.052483), ), ((0.030491, 0.000993, 0.060208), ), ((0.055623, 0.000993, 0.060208), ),
-                 ((0.036765, 0.000321, 0.060208), ), ((0.061897, 0.000321, 0.060208), ), ((0.049347, -0.000316, 0.060208), ), ((0.043057, 0.000994, 0.060208), ),
-                 ((0.024699, -0.001019, 0.033632), ), ((0.024699, -0.001019, 0.058765), ), ((0.024699, -0.00123, 0.045933), ), ((0.024699, 0.000216, 0.039923), ))
+cells = c.findAt(((62.699112, -0.999767, 27.375461), ), ((62.699112, -0.999767, 52.508203), ), ((30.516722, 0.350936, 21.208453), ), ((55.649464, 0.350936, 21.208453), ),
+                 ((36.800237, 0.999924, 21.208453), ), ((61.932981, 0.999924, 21.208453), ), ((49.367701, -0.381862, 21.208453), ), ((43.083425, 0.999927, 21.208453), ),
+                 ((62.699112, -0.000389, 33.658504), ), ((62.699112, -0.000389, 58.791246), ), ((62.699112, -0.99999, 46.225015), ), ((62.699112, 0.00107, 39.938972), ))
 region = regionToolset.Region(cells=cells)
 p.SectionAssignment(region=region, sectionName='Cf_sec', offset=0.0, offsetType=MIDDLE_SURFACE, offsetField='', thicknessAssignment=FROM_SECTION)
 c = p.cells
-cells = c.findAt(((0.053429, -0.001165, 0.060208), ))
+cells = c.findAt(((38.60369, -1.226962, 21.208453), ))
 region = regionToolset.Region(cells=cells)
 p.SectionAssignment(region=region, sectionName='Epo_sec', offset=0.0, offsetType=MIDDLE_SURFACE, offsetField='', thicknessAssignment=FROM_SECTION)
 print('Assembly done!')
 
 # Seeding and meshing:
 c = p.cells
-pickedRegions = c.findAt(((0.024699, -0.000185, 0.02735), ), ((0.024699, -0.000185, 0.052483), ), ((0.030491, 0.000993, 0.060208), ), ((0.055623, 0.000993, 0.060208), ),
-                         ((0.036765, 0.000321, 0.060208), ), ((0.061897, 0.000321, 0.060208), ), ((0.049347, -0.000316, 0.060208), ), ((0.043057, 0.000994, 0.060208), ),
-                         ((0.024699, -0.001019, 0.033632), ), ((0.024699, -0.001019, 0.058765), ), ((0.024699, -0.00123, 0.045933), ), ((0.024699, 0.000216, 0.039923), ),
-                         ((0.053429, -0.001165, 0.060208), ))
+pickedRegions = c.findAt(((62.699112, -0.999767, 27.375461), ), ((62.699112, -0.999767, 52.508203), ), ((30.516722, 0.350936, 21.208453), ), ((55.649464, 0.350936, 21.208453), ),
+                         ((36.800237, 0.999924, 21.208453), ), ((61.932981, 0.999924, 21.208453), ), ((49.367701, -0.381862, 21.208453), ), ((43.083425, 0.999927, 21.208453), ),
+                         ((62.699112, -0.000389, 33.658504), ), ((62.699112, -0.000389, 58.791246), ), ((62.699112, -0.99999, 46.225015), ), ((62.699112, 0.00107, 39.938972), ),
+                         ((38.60369, -1.226962, 21.208453), ))
 p.setMeshControls(regions=pickedRegions, elemShape=TET, technique=FREE)
 elemType1 = mesh.ElemType(elemCode=C3D20R)
 elemType2 = mesh.ElemType(elemCode=C3D15)
@@ -248,76 +247,77 @@ print('Meshing done!')
 # Static analysis step:
 mdb.models['Model-1'].StaticStep(name='StaticAnalysis', previous='Initial')
 
-# # Set Assignment:
-# f = p.faces
-# faces = f.findAt(((0.018699, -7.4e-05, 0.038619), ), ((0.018699, -0.001061, 0.036786), ), ((0.018699, 0.001061, 0.051178), ), ((0.018699, 7.4e-05, 0.024213), ),
-#                  ((0.018699, -7.4e-05, 0.026053), ), ((0.018699, 7.4e-05, 0.049345), ), ((0.018699, -0.000501, 0.038054), ))
-# p.Set(faces=faces, name='XBack')
-# faces = f.findAt(((0.056699, 7.3e-05, 0.038613), ), ((0.056699, -0.001001, 0.036774), ), ((0.056699, 0.001001, 0.051191), ), ((0.056699, -7.3e-05, 0.024219), ),
-#                  ((0.056699, 7.3e-05, 0.026047), ), ((0.056699, -0.001447, 0.02807), ), ((0.022259, -0.000924, 0.04936), ))
-# p.Set(faces=faces, name='XFront')
-# faces = f.findAt(((0.038619, 7.4e-05, 0.018699), ), ((0.024213, -7.4e-05, 0.018699), ), ((0.026053, 7.4e-05, 0.018699), ), ((0.049345, -7.4e-05, 0.018699), ),
-#                  ((0.051178, -0.001061, 0.018699), ), ((0.036786, 0.001061, 0.018699), ), ((0.038054, 0.000501, 0.018699), ))
-# p.Set(faces=faces, name='ZBack')
-# faces = f.findAt(((0.038613, -7.3e-05, 0.056699), ), ((0.024219, 7.3e-05, 0.056699), ), ((0.026047, -7.3e-05, 0.056699), ), ((0.049351, 7.3e-05, 0.056699), ),
-#                  ((0.051191, -0.001001, 0.056699), ), ((0.036774, 0.001001, 0.056699), ), ((0.055706, -0.001447, 0.056699), ))
-# p.Set(faces=faces, name='ZFront')
-# faces = f.findAt(((0.044032, 0.002, 0.031366), ))
-# p.Set(faces=faces, name='YTop')
-# faces = f.findAt(((0.044032, -0.002, 0.044032), ))
-# p.Set(faces=faces, name='YBottom')
+# Set Assignment:
+f = p.faces
+faces = f.findAt(((24.699112, -0.181101, 27.374324), ), ((24.699112, -0.181101, 52.507065), ), ((24.699112, -0.999924, 33.658647), ), ((24.699112, -0.999924, 58.791387), ),
+                 ((24.699112, 0.21518, 46.227932), ), ((24.699112, -0.999927, 39.941831), ), ((24.699112, -0.306498, 53.145135), ))
+p.Set(faces=faces, name='XBack')
+faces = f.findAt(((62.699112, -0.999767, 27.375461), ), ((62.699112, -0.999767, 52.508203), ), ((62.699112, -0.000389, 33.658504), ), ((62.699112, -0.000389, 58.791246), ),
+                 ((62.699112, -0.99999, 46.225015), ), ((62.699112, 0.00107, 39.938972), ), ((62.699112, -1.674595, 23.294322), ))
+p.Set(faces=faces, name='XFront')
+faces = f.findAt(((30.516722, 0.350936, 21.208453), ), ((55.649464, 0.350936, 21.208453), ), ((36.800237, 0.999924, 21.208453), ), ((61.932981, 0.999924, 21.208453), ),
+                 ((49.367701, -0.381862, 21.208453), ), ((43.083425, 0.999927, 21.208453), ), ((38.60369, -1.226962, 21.208453), ))
+p.Set(faces=faces, name='ZBack')
+faces = f.findAt(((30.517053, 0.999764, 59.208453), ), ((55.649793, 0.999764, 59.208453), ), ((36.804562, -0.173568, 59.208453), ), ((61.932802, -0.17323, 59.208453), ),
+                 ((49.366609, 0.99999, 59.208453), ), ((43.082596, 0.173977, 59.208453), ), ((48.361907, -0.958997, 59.208453),))
+p.Set(faces=faces, name='ZFront')
+faces = f.findAt(((37.365779, 2.0, 46.541787), ))
+p.Set(faces=faces, name='YTop')
+faces = f.findAt(((50.032445, -2.0, 46.541787), ))
+p.Set(faces=faces, name='YBottom')
 
-# # Refrence point:
-# a.ReferencePoint(point=(0.062699, -0.002, 0.060208))
-# r1 = a.referencePoints
-# refPoints1 = (r1[54], )
-# a.Set(referencePoints=refPoints1, name='RP')
+# Refrence point:
+v1, e1, d1, n = p.vertices, p.edges, p.datums, p.nodes
+a.ReferencePoint(point=(65.0, -2.0, 65.0))
+r1 = a.referencePoints
+refPoints1 = (r1[54], )
+a.Set(referencePoints=refPoints1, name='RP')
 
-# # History output:
-# regionDef = mdb.models['Model-1'].rootAssembly.sets['RP']
-# mdb.models['Model-1'].HistoryOutputRequest(name='RPHistory', createStepName='StaticAnalysis', variables=('RF1', 'RF2', 'RF3', 'U1', 'U2', 'U3'), region=regionDef, sectionPoints=DEFAULT, rebar=EXCLUDE)
-# mdb.models['Model-1'].Equation(name='ConstraintEqn', terms=((1.0, 'Composite-1.XFront', 1), (-1.0, 'RP', 1)))
+# History output:
+regionDef = mdb.models['Model-1'].rootAssembly.sets['RP']
+mdb.models['Model-1'].HistoryOutputRequest(name='RPHistory', createStepName='StaticAnalysis', variables=('RF1', 'RF2', 'RF3', 'U1', 'U2', 'U3'), region=regionDef, sectionPoints=DEFAULT, rebar=EXCLUDE)
+mdb.models['Model-1'].Equation(name='ConstraintEqn', terms=((1.0, 'Composite-1.XFront', 1), (-1.0, 'RP', 1)))
 
-# # Boundary conditions:
-# region = a.instances['Composite-1'].sets['XBack']
-# mdb.models['Model-1'].DisplacementBC(name='XBackSupport', createStepName='Initial', region=region, u1=SET, u2=UNSET, u3=UNSET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, distributionType=UNIFORM, fieldName='', localCsys=None)
-# region = a.instances['Composite-1'].sets['ZBack']
-# mdb.models['Model-1'].DisplacementBC(name='ZBackSupport', createStepName='Initial', region=region, u1=UNSET, u2=UNSET, u3=SET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, distributionType=UNIFORM, fieldName='', localCsys=None)
-# region = a.instances['Composite-1'].sets['YBottom']
-# mdb.models['Model-1'].DisplacementBC(name='YBaseSupport', createStepName='Initial', region=region, u1=UNSET, u2=SET, u3=UNSET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, distributionType=UNIFORM, fieldName='', localCsys=None)
+# Boundary conditions:
+region = a.instances['Composite-1'].sets['XBack']
+mdb.models['Model-1'].DisplacementBC(name='XBackSupport', createStepName='Initial', region=region, u1=SET, u2=UNSET, u3=UNSET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, distributionType=UNIFORM, fieldName='', localCsys=None)
+region = a.instances['Composite-1'].sets['ZBack']
+mdb.models['Model-1'].DisplacementBC(name='ZBackSupport', createStepName='Initial', region=region, u1=UNSET, u2=UNSET, u3=SET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, distributionType=UNIFORM, fieldName='', localCsys=None)
+region = a.instances['Composite-1'].sets['YBottom']
+mdb.models['Model-1'].DisplacementBC(name='YBaseSupport', createStepName='Initial', region=region, u1=UNSET, u2=SET, u3=UNSET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, distributionType=UNIFORM, fieldName='', localCsys=None)
 
-# # Refrence point displacement:
-# region = a.sets['RP']
-# mdb.models['Model-1'].DisplacementBC(name='Load', createStepName='StaticAnalysis', region=region, u1=UNSET, u2=UNSET, u3=UNSET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
+# Refrence point displacement:
+region = a.sets['RP']
+mdb.models['Model-1'].DisplacementBC(name='Load', createStepName='StaticAnalysis', region=region, u1=UNSET, u2=UNSET, u3=UNSET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
 
-# # Load case creation:
-# mdb.models.changeKey(fromName='Model-1', toName='XTensCase')
-# mdb.Model(name='XCompCase', objectToCopy=mdb.models['XTensCase'])
-# mdb.Model(name='YShearCase', objectToCopy=mdb.models['XTensCase'])
+# Load case creation:
+mdb.models.changeKey(fromName='Model-1', toName='XTensCase')
+mdb.Model(name='XCompCase', objectToCopy=mdb.models['XTensCase'])
+mdb.Model(name='YShearCase', objectToCopy=mdb.models['XTensCase'])
 
-# # Loading magnitudes:
-# mdb.models['XTensCase'].boundaryConditions['Load'].setValues(u1=15.0)
-# a = mdb.models['XTensCase'].rootAssembly
-# a.regenerate()
-# mdb.models['XCompCase'].boundaryConditions['Load'].setValues(u1=-15.0)
-# a = mdb.models['XCompCase'].rootAssembly
-# a.regenerate()
-# mdb.models['YShearCase'].boundaryConditions['Load'].setValues(u1=UNSET, u2=15.0)
-# a = mdb.models['YShearCase'].rootAssembly
-# a.regenerate()
-# print('Constraining and Loading done!')
+# Loading magnitudes:
+mdb.models['XTensCase'].boundaryConditions['Load'].setValues(u1=15.0)
+a = mdb.models['XTensCase'].rootAssembly
+a.regenerate()
+mdb.models['XCompCase'].boundaryConditions['Load'].setValues(u1=-15.0)
+a = mdb.models['XCompCase'].rootAssembly
+a.regenerate()
+mdb.models['YShearCase'].boundaryConditions['Load'].setValues(u1=UNSET, u2=15.0)
+a = mdb.models['YShearCase'].rootAssembly
+a.regenerate()
+print('Constraining and Loading done!')
 
-# # Job creation:
-# mdb.Job(name='TensionAnalysis', model='XTensCase', description='', type=ANALYSIS, atTime=None, waitMinutes=0, waitHours=0, queue=None, memory=90, memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True,
-#         explicitPrecision=SINGLE, nodalOutputPrecision=SINGLE, echoPrint=OFF, modelPrint=OFF, contactPrint=OFF, historyPrint=OFF, userSubroutine='', scratch='', resultsFormat=ODB)
-# mdb.Job(name='CompressionAnalysis', model='XCompCase', description='', type=ANALYSIS, atTime=None, waitMinutes=0, waitHours=0, queue=None, memory=90, memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True,
-#         explicitPrecision=SINGLE, nodalOutputPrecision=SINGLE, echoPrint=OFF, modelPrint=OFF, contactPrint=OFF, historyPrint=OFF, userSubroutine='', scratch='', resultsFormat=ODB)
-# mdb.Job(name='ShearAnalysis', model='YShearCase', description='', type=ANALYSIS, atTime=None, waitMinutes=0, waitHours=0, queue=None, memory=90, memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True,
-#         explicitPrecision=SINGLE, nodalOutputPrecision=SINGLE, echoPrint=OFF, modelPrint=OFF, contactPrint=OFF, historyPrint=OFF, userSubroutine='', scratch='', resultsFormat=ODB)
-# # # mdb.jobs['TensionAnalysis'].submit(consistencyChecking=OFF)
-# # # mdb.jobs['ShearAnalysis'].submit(consistencyChecking=OFF)
-# # # mdb.jobs['CompressionAnalysis'].submit(consistencyChecking=OFF)
-# # # print('Job submitted for processing!')
+# Job creation:
+mdb.Job(name='TensionAnalysis', model='XTensCase', description='', type=ANALYSIS, atTime=None, waitMinutes=0, waitHours=0, queue=None, memory=90, memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True,
+        explicitPrecision=SINGLE, nodalOutputPrecision=SINGLE, echoPrint=OFF, modelPrint=OFF, contactPrint=OFF, historyPrint=OFF, userSubroutine='', scratch='', resultsFormat=ODB)
+mdb.Job(name='CompressionAnalysis', model='XCompCase', description='', type=ANALYSIS, atTime=None, waitMinutes=0, waitHours=0, queue=None, memory=90, memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True,
+        explicitPrecision=SINGLE, nodalOutputPrecision=SINGLE, echoPrint=OFF, modelPrint=OFF, contactPrint=OFF, historyPrint=OFF, userSubroutine='', scratch='', resultsFormat=ODB)
+mdb.Job(name='ShearAnalysis', model='YShearCase', description='', type=ANALYSIS, atTime=None, waitMinutes=0, waitHours=0, queue=None, memory=90, memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True,
+        explicitPrecision=SINGLE, nodalOutputPrecision=SINGLE, echoPrint=OFF, modelPrint=OFF, contactPrint=OFF, historyPrint=OFF, userSubroutine='', scratch='', resultsFormat=ODB)
+# mdb.jobs['TensionAnalysis'].submit(consistencyChecking=OFF)
+# mdb.jobs['ShearAnalysis'].submit(consistencyChecking=OFF)
+# mdb.jobs['CompressionAnalysis'].submit(consistencyChecking=OFF)
+# print('Job submitted for processing!')
 
 # End of script:
 print('*************************')
