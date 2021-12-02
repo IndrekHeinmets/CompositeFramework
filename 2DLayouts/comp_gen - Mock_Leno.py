@@ -42,15 +42,25 @@ e_height = 0.6
 b_width = (pi_len * pi)
 b_height = 4.0
 
-# Fiber prop:
-f_name = 'Carbon Fiber'
-f_YsM = 228000000000.0
-f_PsR = 0.28
-
 # Matrix prop:
 m_name = 'Epoxy Resin'
-m_YsM = 38000000000.0
-m_PsR = 0.35
+m_E = 38000000000.0
+m_P = 0.35
+
+# Fiber prop:
+f_name = 'Carbon Fiber'
+f_E1 = 105500000000.0
+f_E2 = 7200000000.0
+f_E3 = 7200000000.0
+f_G1 = 3400000000.0
+f_G2 = 3400000000.0
+f_G3 = 2520000000.0
+f_P1 = 0.34
+f_P2 = 0.34
+f_P3 = 0.378
+
+# Load displacement:
+l_disp = 15.0
 
 # Mesh density:
 md = 0.5
@@ -170,10 +180,10 @@ del mdb.models['Model-1'].sketches['__profile1__']
 del mdb.models['Model-1'].sketches['__profile2__']
 
 # Material creation:
-mdb.models['Model-1'].Material(name=f_name)
 mdb.models['Model-1'].Material(name=m_name)
-mdb.models['Model-1'].materials[f_name].Elastic(table=((f_YsM, f_PsR), ))
-mdb.models['Model-1'].materials[m_name].Elastic(table=((m_YsM, m_PsR), ))
+mdb.models['Model-1'].Material(name=f_name)
+mdb.models['Model-1'].materials[m_name].Elastic(table=((m_E, m_P), ))
+mdb.models['Model-1'].materials[f_name].Elastic(type=ENGINEERING_CONSTANTS, table=((f_E1, f_E2, f_E3, f_P1, f_P2, f_P3, f_G1, f_G2, f_G3), ))
 
 # Section creation:
 mdb.models['Model-1'].HomogeneousSolidSection(name='Cf_sec', material=f_name, thickness=None)
@@ -341,17 +351,24 @@ mdb.models.changeKey(fromName='Model-1', toName='XTensCase')
 mdb.Model(name='XCompCase', objectToCopy=mdb.models['XTensCase'])
 mdb.Model(name='YShearCase', objectToCopy=mdb.models['XTensCase'])
 
-# Loading magnitudes:
-mdb.models['XTensCase'].boundaryConditions['Load'].setValues(u1=15.0)
+# Loading model changes:
+mdb.models['XTensCase'].boundaryConditions['Load'].setValues(u1=l_disp)
 a = mdb.models['XTensCase'].rootAssembly
 a.regenerate()
-mdb.models['XCompCase'].boundaryConditions['Load'].setValues(u1=-15.0)
+mdb.models['XCompCase'].boundaryConditions['Load'].setValues(u1=-l_disp)
 a = mdb.models['XCompCase'].rootAssembly
 a.regenerate()
-mdb.models['YShearCase'].boundaryConditions['Load'].setValues(u1=UNSET, u2=15.0)
+mdb.models['YShearCase'].boundaryConditions['Load'].setValues(u2=l_disp)
+mdb.models['YShearCase'].constraints['ConstraintEqn'].setValues(terms=((1.0, 'Composite-1.XFront', 2), (-1.0, 'RP', 2)))
+mdb.models['YShearCase'].boundaryConditions['XBackSupport'].setValues(u2=SET, u3=SET)
 a = mdb.models['YShearCase'].rootAssembly
+region = a.instances['Composite-1'].sets['XFront']
+mdb.models['YShearCase'].DisplacementBC(name='XFrontRoller', createStepName='Initial', region=region, u1=SET, u2=UNSET, u3=SET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, distributionType=UNIFORM, fieldName='', localCsys=None)
+del mdb.models['YShearCase'].boundaryConditions['YBaseSupport']
+del mdb.models['YShearCase'].boundaryConditions['ZBackSupport']
 a.regenerate()
 print('Constraining and Loading done!')
+
 # Job creation:
 mdb.Job(name='TensionAnalysis', model='XTensCase', description='', type=ANALYSIS, atTime=None, waitMinutes=0, waitHours=0, queue=None, memory=90, memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True,
         explicitPrecision=SINGLE, nodalOutputPrecision=SINGLE, echoPrint=OFF, modelPrint=OFF, contactPrint=OFF, historyPrint=OFF, userSubroutine='', scratch='', resultsFormat=ODB)

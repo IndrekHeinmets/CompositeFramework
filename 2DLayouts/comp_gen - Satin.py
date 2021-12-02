@@ -208,7 +208,23 @@ s.unsetPrimaryObject()
 del mdb.models['Model-1'].sketches['__profile__']
 
 # Fibre orientation assignment:
-
+v1 = p.vertices
+p.DatumCsysByThreePoints(origin=v1.findAt(coordinates=(69.699112, -2.0, 66.208453)), point1=v1.findAt(coordinates=(69.699112, -2.0, 28.208453)), point2=v1.findAt(coordinates=(69.699112, 2.0, 28.208453)), name='Datum csys-1', coordSysType=CARTESIAN)
+v2 = p.vertices
+p.DatumCsysByThreePoints(origin=v2.findAt(coordinates=(69.699112, -2.0, 66.208453)), point1=v2.findAt(coordinates=(31.699112, -2.0, 66.208453)), point2=v2.findAt(coordinates=(31.699112, 2.0, 66.208453)), name='Datum csys-2', coordSysType=CARTESIAN)
+c = p.cells
+cells = c.findAt(((55.652719, 9.1e-05, 28.208453), ), ((36.804546, -0.000322, 28.208453), ), ((61.937288, -0.000322, 28.208453), ), ((49.366609, 0.999924, 28.208453), ),
+                 ((43.083425, 0.999926, 28.208453), ), ((68.216164, 0.999926, 28.208453), ))
+region = regionToolset.Region(cells=cells)
+orientation = mdb.models['Model-1'].parts['Composite'].datums[3]
+mdb.models['Model-1'].parts['Composite'].MaterialOrientation(region=region, orientationType=SYSTEM, axis=AXIS_3, localCsys=orientation, fieldName='', additionalRotationType=ROTATION_NONE, angle=0.0, additionalRotationField='', stackDirection=STACK_3)
+c = p.cells
+c = p.cells
+cells = c.findAt(((69.699112, -0.999776, 52.508203), ), ((69.699112, -0.999772, 33.658647), ), ((69.699112, -0.999772, 58.791387), ), ((69.699112, -0.35026, 46.226288), ),
+                 ((69.699112, 0.350881, 39.946159), ), ((69.699112, 0.350881, 65.078903), ))
+region = regionToolset.Region(cells=cells)
+orientation = mdb.models['Model-1'].parts['Composite'].datums[4]
+mdb.models['Model-1'].parts['Composite'].MaterialOrientation(region=region, orientationType=SYSTEM, axis=AXIS_3, localCsys=orientation, fieldName='', additionalRotationType=ROTATION_NONE, angle=0.0, additionalRotationField='', stackDirection=STACK_3)
 
 # Section assignment:
 c = p.cells
