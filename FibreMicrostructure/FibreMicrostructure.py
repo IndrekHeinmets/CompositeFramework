@@ -32,7 +32,13 @@ pi_len = 6.0
 period = pi / (sin_x * sc)
 
 # Fibre cs:
-f_rad = 0.05
+fibre_diameter = 0.1
+fibre_spacing = 0.12
+fibre_cols = 36
+
+# Ellipse cs:
+e_width = 4.5
+e_height = 0.6
 
 # Fiber prop:
 f_name = 'Carbon Fiber'
@@ -92,7 +98,7 @@ s1 = mdb.models['Model-1'].ConstrainedSketch(name='__profile__', sheetSize=1, tr
 g1, v1, d1, c1 = s1.geometry, s1.vertices, s1.dimensions, s1.constraints
 s1.setPrimaryObject(option=SUPERIMPOSE)
 s1.setPrimaryObject(option=STANDALONE)
-s1.CircleByCenterPerimeter(center=(0.0, 0.0), point1=(f_rad, 0.0))
+s1.CircleByCenterPerimeter(center=(0.0, 0.0), point1=(fibre_diameter / 2, 0.0))
 s1.unsetPrimaryObject()
 print('Sketching done!')
 
@@ -133,69 +139,112 @@ mdb.models['Model-1'].HomogeneousSolidSection(name='Cf_sec', material=f_name, th
 a = mdb.models['Model-1'].rootAssembly
 a.DatumCsysByDefault(CARTESIAN)
 
-# Instance creation:
-a.Instance(name='CfWeave-1', part=p, dependent=ON)
-a.Instance(name='CfWeave-2', part=p, dependent=ON)
-a.Instance(name='CfWeave-3', part=p, dependent=ON)
-a.Instance(name='CfWeave-4', part=p, dependent=ON)
-a.Instance(name='CfWeave-5', part=p, dependent=ON)
-a.Instance(name='CfWeave-6', part=p, dependent=ON)
-a.Instance(name='CfWeave-7', part=p, dependent=ON)
-a.Instance(name='CfWeave-8', part=p, dependent=ON)
-a.Instance(name='CfWeave-9', part=p, dependent=ON)
-a.Instance(name='CfWeave-10', part=p, dependent=ON)
-a.Instance(name='CfWeave-11', part=p, dependent=ON)
-a.Instance(name='CfWeave-12', part=p, dependent=ON)
-a.Instance(name='CfWeave-13', part=p, dependent=ON)
-a.Instance(name='CfWeave-14', part=p, dependent=ON)
-a.Instance(name='CfWeave-15', part=p, dependent=ON)
-a.Instance(name='CfWeave-16', part=p, dependent=ON)
-a.Instance(name='CfWeave-17', part=p, dependent=ON)
-a.Instance(name='CfWeave-18', part=p, dependent=ON)
-a.Instance(name='CfWeave-19', part=p1, dependent=ON)
-
 # Weave arrangement:
-a.translate(instanceList=('CfWeave-1', ), vector=(0.0, 0.0, 0.12))
-a.translate(instanceList=('CfWeave-2', ), vector=(0.0, 0.0, 0.24))
-a.translate(instanceList=('CfWeave-3', ), vector=(0.0, 0.0, 0.36))
-a.translate(instanceList=('CfWeave-4', ), vector=(0.0, 0.0, 0.48))
-a.translate(instanceList=('CfWeave-5', ), vector=(0.0, 0.0, 0.6))
-a.translate(instanceList=('CfWeave-6', ), vector=(0.0, 0.0, 0.72))
-a.translate(instanceList=('CfWeave-7', ), vector=(0.0, 0.0, 0.84))
-a.translate(instanceList=('CfWeave-8', ), vector=(0.0, 0.0, 0.96))
-a.translate(instanceList=('CfWeave-9', ), vector=(0.0, 0.0, 1.08))
-a.translate(instanceList=('CfWeave-10', ), vector=(0.0, 0.0, 1.2))
-a.translate(instanceList=('CfWeave-11', ), vector=(0.0, 0.0, 1.32))
-a.translate(instanceList=('CfWeave-12', ), vector=(0.0, 0.0, 1.44))
-a.translate(instanceList=('CfWeave-13', ), vector=(0.0, 0.0, 1.56))
-a.translate(instanceList=('CfWeave-14', ), vector=(0.0, 0.0, 1.68))
-a.translate(instanceList=('CfWeave-15', ), vector=(0.0, 0.0, 1.8))
-a.translate(instanceList=('CfWeave-16', ), vector=(0.0, 0.0, 1.92))
-a.translate(instanceList=('CfWeave-17', ), vector=(0.0, 0.0, 2.04))
-a.translate(instanceList=('CfWeave-18', ), vector=(0.0, 0.0, 2.16))
+for i in range(fibre_cols + 1):
+    a.Instance(name='CfWeave-' + str(i + 1), part=p, dependent=ON)
+    a.translate(instanceList=('CfWeave-' + str(i + 1), ), vector=(0.0, 0.0, (fibre_spacing * i)))
+for i in range((fibre_cols - 2) + 1):
+    a.Instance(name='CfWeave2-' + str(i + 1), part=p, dependent=ON)
+    a.translate(instanceList=('CfWeave2-' + str(i + 1), ), vector=(0.0, fibre_spacing, (fibre_spacing * (i + 1))))
+    a.Instance(name='CfWeave2n-' + str(i + 1), part=p, dependent=ON)
+    a.translate(instanceList=('CfWeave2n-' + str(i + 1), ), vector=(0.0, -fibre_spacing, (fibre_spacing * (i + 1))))
+for i in range((fibre_cols - 4) + 1):
+    a.Instance(name='CfWeave3-' + str(i + 1), part=p, dependent=ON)
+    a.translate(instanceList=('CfWeave3-' + str(i + 1), ), vector=(0.0, (fibre_spacing * 2), (fibre_spacing * (i + 2))))
+    a.Instance(name='CfWeave3n-' + str(i + 1), part=p, dependent=ON)
+    a.translate(instanceList=('CfWeave3n-' + str(i + 1), ), vector=(0.0, -(fibre_spacing * 2), (fibre_spacing * (i + 2))))
+for i in range((fibre_cols - 8) + 1):
+    a.Instance(name='CfWeave4-' + str(i + 1), part=p, dependent=ON)
+    a.translate(instanceList=('CfWeave4-' + str(i + 1), ), vector=(0.0, (fibre_spacing * 3), (fibre_spacing * (i + 4))))
+    a.Instance(name='CfWeave4n-' + str(i + 1), part=p, dependent=ON)
+    a.translate(instanceList=('CfWeave4n-' + str(i + 1), ), vector=(0.0, -(fibre_spacing * 3), (fibre_spacing * (i + 4))))
+for i in range((fibre_cols - 16) + 1):
+    a.Instance(name='CfWeave5-' + str(i + 1), part=p, dependent=ON)
+    a.translate(instanceList=('CfWeave5-' + str(i + 1), ), vector=(0.0, (fibre_spacing * 4), (fibre_spacing * (i + 8))))
+    a.Instance(name='CfWeave5n-' + str(i + 1), part=p, dependent=ON)
+    a.translate(instanceList=('CfWeave5n-' + str(i + 1), ), vector=(0.0, -(fibre_spacing * 4), (fibre_spacing * (i + 8))))
+for i in range((fibre_cols - 26) + 1):
+    a.Instance(name='CfWeave6-' + str(i + 1), part=p, dependent=ON)
+    a.translate(instanceList=('CfWeave6-' + str(i + 1), ), vector=(0.0, (fibre_spacing * 5), (fibre_spacing * (i + 13))))
+    a.Instance(name='CfWeave6n-' + str(i + 1), part=p, dependent=ON)
+    a.translate(instanceList=('CfWeave6n-' + str(i + 1), ), vector=(0.0, -(fibre_spacing * 5), (fibre_spacing * (i + 13))))
+a.Instance(name='Yarn', part=p1, dependent=ON)
+a.translate(instanceList=('Yarn', ), vector=(0.0, 0.0, (e_width / 2) - fibre_diameter))
 
-# # Merge into composite & delete original parts:
-# a.InstanceFromBooleanMerge(name='Composite', instances=(a.instances['CfWeave-1'], a.instances['CfWeave-2'], a.instances['CfWeave-5'], a.instances['CfWeave-6'], a.instances['CfWeave_l-1'], a.instances['CfWeave_l-2'], a.instances['CfWeave-3'], a.instances['CfWeave-4'],
-#                                                         a.instances['CfWeave-7'], a.instances['CfWeave-8'], a.instances['CfWeave_l-3'], a.instances['CfWeave_l-4'], a.instances['ResinBlock-1'], a.instances['CfWeave-1-lin-2-1'], a.instances['CfWeave-2-lin-2-1'], a.instances['CfWeave-6-lin-2-1'], a.instances['CfWeave_l-2-lin-2-1'],
-#                                                         a.instances['CfWeave-5-lin-2-1'], a.instances['CfWeave_l-1-lin-2-1'], a.instances['CfWeave_l-4-lin-2-1'], a.instances['CfWeave-8-lin-2-1'], a.instances['CfWeave-4-lin-2-1'], a.instances['CfWeave-7-lin-2-1'], a.instances['CfWeave_l-3-lin-2-1'], a.instances['CfWeave-3-lin-2-1'], ), keepIntersections=ON, originalInstances=DELETE, domain=GEOMETRY)
-# del mdb.models['Model-1'].parts['CfWeave']
-# del mdb.models['Model-1'].parts['CfWeave_l']
-# del mdb.models['Model-1'].parts['ResinBlock']
-# p = mdb.models['Model-1'].parts['Composite']
+# Merge into composite & delete original parts:
+a.InstanceFromBooleanMerge(name='Fibres', instances=(a.instances['CfWeave-1'], a.instances['CfWeave-2'], a.instances['CfWeave-3'], a.instances['CfWeave-4'], a.instances['CfWeave-5'], a.instances['CfWeave-6'],
+    a.instances['CfWeave-7'], a.instances['CfWeave-8'], a.instances['CfWeave-9'], a.instances['CfWeave-10'], a.instances['CfWeave-11'], a.instances['CfWeave-12'], a.instances['CfWeave-13'], a.instances['CfWeave-14'],
+    a.instances['CfWeave-15'], a.instances['CfWeave-16'], a.instances['CfWeave-17'], a.instances['CfWeave-18'], a.instances['CfWeave-19'], a.instances['CfWeave-20'], a.instances['CfWeave-21'], a.instances['CfWeave-22'],
+    a.instances['CfWeave-23'], a.instances['CfWeave-24'], a.instances['CfWeave-25'], a.instances['CfWeave-26'], a.instances['CfWeave-27'], a.instances['CfWeave-28'], a.instances['CfWeave-29'], a.instances['CfWeave-30'],
+    a.instances['CfWeave-31'], a.instances['CfWeave-32'], a.instances['CfWeave-33'], a.instances['CfWeave-34'], a.instances['CfWeave-35'], a.instances['CfWeave-36'], a.instances['CfWeave-37'], a.instances['CfWeave2-1'],
+    a.instances['CfWeave2n-1'], a.instances['CfWeave2-2'], a.instances['CfWeave2n-2'], a.instances['CfWeave2-3'], a.instances['CfWeave2n-3'], a.instances['CfWeave2-4'], a.instances['CfWeave2n-4'], a.instances['CfWeave2-5'],
+    a.instances['CfWeave2n-5'], a.instances['CfWeave2-6'], a.instances['CfWeave2n-6'], a.instances['CfWeave2-7'], a.instances['CfWeave2n-7'], a.instances['CfWeave2-8'], a.instances['CfWeave2n-8'], a.instances['CfWeave2-9'],
+    a.instances['CfWeave2n-9'], a.instances['CfWeave2-10'], a.instances['CfWeave2n-10'], a.instances['CfWeave2-11'], a.instances['CfWeave2n-11'], a.instances['CfWeave2-12'], a.instances['CfWeave2n-12'], a.instances['CfWeave2-13'],
+    a.instances['CfWeave2n-13'], a.instances['CfWeave2-14'], a.instances['CfWeave2n-14'], a.instances['CfWeave2-15'], a.instances['CfWeave2n-15'], a.instances['CfWeave2-16'], a.instances['CfWeave2n-16'], a.instances['CfWeave2-17'],
+    a.instances['CfWeave2n-17'], a.instances['CfWeave2-18'], a.instances['CfWeave2n-18'], a.instances['CfWeave2-19'], a.instances['CfWeave2n-19'], a.instances['CfWeave2-20'], a.instances['CfWeave2n-20'], a.instances['CfWeave2-21'],
+    a.instances['CfWeave2n-21'], a.instances['CfWeave2-22'], a.instances['CfWeave2n-22'], a.instances['CfWeave2-23'], a.instances['CfWeave2n-23'], a.instances['CfWeave2-24'], a.instances['CfWeave2n-24'], a.instances['CfWeave2-25'],
+    a.instances['CfWeave2n-25'], a.instances['CfWeave2-26'], a.instances['CfWeave2n-26'], a.instances['CfWeave2-27'], a.instances['CfWeave2n-27'], a.instances['CfWeave2-28'], a.instances['CfWeave2n-28'], a.instances['CfWeave2-29'],
+    a.instances['CfWeave2n-29'], a.instances['CfWeave2-30'], a.instances['CfWeave2n-30'], a.instances['CfWeave2-31'], a.instances['CfWeave2n-31'], a.instances['CfWeave2-32'], a.instances['CfWeave2n-32'], a.instances['CfWeave2-33'],
+    a.instances['CfWeave2n-33'], a.instances['CfWeave2-34'], a.instances['CfWeave2n-34'], a.instances['CfWeave2-35'], a.instances['CfWeave2n-35'], a.instances['CfWeave3-1'], a.instances['CfWeave3n-1'], a.instances['CfWeave3-2'],
+    a.instances['CfWeave3n-2'], a.instances['CfWeave3-3'], a.instances['CfWeave3n-3'], a.instances['CfWeave3-4'],a.instances['CfWeave3n-4'], a.instances['CfWeave3-5'], a.instances['CfWeave3n-5'], a.instances['CfWeave3-6'],
+    a.instances['CfWeave3n-6'], a.instances['CfWeave3-7'], a.instances['CfWeave3n-7'], a.instances['CfWeave3-8'], a.instances['CfWeave3n-8'], a.instances['CfWeave3-9'], a.instances['CfWeave3n-9'], a.instances['CfWeave3-10'],
+    a.instances['CfWeave3n-10'], a.instances['CfWeave3-11'], a.instances['CfWeave3n-11'], a.instances['CfWeave3-12'], a.instances['CfWeave3n-12'], a.instances['CfWeave3-13'], a.instances['CfWeave3n-13'], a.instances['CfWeave3-14'],
+    a.instances['CfWeave3n-14'], a.instances['CfWeave3-15'], a.instances['CfWeave3n-15'], a.instances['CfWeave3-16'], a.instances['CfWeave3n-16'], a.instances['CfWeave3-17'], a.instances['CfWeave3n-17'], a.instances['CfWeave3-18'],
+    a.instances['CfWeave3n-18'], a.instances['CfWeave3-19'], a.instances['CfWeave3n-19'], a.instances['CfWeave3-20'], a.instances['CfWeave3n-20'], a.instances['CfWeave3-21'], a.instances['CfWeave3n-21'], a.instances['CfWeave3-22'],
+    a.instances['CfWeave3n-22'], a.instances['CfWeave3-23'], a.instances['CfWeave3n-23'], a.instances['CfWeave3-24'], a.instances['CfWeave3n-24'], a.instances['CfWeave3-25'], a.instances['CfWeave3n-25'], a.instances['CfWeave3-26'],
+    a.instances['CfWeave3n-26'], a.instances['CfWeave3-27'], a.instances['CfWeave3n-27'], a.instances['CfWeave3-28'], a.instances['CfWeave3n-28'], a.instances['CfWeave3-29'], a.instances['CfWeave3n-29'], a.instances['CfWeave3-30'],
+    a.instances['CfWeave3n-30'], a.instances['CfWeave3-31'], a.instances['CfWeave3n-31'], a.instances['CfWeave3-32'], a.instances['CfWeave3n-32'], a.instances['CfWeave3-33'], a.instances['CfWeave3n-33'], a.instances['CfWeave4-1'],
+    a.instances['CfWeave4n-1'], a.instances['CfWeave4-2'], a.instances['CfWeave4n-2'], a.instances['CfWeave4-3'], a.instances['CfWeave4n-3'], a.instances['CfWeave4-4'], a.instances['CfWeave4n-4'], a.instances['CfWeave4-5'],
+    a.instances['CfWeave4n-5'], a.instances['CfWeave4-6'], a.instances['CfWeave4n-6'], a.instances['CfWeave4-7'], a.instances['CfWeave4n-7'], a.instances['CfWeave4-8'], a.instances['CfWeave4n-8'], a.instances['CfWeave4-9'],
+    a.instances['CfWeave4n-9'], a.instances['CfWeave4-10'], a.instances['CfWeave4n-10'], a.instances['CfWeave4-11'], a.instances['CfWeave4n-11'], a.instances['CfWeave4-12'], a.instances['CfWeave4n-12'], a.instances['CfWeave4-13'],
+    a.instances['CfWeave4n-13'], a.instances['CfWeave4-14'], a.instances['CfWeave4n-14'], a.instances['CfWeave4-15'], a.instances['CfWeave4n-15'], a.instances['CfWeave4-16'], a.instances['CfWeave4n-16'], a.instances['CfWeave4-17'],
+    a.instances['CfWeave4n-17'], a.instances['CfWeave4-18'], a.instances['CfWeave4n-18'], a.instances['CfWeave4-19'], a.instances['CfWeave4n-19'], a.instances['CfWeave4-20'], a.instances['CfWeave4n-20'], a.instances['CfWeave4-21'],
+    a.instances['CfWeave4n-21'], a.instances['CfWeave4-22'], a.instances['CfWeave4n-22'], a.instances['CfWeave4-23'], a.instances['CfWeave4n-23'], a.instances['CfWeave4-24'], a.instances['CfWeave4n-24'], a.instances['CfWeave4-25'],
+    a.instances['CfWeave4n-25'], a.instances['CfWeave4-26'], a.instances['CfWeave4n-26'], a.instances['CfWeave4-27'], a.instances['CfWeave4n-27'], a.instances['CfWeave4-28'], a.instances['CfWeave4n-28'], a.instances['CfWeave4-29'],
+    a.instances['CfWeave4n-29'], a.instances['CfWeave5-1'], a.instances['CfWeave5n-1'], a.instances['CfWeave5-2'], a.instances['CfWeave5n-2'], a.instances['CfWeave5-3'], a.instances['CfWeave5n-3'], a.instances['CfWeave5-4'],
+    a.instances['CfWeave5n-4'], a.instances['CfWeave5-5'], a.instances['CfWeave5n-5'], a.instances['CfWeave5-6'], a.instances['CfWeave5n-6'], a.instances['CfWeave5-7'], a.instances['CfWeave5n-7'], a.instances['CfWeave5-8'],
+    a.instances['CfWeave5n-8'], a.instances['CfWeave5-9'], a.instances['CfWeave5n-9'], a.instances['CfWeave5-10'], a.instances['CfWeave5n-10'], a.instances['CfWeave5-11'], a.instances['CfWeave5n-11'], a.instances['CfWeave5-12'],
+    a.instances['CfWeave5n-12'], a.instances['CfWeave5-13'], a.instances['CfWeave5n-13'], a.instances['CfWeave5-14'], a.instances['CfWeave5n-14'], a.instances['CfWeave5-15'], a.instances['CfWeave5n-15'], a.instances['CfWeave5-16'],
+    a.instances['CfWeave5n-16'], a.instances['CfWeave5-17'], a.instances['CfWeave5n-17'], a.instances['CfWeave5-18'], a.instances['CfWeave5n-18'], a.instances['CfWeave5-19'], a.instances['CfWeave5n-19'], a.instances['CfWeave5-20'],
+    a.instances['CfWeave5n-20'], a.instances['CfWeave5-21'], a.instances['CfWeave5n-21'], a.instances['CfWeave6-1'], a.instances['CfWeave6n-1'], a.instances['CfWeave6-2'], a.instances['CfWeave6n-2'], a.instances['CfWeave6-3'],
+    a.instances['CfWeave6n-3'], a.instances['CfWeave6-4'], a.instances['CfWeave6n-4'], a.instances['CfWeave6-5'], a.instances['CfWeave6n-5'], a.instances['CfWeave6-6'], a.instances['CfWeave6n-6'], a.instances['CfWeave6-7'],
+    a.instances['CfWeave6n-7'], a.instances['CfWeave6-8'], a.instances['CfWeave6n-8'], a.instances['CfWeave6-9'], a.instances['CfWeave6n-9'], a.instances['CfWeave6-10'], a.instances['CfWeave6n-10'], a.instances['CfWeave6-11'],
+    a.instances['CfWeave6n-11'], ), originalInstances=DELETE, domain=GEOMETRY)
 
-# # Composite specimen creation:
-# f, e = p.faces, p.edges
-# t = p.MakeSketchTransform(sketchPlane=f.findAt(coordinates=(25.132741, 2.0, 50.265483)), sketchUpEdge=e.findAt(coordinates=(75.398224, 2.0, 18.849556)), sketchPlaneSide=SIDE1, sketchOrientation=RIGHT, origin=(37.699112, 2.0, 37.699112))
-# s = mdb.models['Model-1'].ConstrainedSketch(name='__profile__', sheetSize=1, gridSpacing=0.002, transform=t)
-# g, v, d, c = s.geometry, s.vertices, s.dimensions, s.constraints
-# s.setPrimaryObject(option=SUPERIMPOSE)
-# p.projectReferencesOntoSketch(sketch=s, filter=COPLANAR_EDGES)
-# s.rectangle(point1=((19.0 / sc), (19.0 / sc)), point2=(-(19.0 / sc), -(19.0 / sc)))
-# s.rectangle(point1=(-(70.0 / sc), -(70.0 / sc)), point2=((70.0 / sc), (70.0 / sc)))
-# f1, e1 = p.faces, p.edges
-# p.CutExtrude(sketchPlane=f1.findAt(coordinates=(25.132741, 2.0, 50.265483)), sketchUpEdge=e1.findAt(coordinates=(75.398224, 2.0, 18.849556)), sketchPlaneSide=SIDE1, sketchOrientation=RIGHT, sketch=s, flipExtrudeDirection=OFF)
-# s.unsetPrimaryObject()
-# del mdb.models['Model-1'].sketches['__profile__']
+del mdb.models['Model-1'].parts['CfWeave']
+p = mdb.models['Model-1'].parts['CfBase']
+p1 = mdb.models['Model-1'].parts['Fibres']
+
+# Composite specimen creation:
+p.DatumPlaneByPrincipalPlane(principalPlane=XZPLANE, offset=10.0)
+f1, e1, d1 = p.faces, p.edges, p.datums
+t = p.MakeSketchTransform(sketchPlane=d1[2], sketchUpEdge=e1.findAt(coordinates=(18.242115, 0.961099, 0.0)), sketchPlaneSide=SIDE1, sketchOrientation=RIGHT, origin=(8.98655, 10.0, -0.029281))
+s = mdb.models['Model-1'].ConstrainedSketch(name='__profile__', sheetSize=1, gridSpacing=1, transform=t)
+g, v, d, c = s.geometry, s.vertices, s.dimensions, s.constraints
+s.setPrimaryObject(option=SUPERIMPOSE)
+p.projectReferencesOntoSketch(sketch=s, filter=COPLANAR_EDGES)
+s.rectangle(point1=(-4, 10), point2=(4, -10))
+s.rectangle(point1=(-3, 8.5), point2=(3, -8.5))
+f, e, d2 = p.faces, p.edges, p.datums
+p.CutExtrude(sketchPlane=d2[2], sketchUpEdge=e.findAt(coordinates=(18.242115, 0.961099, 0.0)), sketchPlaneSide=SIDE1, sketchOrientation=RIGHT, sketch=s, flipExtrudeDirection=OFF)
+s.unsetPrimaryObject()
+del mdb.models['Model-1'].sketches['__profile__']
+
+p1 = mdb.models['Model-1'].parts['Fibres']
+p1.DatumPlaneByPrincipalPlane(principalPlane=XZPLANE, offset=10.0)
+p1 = mdb.models['Model-1'].parts['Fibres']
+f1, e1, d1 = p1.faces, p1.edges, p1.datums
+t = p1.MakeSketchTransform(sketchPlane=d1[2], sketchUpEdge=e1.findAt(coordinates=(18.0, 1.012118, 2.09)), sketchPlaneSide=SIDE1, sketchOrientation=RIGHT, origin=(8.998734, 10.0, 2.160166))
+s1 = mdb.models['Model-1'].ConstrainedSketch(name='__profile__', sheetSize=1, gridSpacing=1, transform=t)
+g, v, d, c = s1.geometry, s1.vertices, s1.dimensions, s1.constraints
+s1.setPrimaryObject(option=SUPERIMPOSE)
+p1.projectReferencesOntoSketch(sketch=s1, filter=COPLANAR_EDGES)
+s1.rectangle(point1=(-10, 4), point2=(10, -4))
+s1.rectangle(point1=(-8.5, 3), point2=(8.5, -3))
+f, e, d2 = p1.faces, p1.edges, p1.datums
+p1.CutExtrude(sketchPlane=d2[2], sketchUpEdge=e.findAt(coordinates=(18.0, 1.012118, 2.09)), sketchPlaneSide=SIDE1, sketchOrientation=RIGHT, sketch=s1, flipExtrudeDirection=OFF)
+s1.unsetPrimaryObject()
+del mdb.models['Model-1'].sketches['__profile__']
 
 # # Fibre orientation assignment:
 # v1 = p.vertices
