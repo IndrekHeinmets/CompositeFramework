@@ -42,12 +42,14 @@ e_height = 0.6
 b_width = (pi_len * pi)
 b_height = 4.0
 
-# Matrix prop:
+# Matrix props:
 m_name = 'Epoxy Resin'
 m_E = 38000000000.0
 m_P = 0.35
+m_Ys = 55000000.0
+m_Ps = 0.0
 
-# Fiber prop:
+# Fiber props:
 f_name = 'Carbon Fiber'
 f_E1 = 105500000000.0
 f_E2 = 7200000000.0
@@ -183,6 +185,7 @@ del mdb.models['Model-1'].sketches['__profile2__']
 mdb.models['Model-1'].Material(name=m_name)
 mdb.models['Model-1'].Material(name=f_name)
 mdb.models['Model-1'].materials[m_name].Elastic(table=((m_E, m_P), ))
+mdb.models['Model-1'].materials[m_name].Plastic(scaleStress=None, table=((m_Ys, m_Ps), ))
 mdb.models['Model-1'].materials[f_name].Elastic(type=ENGINEERING_CONSTANTS, table=((f_E1, f_E2, f_E3, f_P1, f_P2, f_P3, f_G1, f_G2, f_G3), ))
 
 # Section creation:
@@ -322,17 +325,9 @@ p.Set(faces=faces, name='YTop')
 faces = f.findAt(((44.032445, -2.0, 44.032445), ))
 p.Set(faces=faces, name='YBottom')
 
-# Refrence point:
-v1, e1, d1, n = p.vertices, p.edges, p.datums, p.nodes
-a.ReferencePoint(point=(60.0, -2.0, 60.0))
-r1 = a.referencePoints
-refPoints1 = (r1[54], )
-a.Set(referencePoints=refPoints1, name='RP')
-
 # History output:
-regionDef = mdb.models['Model-1'].rootAssembly.sets['RP']
-mdb.models['Model-1'].HistoryOutputRequest(name='RPHistory', createStepName='StaticAnalysis', variables=('RF1', 'RF2', 'RF3', 'U1', 'U2', 'U3'), region=regionDef, sectionPoints=DEFAULT, rebar=EXCLUDE)
-mdb.models['Model-1'].Equation(name='ConstraintEqn', terms=((1.0, 'Composite-1.XFront', 1), (-1.0, 'RP', 1)))
+regionDef = mdb.models['Model-1'].rootAssembly.allInstances['Composite-1'].sets['XFront']
+mdb.models['Model-1'].HistoryOutputRequest(name='DispHistory', createStepName='StaticAnalysis', variables=('RF1', 'RF2', 'RF3', 'U1', 'U2', 'U3'), region=regionDef, sectionPoints=DEFAULT, rebar=EXCLUDE, timeInterval=0.05)
 
 # Boundary conditions:
 region = a.instances['Composite-1'].sets['XBack']
@@ -342,8 +337,8 @@ mdb.models['Model-1'].DisplacementBC(name='ZBackSupport', createStepName='Initia
 region = a.instances['Composite-1'].sets['YBottom']
 mdb.models['Model-1'].DisplacementBC(name='YBaseSupport', createStepName='Initial', region=region, u1=UNSET, u2=SET, u3=UNSET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, distributionType=UNIFORM, fieldName='', localCsys=None)
 
-# Refrence point displacement:
-region = a.sets['RP']
+# Front face displacement:
+region = a.instances['Composite-1'].sets['XFront']
 mdb.models['Model-1'].DisplacementBC(name='Load', createStepName='StaticAnalysis', region=region, u1=UNSET, u2=UNSET, u3=UNSET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
 
 # Load case creation:
@@ -359,7 +354,6 @@ mdb.models['XCompCase'].boundaryConditions['Load'].setValues(u1=-l_disp)
 a = mdb.models['XCompCase'].rootAssembly
 a.regenerate()
 mdb.models['YShearCase'].boundaryConditions['Load'].setValues(u2=l_disp)
-mdb.models['YShearCase'].constraints['ConstraintEqn'].setValues(terms=((1.0, 'Composite-1.XFront', 2), (-1.0, 'RP', 2)))
 mdb.models['YShearCase'].boundaryConditions['XBackSupport'].setValues(u2=SET, u3=SET)
 a = mdb.models['YShearCase'].rootAssembly
 region = a.instances['Composite-1'].sets['XFront']
@@ -369,7 +363,7 @@ del mdb.models['YShearCase'].boundaryConditions['ZBackSupport']
 a.regenerate()
 print('Constraining and Loading done!')
 
-# Job creation:
+# # Job creation:
 mdb.Job(name='TensionAnalysis', model='XTensCase', description='', type=ANALYSIS, atTime=None, waitMinutes=0, waitHours=0, queue=None, memory=90, memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True,
         explicitPrecision=SINGLE, nodalOutputPrecision=SINGLE, echoPrint=OFF, modelPrint=OFF, contactPrint=OFF, historyPrint=OFF, userSubroutine='', scratch='', resultsFormat=ODB)
 mdb.Job(name='CompressionAnalysis', model='XCompCase', description='', type=ANALYSIS, atTime=None, waitMinutes=0, waitHours=0, queue=None, memory=90, memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True,
