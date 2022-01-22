@@ -330,7 +330,7 @@ mdb.Job(name='ShearAnalysis', model='YShearCase', description='', type=ANALYSIS,
 # mdb.jobs['TensionAnalysis'].submit(consistencyChecking=OFF)
 # mdb.jobs['ShearAnalysis'].submit(consistencyChecking=OFF)
 # mdb.jobs['CompressionAnalysis'].submit(consistencyChecking=OFF)
-# print('Job submitted for processing!')
+# print('Jobs submitted for processing!')
 
 # End of script:
 print('*************************')
