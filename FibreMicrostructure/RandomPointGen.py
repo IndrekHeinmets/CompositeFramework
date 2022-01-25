@@ -29,33 +29,36 @@ def randFibrePos(fibre_diameter, fibre_count, fibre_spacing_buffer, RVE_size):
         if valid:
             point_lst.append((x, y))
 
-    # Handle half-fibres:
-    boundary = (RVE_size / 2) - (fibre_diameter / 2)
-    side = RVE_size / 2
-
-    for point in point_lst:
-        x1, y1 = point
-        if x1 > boundary:
-            dist_to_edge = side - x1
-            x = -side - dist_to_edge
-            y = random.randrange(-int(RVE_size / 2), int(RVE_size / 2))
-            point_lst.append((x, y))
-
-        # if x1 < -boundary:
-        #     dist_to_edge = -side - x1
-        #     x = side + dist_to_edge
-        #     y = random.randrange(-int(RVE_size / 2), int(RVE_size / 2))
-        #     point_lst.append((x, y))
-
-        if y1 > boundary:
-            dist_to_edge = side - y1
-            y = -side - dist_to_edge
-            x = random.randrange(-int(RVE_size / 2), int(RVE_size / 2))
-            point_lst.append((x, y))
-
-        # if y1 > ((RVE_size / 2) - (fibre_diameter / 2)) or y1 < ((-RVE_size / 2) + (fibre_diameter / 2)):
-        #     print('y_half')
-
+    # # Handle half-fibres:
+    # boundary = (RVE_size / 2) - (fibre_diameter / 2)
+    # side = RVE_size / 2
+    #
+    # for point in point_lst:
+    #     x1, y1 = point
+    #
+    #     if x1 > boundary:
+    #         dist_to_edge = side - x1
+    #         x = -side - dist_to_edge
+    #         y = random.randrange(-int(RVE_size / 2), int(RVE_size / 2))
+    #         point_lst.append((x, y))
+    #
+    #     if x1 < -boundary:
+    #         dist_to_edge = -side - x1
+    #         x = side + dist_to_edge
+    #         y = random.randrange(-int(RVE_size / 2), int(RVE_size / 2))
+    #         point_lst.append((x, y))
+    #
+    #     if y1 > boundary:
+    #         dist_to_edge = side - y1
+    #         y = -side - dist_to_edge
+    #         x = random.randrange(-int(RVE_size / 2), int(RVE_size / 2))
+    #         point_lst.append((x, y))
+    #
+    #     if y1 < -boundary:
+    #         dist_to_edge = -side - y1
+    #         y = side + dist_to_edge
+    #         x = random.randrange(-int(RVE_size / 2), int(RVE_size / 2))
+    #         point_lst.append((x, y))
 
     return point_lst
 
