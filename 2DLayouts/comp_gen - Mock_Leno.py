@@ -256,49 +256,38 @@ p.CutExtrude(sketchPlane=f1.findAt(coordinates=(25.132741, 2.0, 50.265483)), ske
 s.unsetPrimaryObject()
 del mdb.models['Model-1'].sketches['__profile__']
 
+# Cell assignment:
+fibreCells1 = p.cells.findAt(((38.598564, 0.07419, 18.699112), ), ((49.366029, -0.07419, 18.699112), ), ((51.164355, -0.999926, 18.699112), ), ((36.800237, 0.999926, 18.699112), ),
+                             ((24.233288, -0.07419, 18.699112), ), ((26.032194, 0.07419, 18.699112), ))
+fibreCells2 = p.cells.findAt(((18.699112, -0.07419, 38.598564), ), ((18.699112, 0.999926, 51.164355), ), ((18.699112, 0.07419, 49.366029), ), ((18.699112, -0.999926, 36.800237), ),
+                             ((18.699112, 0.07419, 24.233288), ), ((18.699112, -0.07419, 26.032194), ))
+matrixCells = p.cells.findAt(((18.699112, -0.659536, 43.275667), ))
+
 # Fibre orientation assignment:
 v1 = p.vertices
 p.DatumCsysByThreePoints(origin=v1.findAt(coordinates=(56.699112, -2.0, 56.699112)), point1=v1.findAt(coordinates=(56.699112, -2.0, 18.699112)), point2=v1.findAt(coordinates=(56.699112, 2.0, 18.699112)), name='Datum csys-1', coordSysType=CARTESIAN)
 v2 = p.vertices
 p.DatumCsysByThreePoints(origin=v2.findAt(coordinates=(56.699112, -2.0, 56.699112)), point1=v2.findAt(coordinates=(18.699112, -2.0, 56.699112)), point2=v2.findAt(coordinates=(18.699112, 2.0, 56.699112)), name='Datum csys-2', coordSysType=CARTESIAN)
-c = p.cells
-cells = c.findAt(((38.598564, 0.07419, 18.699112), ), ((49.366029, -0.07419, 18.699112), ), ((51.164355, -0.999926, 18.699112), ), ((36.800237, 0.999926, 18.699112), ),
-                 ((24.233288, -0.07419, 18.699112), ), ((26.032194, 0.07419, 18.699112), ))
-region = regionToolset.Region(cells=cells)
+region = regionToolset.Region(cells=fibreCells1)
 orientation = mdb.models['Model-1'].parts['Composite'].datums[3]
 mdb.models['Model-1'].parts['Composite'].MaterialOrientation(region=region, orientationType=SYSTEM, axis=AXIS_3, localCsys=orientation, fieldName='', additionalRotationType=ROTATION_NONE, angle=0.0, additionalRotationField='', stackDirection=STACK_3)
-c = p.cells
-cells = c.findAt(((18.699112, -0.07419, 38.598564), ), ((18.699112, 0.999926, 51.164355), ), ((18.699112, 0.07419, 49.366029), ), ((18.699112, -0.999926, 36.800237), ),
-                 ((18.699112, 0.07419, 24.233288), ), ((18.699112, -0.07419, 26.032194), ))
-region = regionToolset.Region(cells=cells)
+region = regionToolset.Region(cells=fibreCells2)
 orientation = mdb.models['Model-1'].parts['Composite'].datums[4]
 mdb.models['Model-1'].parts['Composite'].MaterialOrientation(region=region, orientationType=SYSTEM, axis=AXIS_3, localCsys=orientation, fieldName='', additionalRotationType=ROTATION_NONE, angle=0.0, additionalRotationField='', stackDirection=STACK_3)
 
 # Section assignment:
-c = p.cells
-cells = c.findAt(((38.598564, 0.07419, 18.699112), ), ((49.366029, -0.07419, 18.699112), ), ((51.164355, -0.999926, 18.699112), ), ((18.699112, -0.07419, 38.598564), ),
-                 ((18.699112, 0.999926, 51.164355), ), ((18.699112, 0.07419, 49.366029), ), ((18.699112, -0.999926, 36.800237), ), ((36.800237, 0.999926, 18.699112), ),
-                 ((18.699112, 0.07419, 24.233288), ), ((24.233288, -0.07419, 18.699112), ), ((26.032194, 0.07419, 18.699112), ), ((18.699112, -0.07419, 26.032194), ))
-region = regionToolset.Region(cells=cells)
+region = regionToolset.Region(cells=fibreCells1 + fibreCells2)
 p.SectionAssignment(region=region, sectionName='Cf_sec', offset=0.0, offsetType=MIDDLE_SURFACE, offsetField='', thicknessAssignment=FROM_SECTION)
-c = p.cells
-cells = c.findAt(((18.699112, -0.659536, 43.275667), ))
-region = regionToolset.Region(cells=cells)
+region = regionToolset.Region(cells=matrixCells)
 p.SectionAssignment(region=region, sectionName='Epo_sec', offset=0.0, offsetType=MIDDLE_SURFACE, offsetField='', thicknessAssignment=FROM_SECTION)
 print('Assembly done!')
 
 # Seeding and meshing:
-c = p.cells
-pickedRegions = c.findAt(((38.598564, 0.07419, 18.699112), ), ((49.366029, -0.07419, 18.699112), ), ((51.164355, -0.999926, 18.699112), ), ((18.699112, -0.07419, 38.598564), ),
-                         ((18.699112, 0.999926, 51.164355), ), ((18.699112, 0.07419, 49.366029), ), ((18.699112, -0.999926, 36.800237), ), ((36.800237, 0.999926, 18.699112), ),
-                         ((18.699112, 0.07419, 24.233288), ), ((24.233288, -0.07419, 18.699112), ), ((26.032194, 0.07419, 18.699112), ), ((18.699112, -0.07419, 26.032194), ),
-                         ((18.699112, -0.659536, 43.275667), ))
-p.setMeshControls(regions=pickedRegions, elemShape=TET, technique=FREE)
+p.setMeshControls(regions=fibreCells1 + fibreCells2 + matrixCells, elemShape=TET, technique=FREE)
 elemType1 = mesh.ElemType(elemCode=C3D20R)
 elemType2 = mesh.ElemType(elemCode=C3D15)
 elemType3 = mesh.ElemType(elemCode=C3D10)
-pickedRegions = (cells, )
-p.setElementType(regions=pickedRegions, elemTypes=(elemType1, elemType2, elemType3))
+p.setElementType(regions=(cells, ), elemTypes=(elemType1, elemType2, elemType3))
 p.seedPart(size=(md / sc), deviationFactor=0.1, minSizeFactor=0.1)
 p.generateMesh()
 print('Meshing done!')
