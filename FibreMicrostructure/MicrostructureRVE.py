@@ -1,6 +1,5 @@
 from abaqus import *
 from abaqusConstants import *
-from math import sqrt
 import __main__
 import section
 import regionToolset
