@@ -39,9 +39,12 @@ e_height = 0.6
 b_width = (pi_len * pi)
 b_height = 4.0
 
+# RVE block:
+r_size = 38.0
+
 # Matrix props:
 m_name = 'Epoxy Resin'
-m_E = 38000000000.0
+m_E = 3800000000.0
 m_P = 0.35
 m_Ys = 55000000.0
 m_Ps = 0.0
@@ -59,7 +62,8 @@ f_P2 = 0.34
 f_P3 = 0.378
 
 # Load displacement:
-l_disp = 15.0
+strain = 0.1
+l_disp = r_size * strain
 
 # Mesh density:
 md = 0.5
@@ -214,7 +218,7 @@ p.setMeshControls(regions=fibreCells1 + fibreCells2 + matrixCells, elemShape=TET
 elemType1 = mesh.ElemType(elemCode=C3D20R)
 elemType2 = mesh.ElemType(elemCode=C3D15)
 elemType3 = mesh.ElemType(elemCode=C3D10)
-p.setElementType(regions=(cells, ), elemTypes=(elemType1, elemType2, elemType3))
+p.setElementType(regions=((fibreCells1 + fibreCells2 + matrixCells), ), elemTypes=(elemType1, elemType2, elemType3))
 p.seedPart(size=(md / sc), deviationFactor=0.1, minSizeFactor=0.1)
 p.generateMesh()
 print('Meshing done!')

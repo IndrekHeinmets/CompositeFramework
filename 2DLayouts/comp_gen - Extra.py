@@ -42,9 +42,12 @@ e_height = 0.6
 b_width = (pi_len * pi) * 2
 b_height = 4.0
 
+# RVE block:
+r_size = 38.0
+
 # Matrix props:
 m_name = 'Epoxy Resin'
-m_E = 38000000000.0
+m_E = 3800000000.0
 m_P = 0.35
 m_Ys = 55000000.0
 m_Ps = 0.0
@@ -62,7 +65,8 @@ f_P2 = 0.34
 f_P3 = 0.378
 
 # Load displacement:
-l_disp = 15.0
+strain = 0.1
+l_disp = r_size * strain
 
 # Mesh density:
 md = 0.5
@@ -204,7 +208,7 @@ g, v, d, c = s.geometry, s.vertices, s.dimensions, s.constraints
 s.setPrimaryObject(option=SUPERIMPOSE)
 p.projectReferencesOntoSketch(sketch=s, filter=COPLANAR_EDGES)
 s.rectangle(point1=((25.0 / sc), (25.0 / sc)), point2=(-(13.0 / sc), -(13.0 / sc)))
-s.rectangle(point1=(-(60.0 / sc), -(60.0 / sc)), point2=((60.0 / sc), (60.0 / sc)))
+s.rectangle(point1=(-((60.0) / sc), -(60.0 / sc)), point2=((60.0 / sc), (60.0 / sc)))
 f1, e1 = p.faces, p.edges
 p.CutExtrude(sketchPlane=f1.findAt(coordinates=(25.132741, 2.0, 46.774822)), sketchUpEdge=e1.findAt(coordinates=(59.690272, 0.399774, 71.907565)), sketchPlaneSide=SIDE1, sketchOrientation=RIGHT, sketch=s, flipExtrudeDirection=OFF)
 s.unsetPrimaryObject()
@@ -212,9 +216,9 @@ del mdb.models['Model-1'].sketches['__profile__']
 
 # Cell assignment:
 fibreCells1 = p.cells.findAt(((30.516722, 0.350936, 21.208453), ), ((55.649464, 0.350936, 21.208453), ), ((36.800237, 0.999924, 21.208453), ), ((61.932981, 0.999924, 21.208453), ),
-                 ((49.367701, -0.381862, 21.208453), ), ((43.083425, 0.999927, 21.208453), ))
+                             ((49.367701, -0.381862, 21.208453), ), ((43.083425, 0.999927, 21.208453), ))
 fibreCells2 = p.cells.findAt(((62.699112, -0.999767, 27.375461), ), ((62.699112, -0.999767, 52.508203), ), ((62.699112, -0.000389, 33.658504), ), ((62.699112, -0.000389, 58.791246), ),
-                 ((62.699112, -0.99999, 46.225015), ), ((62.699112, 0.00107, 39.938972), ))
+                             ((62.699112, -0.99999, 46.225015), ), ((62.699112, 0.00107, 39.938972), ))
 matrixCells = p.cells.findAt(((38.60369, -1.226962, 21.208453), ))
 
 # Fibre orientation assignment:
@@ -241,7 +245,7 @@ p.setMeshControls(regions=fibreCells1 + fibreCells2 + matrixCells, elemShape=TET
 elemType1 = mesh.ElemType(elemCode=C3D20R)
 elemType2 = mesh.ElemType(elemCode=C3D15)
 elemType3 = mesh.ElemType(elemCode=C3D10)
-p.setElementType(regions=(cells, ), elemTypes=(elemType1, elemType2, elemType3))
+p.setElementType(regions=((fibreCells1 + fibreCells2 + matrixCells), ), elemTypes=(elemType1, elemType2, elemType3))
 p.seedPart(size=(md / sc), deviationFactor=0.1, minSizeFactor=0.1)
 p.generateMesh()
 print('Meshing done!')

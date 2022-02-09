@@ -28,7 +28,7 @@ interface_diameter = 1.15 * fibre_diameter
 
 # Matrix props:
 m_name = 'Epoxy Resin'
-m_E = 38000000000.0
+m_E = 3800000000.0
 m_P = 0.35
 m_Ys = 55000000.0
 m_Ps = 0.0
@@ -47,11 +47,12 @@ f_P3 = 0.378
 
 # Interface Medium props:
 i_name = 'Interface Medium'
-i_E = 70000000000.0
+i_E = 10000000000.0
 i_P = 0.35
 
 # Load displacement:
-l_disp = 15.0
+strain = 0.1
+l_disp = RVE_size * strain
 
 # Mesh density:
 md = 5.0
@@ -153,7 +154,7 @@ g, v, d, c = s.geometry, s.vertices, s.dimensions, s.constraints
 s.setPrimaryObject(option=SUPERIMPOSE)
 p.projectReferencesOntoSketch(sketch=s, filter=COPLANAR_EDGES)
 s.rectangle(point1=(-90, 90), point2=(90, -90))
-s.rectangle(point1=(-60.0, 60.0), point2=(60.0, -60.0))
+s.rectangle(point1=(-(RVE_size / 2), (RVE_size / 2)), point2=((RVE_size / 2), -(RVE_size / 2)))
 f1, e1 = p.faces, p.edges
 p.CutExtrude(sketchPlane=f1.findAt(coordinates=(-55.68058, 31.096438, 120.0)), sketchUpEdge=e1.findAt(coordinates=(63.157895, 53.397131, 120.0)), sketchPlaneSide=SIDE1, sketchOrientation=RIGHT, sketch=s, flipExtrudeDirection=OFF)
 s.unsetPrimaryObject()
@@ -195,7 +196,7 @@ p.setMeshControls(regions=fibreCells + interfaceCells + matrixCells, elemShape=T
 elemType1 = mesh.ElemType(elemCode=C3D20R)
 elemType2 = mesh.ElemType(elemCode=C3D15)
 elemType3 = mesh.ElemType(elemCode=C3D10)
-p.setElementType(regions=(cells, ), elemTypes=(elemType1, elemType2, elemType3))
+p.setElementType(regions=((fibreCells + interfaceCells + matrixCells), ), elemTypes=(elemType1, elemType2, elemType3))
 p.seedPart(size=md, deviationFactor=0.1, minSizeFactor=0.1)
 p.generateMesh()
 print('Meshing done!')
