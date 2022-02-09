@@ -3,7 +3,18 @@ from math import pi
 import matplotlib.pyplot as plt
 
 
-def find_spline_nodes(sin_x, step, pi_len, overlap_pi_len, sc):
+def add_straight(x, y, overlap_len, step, points, x_points, y_points, offset):
+    for i in range(int(overlap_len / step)):
+        x += step
+        offset += step
+        points.append((x, y))
+        x_points.append(x)
+        y_points.append(y)
+
+    return x, offset, points, x_points, y_points
+
+
+def find_spline_nodes(sin_x, step, pi_len, overlap_len, sc):
     x_points, y_points = [], []
     points = []
     offset = 0
@@ -21,12 +32,7 @@ def find_spline_nodes(sin_x, step, pi_len, overlap_pi_len, sc):
             y_points.append(y)
 
         else:
-            for j in range(int((overlap_pi_len * pi) / step)):
-                x += step * j
-                offset += step * j
-                points.append((x, y))
-                x_points.append(x)
-                y_points.append(y)
+            x, offset, points, x_points, y_points = add_straight(x, y, overlap_len, step, points, x_points, y_points, offset)
 
     print(len(points))
     print(len(x_points))
@@ -47,7 +53,7 @@ if __name__ == '__main__':
     period = pi / (sin_x * sc)
 
     # Overlap
-    overlap_pi_len = (period * 24) / pi
+    overlap_len = 3 * period
 
     # Ellipse cs:
     e_width = 4.5
@@ -71,7 +77,7 @@ if __name__ == '__main__':
     md = 0.5
     ###########################################################################
 
-    x, y, p = find_spline_nodes((sin_x * sc), (step / sc), (pi_len / sc), (overlap_pi_len / sc), sc)
+    x, y, p = find_spline_nodes((sin_x * sc), (step / sc), (pi_len / sc), overlap_len, sc)
     # print(p)
     # print(len(p))
 

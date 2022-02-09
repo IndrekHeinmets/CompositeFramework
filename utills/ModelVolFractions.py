@@ -17,7 +17,7 @@ def find_volume_fraction(volumes, model):
 
 
 # Enter the name of the model (Plain, Basket, Mock-Leno, Satin, Twill, Extra, MsRVE):
-model = 'Mock-Leno'
+model = 'Plain'
 
 VolFraction_Fibres, VolFraction_Matrix = find_volume_fraction(volumes, model)
 print(f"Volume Fraction of CF Fibers: {VolFraction_Fibres * 100}%")
