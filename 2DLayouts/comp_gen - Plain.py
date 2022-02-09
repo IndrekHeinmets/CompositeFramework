@@ -22,7 +22,7 @@ import displayGroupOdbToolset as dgo
 import connectorBehavior
 
 ############################# VARIABLES ###################################
-# Scale (m -> mm):
+# Scale:
 sc = 1
 
 # Sin curve:
@@ -33,7 +33,7 @@ period = pi / (sin_x * sc)
 
 # Ellipse cs:
 e_width = 4.5
-e_height = 0.6
+e_height = 1.2
 
 # Resin block:
 b_width = (pi_len * pi)
@@ -102,7 +102,7 @@ g1, v1, d1, c1 = s1.geometry, s1.vertices, s1.dimensions, s1.constraints
 s1.setPrimaryObject(option=SUPERIMPOSE)
 s1.ConstructionLine(point1=(-0.5, 0.0), point2=(0.5, 0.0))
 s1.ConstructionLine(point1=(0.0, -0.5), point2=(0.0, 0.5))
-s1.EllipseByCenterPerimeter(center=(0.0, 0.0), axisPoint1=(0.0, (e_width / (2 * sc))), axisPoint2=((e_height / sc), 0.0))
+s1.EllipseByCenterPerimeter(center=(0.0, 0.0), axisPoint1=(0.0, (e_width / (2 * sc))), axisPoint2=((e_height / (2 * sc)), 0.0))
 s1.CoincidentConstraint(entity1=v1[0], entity2=g1[3], addUndoState=False)
 s1.CoincidentConstraint(entity1=v1[2], entity2=g1[2], addUndoState=False)
 s1.unsetPrimaryObject()
