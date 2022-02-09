@@ -54,15 +54,15 @@ m_Ps = 0.0
 
 # Fiber props:
 f_name = 'Carbon Fiber'
-f_E1 = 105500000000.0
-f_E2 = 7200000000.0
-f_E3 = 7200000000.0
-f_G1 = 3400000000.0
-f_G2 = 3400000000.0
-f_G3 = 2520000000.0
-f_P1 = 0.34
-f_P2 = 0.34
-f_P3 = 0.378
+f_E1 = 228000000000.0
+f_E2 = 17200000000.0
+f_E3 = 17200000000.0
+f_P12 = 0.2
+f_P13 = 0.2
+f_P23 = 0.5
+f_G12 = 27600000000.0
+f_G13 = 27600000000.0
+f_G23 = 5730000000.0
 
 # Load displacement:
 strain = 0.1
@@ -155,7 +155,7 @@ mdb.models['Model-1'].Material(name=m_name)
 mdb.models['Model-1'].Material(name=f_name)
 mdb.models['Model-1'].materials[m_name].Elastic(table=((m_E, m_P), ))
 mdb.models['Model-1'].materials[m_name].Plastic(scaleStress=None, table=((m_Ys, m_Ps), ))
-mdb.models['Model-1'].materials[f_name].Elastic(type=ENGINEERING_CONSTANTS, table=((f_E1, f_E2, f_E3, f_P1, f_P2, f_P3, f_G1, f_G2, f_G3), ))
+mdb.models['Model-1'].materials[f_name].Elastic(type=ENGINEERING_CONSTANTS, table=((f_E1, f_E2, f_E3, f_P12, f_P13, f_P23, f_G12, f_G13, f_G23), ))
 
 # Section creation:
 mdb.models['Model-1'].HomogeneousSolidSection(name='Cf_sec', material=f_name, thickness=None)
