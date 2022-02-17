@@ -279,7 +279,7 @@ mdb.Model(name='LongitudinalTension', objectToCopy=mdb.models['LongitudinalShear
 a = mdb.models['LongitudinalTension'].rootAssembly
 a.regenerate()
 # Constraint equation:
-mdb.models['LongitudinalTension'].constraints['ConstraintEqn'].setValues(terms=((1.0, 'RVECube-1.ZFront', 1), (-1.0, 'RPSet', 1)))
+mdb.models['LongitudinalTension'].constraints['ConstraintEqn'].setValues(terms=((1.0, 'RVECube-1.ZFront', 3), (-1.0, 'RPSet', 3)))
 # Boundary conditions:
 region = a.instances['RVECube-1'].sets['XBack']
 mdb.models['LongitudinalTension'].DisplacementBC(name='XSupport', createStepName='Initial', region=region, u1=SET, u2=UNSET, u3=UNSET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, distributionType=UNIFORM, fieldName='', localCsys=None)
@@ -342,11 +342,12 @@ region = mdb.models['LongitudinalShear'].rootAssembly.sets['RPSet']
 mdb.models['TransverseCompressionSide'].DisplacementBC(name='Load', createStepName='StaticAnalysis', region=region, u1=-l_disp, u2=UNSET, u3=UNSET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
 a.regenerate()
 
+
 # Transverse Top Shear setup:
 a = mdb.models['TransverseShearTop'].rootAssembly
 a.regenerate()
 # Constraint equation:
-mdb.models['TransverseShearTop'].Equation(name='ConstraintEqn', terms=((1.0, 'RVECube-1.YTop', 2), (-1.0, 'RPSet', 2)))
+mdb.models['TransverseShearTop'].Equation(name='ConstraintEqn', terms=((1.0, 'RVECube-1.YTop', 3), (-1.0, 'RPSet', 3)))
 # Boundary conditions:
 region = a.instances['RVECube-1'].sets['YBottom']
 mdb.models['TransverseShearTop'].DisplacementBC(name='YSupport', createStepName='Initial', region=region, u1=SET, u2=SET, u3=SET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
@@ -361,7 +362,7 @@ mdb.Model(name='TransverseTensionTop', objectToCopy=mdb.models['TransverseShearT
 a = mdb.models['TransverseTensionTop'].rootAssembly
 a.regenerate()
 # Constraint equation:
-mdb.models['TransverseTensionTop'].constraints['ConstraintEqn'].setValues(terms=((1.0, 'RVECube-1.YTop', 1), (-1.0, 'RPSet', 1)))
+mdb.models['TransverseTensionTop'].constraints['ConstraintEqn'].setValues(terms=((1.0, 'RVECube-1.YTop', 2), (-1.0, 'RPSet', 2)))
 # Boundary conditions:
 region = a.instances['RVECube-1'].sets['XBack']
 mdb.models['TransverseTensionTop'].DisplacementBC(name='XSupport', createStepName='Initial', region=region, u1=SET, u2=UNSET, u3=UNSET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, distributionType=UNIFORM, fieldName='', localCsys=None)
