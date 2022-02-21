@@ -57,8 +57,8 @@ l_disp = RVE_size * strain
 # Mesh density:
 md = 5.0
 
-# History output frequency:
-hf = 10
+# History output time interval:
+ht = 0.05
 
 # Fiber positions:
 point_lst = [(-58, 16), (-32, 57), (-12, -49), (32, 18), (-25, 15), (59, 44), (-18, -24), (-3, 22), (-7, 45), (21, -53), (49, -25), (14, -18),
@@ -256,7 +256,7 @@ a.ReferencePoint(point=(-60.0, -60.0, 140.0))
 refPoints1 = (a.referencePoints[94], )
 a.Set(referencePoints=refPoints1, name='RPSet')
 regionDef = mdb.models['Model-1'].rootAssembly.sets['RPSet']
-mdb.models['Model-1'].HistoryOutputRequest(name='RPHO', createStepName='StaticAnalysis', variables=('RF1', 'RF2', 'RF3', 'U1', 'U2', 'U3'), region=regionDef, sectionPoints=DEFAULT, rebar=EXCLUDE, timeInterval=(1 / hf))
+mdb.models['Model-1'].HistoryOutputRequest(name='RPHO', createStepName='StaticAnalysis', variables=('RF1', 'RF2', 'RF3', 'U1', 'U2', 'U3'), region=regionDef, sectionPoints=DEFAULT, rebar=EXCLUDE, timeInterval=ht)
 
 # Longitudinal Shear setup:
 mdb.models.changeKey(fromName='Model-1', toName='LongitudinalShear')
