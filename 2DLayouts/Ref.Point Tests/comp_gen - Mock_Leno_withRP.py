@@ -70,6 +70,9 @@ l_disp = r_size * strain
 
 # Mesh density:
 md = 0.5
+
+# History output time intervals:
+hi = 20
 ###########################################################################
 
 
@@ -323,7 +326,7 @@ a.ReferencePoint(point=(60.0, -2.0, 60.0))
 refPoints1 = (a.referencePoints[54], )
 a.Set(referencePoints=refPoints1, name='RPSet')
 regionDef = mdb.models['Model-1'].rootAssembly.sets['RPSet']
-mdb.models['Model-1'].HistoryOutputRequest(name='RPHO', createStepName='StaticAnalysis', variables=('RF1', 'RF2', 'RF3', 'U1', 'U2', 'U3'), region=regionDef, sectionPoints=DEFAULT, rebar=EXCLUDE, timeInterval=0.05)
+mdb.models['Model-1'].HistoryOutputRequest(name='RPHO', createStepName='StaticAnalysis', variables=('RF1', 'RF2', 'RF3', 'U1', 'U2', 'U3'), region=regionDef, sectionPoints=DEFAULT, rebar=EXCLUDE, numIntervals=hi)
 
 # Constraint equation:
 mdb.models['Model-1'].Equation(name='ConstraintEqn', terms=((1.0, 'Composite-1.XFront', 1), (-1.0, 'RPSet', 1)))

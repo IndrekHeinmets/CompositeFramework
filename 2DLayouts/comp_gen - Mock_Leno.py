@@ -70,6 +70,9 @@ l_disp = r_size * strain
 
 # Mesh density:
 md = 0.5
+
+# History output time intervals:
+hi = 20
 ###########################################################################
 
 
@@ -320,7 +323,7 @@ p.Set(faces=faces, name='YBottom')
 
 # History output:
 regionDef = mdb.models['Model-1'].rootAssembly.allInstances['Composite-1'].sets['XFront']
-mdb.models['Model-1'].HistoryOutputRequest(name='DispHistory', createStepName='StaticAnalysis', variables=('RF1', 'RF2', 'RF3', 'U1', 'U2', 'U3'), region=regionDef, sectionPoints=DEFAULT, rebar=EXCLUDE, timeInterval=0.05)
+mdb.models['Model-1'].HistoryOutputRequest(name='DispHistory', createStepName='StaticAnalysis', variables=('RF1', 'RF2', 'RF3', 'U1', 'U2', 'U3'), region=regionDef, sectionPoints=DEFAULT, rebar=EXCLUDE, numIntervals=hi)
 
 # Boundary conditions:
 region = a.instances['Composite-1'].sets['XBack']

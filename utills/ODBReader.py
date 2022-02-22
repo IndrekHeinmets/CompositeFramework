@@ -30,12 +30,12 @@ isFirstIP = True
 
 for q in range(Max_iterations):
 
-    odbname = 'Job1'
+    odbname = 'TestODB'
     path = './Results/'
     myodbpath = path + odbname + '.odb'
     odb = openOdb(myodbpath)
 
-    allIPs = odb.steps['Step-1'].historyRegions.keys()
+    allIPs = odb.steps['Loading'].historyRegions.keys()
 
     Total_load = 0.0
 
@@ -45,7 +45,7 @@ for q in range(Max_iterations):
             isFirstIP = False
             continue
 
-        tipHistories = odb.steps['Step-1'].historyRegions[integrationPoint]
+        tipHistories = odb.steps['Loading'].historyRegions[integrationPoint]
 
         HistoryOutput_RF2 = tipHistories.historyOutputs['RF2'].data
 
@@ -63,7 +63,7 @@ for q in range(Max_iterations):
     #################################################################
     RVE_size = 120.0
     Strain = 0.1
-    Displacement = RVE_size * strain
+    Displacement = RVE_size * Strain
 
     Area = RVE_size**2
     Original_length = RVE_size
@@ -79,3 +79,7 @@ for q in range(Max_iterations):
 
     sortie.write('\n')
 sortie.close()
+
+# End of script:
+print('*************************')
+print('End of script, no errors!')
