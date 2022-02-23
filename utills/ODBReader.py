@@ -23,13 +23,8 @@ import shutil
 # Number of jobs:
 Max_iterations = 1
 
-# Open text file to write results
-sortie = open('ODBResults.txt', 'w')
-
 isFirstIP = True
-
 for q in range(Max_iterations):
-
     odbname = 'TestODB'
     path = './Results/'
     myodbpath = path + odbname + '.odb'
@@ -55,18 +50,19 @@ for q in range(Max_iterations):
         HistoryOutput_U2 = tipHistories.historyOutputs['U2'].data
         HistoryOutput_U3 = tipHistories.historyOutputs['U3'].data
 
-        def column(matrix, i):
-            return [row[i] for row in matrix]
+        # Open text file to write results:
+        sortie = open('ODBResults.txt', 'w')
 
-        RF2_values = column(HistoryOutput_RF2, 1)
-        Time_values = column(HistoryOutput_RF2, 0)
-
-        Load = RF2_values[-1]
-
-        Total_load += Load
+        # Write results to file:
+        sortie.write('RF1: ' + str(HistoryOutput_RF1))
+        sortie.write('RF2: ' + str(HistoryOutput_RF2))
+        sortie.write('RF3: ' + str(HistoryOutput_RF3))
+        sortie.write('U1: ' + str(HistoryOutput_U1))
+        sortie.write('U2: ' + str(HistoryOutput_U2))
+        sortie.write('U3: ' + str(HistoryOutput_U3))
 
     odb.close()
-    #################################################################
+#################################################################
     RVE_size = 120.0
     Strain = 0.1
     Displacement = RVE_size * Strain
@@ -79,17 +75,9 @@ for q in range(Max_iterations):
 
     Homogenized_E = Stress / Strain
 
-    Average_Homogenized_E += Homogenized_E
-
-    sortie.write('\n Homogenized Youngs Modulus E from Job-%d is: %f ' % (q, Homogenized_E))
-
     isFirstIP = True
 
     sortie.write('\n')
-
-Average_Homogenized_E = Average_Homogenized_E / (Max_iterations - 1)
-sortie.write('\n Averaged Homogenized Youngs Modulus E is: %f ' % (Average_Homogenized_E))
-sortie.write('\n')
 sortie.close()
 
 # End of script:
