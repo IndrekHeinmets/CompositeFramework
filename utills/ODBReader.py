@@ -47,9 +47,15 @@ for q in range(Max_iterations):
 
         tipHistories = odb.steps['StaticAnalysis'].historyRegions[integrationPoint]
 
+        HistoryOutput_RF1 = tipHistories.historyOutputs['RF1'].data
         HistoryOutput_RF2 = tipHistories.historyOutputs['RF2'].data
+        HistoryOutput_RF3 = tipHistories.historyOutputs['RF3'].data
 
-        sortie.write('RF2 values' + HistoryOutput_RF2)
+        HistoryOutput_U1 = tipHistories.historyOutputs['U1'].data
+        HistoryOutput_U2 = tipHistories.historyOutputs['U2'].data
+        HistoryOutput_U3 = tipHistories.historyOutputs['U3'].data
+
+        print(HistoryOutput_RF2)
 
         # def column(matrix, i):
         #     return [row[i] for row in matrix]
@@ -74,6 +80,8 @@ for q in range(Max_iterations):
     Strain = Displacement / Original_length
 
     Homogenized_E = Stress / Strain
+
+
 
     isFirstIP = True
 
