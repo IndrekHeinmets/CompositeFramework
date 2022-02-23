@@ -250,7 +250,7 @@ p.Set(faces=faces, name='YBottom')
 
 # Refrence point and history output:
 a.ReferencePoint(point=(-60.0, -60.0, 140.0))
-refPoints1 = (a.referencePoints[94], )
+refPoints1 = (a.referencePoints[90], )
 a.Set(referencePoints=refPoints1, name='RPSet')
 regionDef = mdb.models['Model-1'].rootAssembly.sets['RPSet']
 mdb.models['Model-1'].HistoryOutputRequest(name='RPHO', createStepName='StaticAnalysis', variables=('RF1', 'RF2', 'RF3', 'U1', 'U2', 'U3'), region=regionDef, sectionPoints=DEFAULT, rebar=EXCLUDE, numIntervals=hi)
