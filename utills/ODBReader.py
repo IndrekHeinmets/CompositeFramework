@@ -20,6 +20,8 @@ import numpy
 import os
 import shutil
 
+print('Running OBD reader...')
+
 # Number of jobs:
 Max_iterations = 1
 
@@ -54,12 +56,13 @@ for q in range(Max_iterations):
         sortie = open('ODBResults.txt', 'w')
 
         # Write results to file:
-        sortie.write('RF1: ' + str(HistoryOutput_RF1))
-        sortie.write('RF2: ' + str(HistoryOutput_RF2))
-        sortie.write('RF3: ' + str(HistoryOutput_RF3))
-        sortie.write('U1: ' + str(HistoryOutput_U1))
-        sortie.write('U2: ' + str(HistoryOutput_U2))
-        sortie.write('U3: ' + str(HistoryOutput_U3))
+        sortie.write('Results: ')
+        sortie.write('\nRF1: ' + str(HistoryOutput_RF1))
+        sortie.write('\nRF2: ' + str(HistoryOutput_RF2))
+        sortie.write('\nRF3: ' + str(HistoryOutput_RF3))
+        sortie.write('\nU1: ' + str(HistoryOutput_U1))
+        sortie.write('\nU2: ' + str(HistoryOutput_U2))
+        sortie.write('\nU3: ' + str(HistoryOutput_U3))
 
     odb.close()
 #################################################################
@@ -77,7 +80,7 @@ for q in range(Max_iterations):
 
     isFirstIP = True
 
-    sortie.write('\n')
+    sortie.write('\nHomogenized E: ' + str(Homogenized_E))
 sortie.close()
 
 # End of script:
