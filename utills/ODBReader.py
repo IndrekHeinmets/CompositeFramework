@@ -35,7 +35,7 @@ for q in range(Max_iterations):
     myodbpath = path + odbname + '.odb'
     odb = openOdb(myodbpath)
 
-    allIPs = odb.steps['Loading'].historyRegions.keys()
+    allIPs = odb.steps['StaticAnalysis'].historyRegions.keys()
 
     Total_load = 0.0
 
@@ -45,19 +45,21 @@ for q in range(Max_iterations):
             isFirstIP = False
             continue
 
-        tipHistories = odb.steps['Loading'].historyRegions[integrationPoint]
+        tipHistories = odb.steps['StaticAnalysis'].historyRegions[integrationPoint]
 
         HistoryOutput_RF2 = tipHistories.historyOutputs['RF2'].data
 
-        def column(matrix, i):
-            return [row[i] for row in matrix]
+        sortie.write('RF2 values' + HistoryOutput_RF2)
 
-        RF2_values = column(HistoryOutput_RF2, 1)
-        Time_values = column(HistoryOutput_RF2, 0)
+        # def column(matrix, i):
+        #     return [row[i] for row in matrix]
 
-        Load = RF2_values[-1]
+        # RF2_values = column(HistoryOutput_RF2, 1)
+        # Time_values = column(HistoryOutput_RF2, 0)
 
-        Total_load += Load
+        # Load = RF2_values[-1]
+
+        # Total_load += Load
 
     odb.close()
     #################################################################
@@ -72,8 +74,6 @@ for q in range(Max_iterations):
     Strain = Displacement / Original_length
 
     Homogenized_E = Stress / Strain
-
-    sortie.write('\n Homogenized Youngs Modulus E from Job-%d is: %f ' % (q, Homogenized_E))
 
     isFirstIP = True
 
