@@ -55,17 +55,15 @@ for q in range(Max_iterations):
         HistoryOutput_U2 = tipHistories.historyOutputs['U2'].data
         HistoryOutput_U3 = tipHistories.historyOutputs['U3'].data
 
-        print(HistoryOutput_RF2)
+        def column(matrix, i):
+            return [row[i] for row in matrix]
 
-        # def column(matrix, i):
-        #     return [row[i] for row in matrix]
+        RF2_values = column(HistoryOutput_RF2, 1)
+        Time_values = column(HistoryOutput_RF2, 0)
 
-        # RF2_values = column(HistoryOutput_RF2, 1)
-        # Time_values = column(HistoryOutput_RF2, 0)
+        Load = RF2_values[-1]
 
-        # Load = RF2_values[-1]
-
-        # Total_load += Load
+        Total_load += Load
 
     odb.close()
     #################################################################
@@ -81,11 +79,17 @@ for q in range(Max_iterations):
 
     Homogenized_E = Stress / Strain
 
+    Average_Homogenized_E += Homogenized_E
 
+    sortie.write('\n Homogenized Youngs Modulus E from Job-%d is: %f ' % (q, Homogenized_E))
 
     isFirstIP = True
 
     sortie.write('\n')
+
+Average_Homogenized_E = Average_Homogenized_E / (Max_iterations - 1)
+sortie.write('\n Averaged Homogenized Youngs Modulus E is: %f ' % (Average_Homogenized_E))
+sortie.write('\n')
 sortie.close()
 
 # End of script:
