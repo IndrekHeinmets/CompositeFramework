@@ -1,88 +1,75 @@
-from part import *
-from material import *
-from section import *
-from assembly import *
-from step import *
-from interaction import *
-from load import *
-from mesh import *
-from optimization import *
 from job import *
-from sketch import *
-from visualization import *
-from connectorBehavior import *
-import random
-from array import *
 from odbAccess import openOdb
 import odbAccess
-import math
-import numpy
-import os
-import shutil
-
 print('Running OBD reader...')
 
-# Number of jobs:
-Max_iterations = 1
 
-isFirstIP = True
-for q in range(Max_iterations):
-    odbname = 'TestODB'
-    path = './Results/'
-    myodbpath = path + odbname + '.odb'
-    odb = openOdb(myodbpath)
-
-    allIPs = odb.steps['StaticAnalysis'].historyRegions.keys()
-
-    Total_load = 0.0
-
-    for integrationPoint in allIPs:
-
-        if (isFirstIP == True):
-            isFirstIP = False
-            continue
-
-        tipHistories = odb.steps['StaticAnalysis'].historyRegions[integrationPoint]
-
-        HistoryOutput_RF1 = tipHistories.historyOutputs['RF1'].data
-        HistoryOutput_RF2 = tipHistories.historyOutputs['RF2'].data
-        HistoryOutput_RF3 = tipHistories.historyOutputs['RF3'].data
-
-        HistoryOutput_U1 = tipHistories.historyOutputs['U1'].data
-        HistoryOutput_U2 = tipHistories.historyOutputs['U2'].data
-        HistoryOutput_U3 = tipHistories.historyOutputs['U3'].data
-
-        # Open text file to write results:
-        sortie = open('ODBResults.txt', 'w')
-
-        # Write results to file:
-        sortie.write('Results: ')
-        sortie.write('\nRF1: ' + str(HistoryOutput_RF1))
-        sortie.write('\nRF2: ' + str(HistoryOutput_RF2))
-        sortie.write('\nRF3: ' + str(HistoryOutput_RF3))
-        sortie.write('\nU1: ' + str(HistoryOutput_U1))
-        sortie.write('\nU2: ' + str(HistoryOutput_U2))
-        sortie.write('\nU3: ' + str(HistoryOutput_U3))
-
-    odb.close()
-#################################################################
-    RVE_size = 120.0
-    Strain = 0.1
-    Displacement = RVE_size * Strain
-
-    Area = RVE_size**2
-    Original_length = RVE_size
-
-    Stress = -Total_load / Area
-    Strain = Displacement / Original_length
-
-    Homogenized_E = Stress / Strain
-
+def readODB(job_list):
     isFirstIP = True
+    for c, job in enumerate(job_list):
 
-    sortie.write('\nHomogenized E: ' + str(Homogenized_E))
-sortie.close()
+        path = './ODBData/'
+        odbpath = path + job + '.odb'
+        odb = openOdb(odbpath)
+
+        allIPs = odb.steps['StaticAnalysis'].historyRegions.keys()
+
+        total_load = 0.0
+
+        for integrationPoint in allIPs:
+
+            if isFirstIP:
+                isFirstIP = False
+                continue
+
+            t = odb.steps['StaticAnalysis'].historyRegions[integrationPoint]
+
+            hOut_U1 = t.historyOutputs['U1'].data
+            hOut_U2 = t.historyOutputs['U2'].data
+            hOut_U3 = t.historyOutputs['U3'].data
+            hOut_RF1 = t.historyOutputs['RF1'].data
+            hOut_RF2 = t.historyOutputs['RF2'].data
+            hOut_RF3 = t.historyOutputs['RF3'].data
+
+            def matCol(i, matrix):
+                return [row[i] for row in matrix]
+
+            U1_vals = matCol(1, hOut_U1)
+            U2_vals = matCol(1, hOut_U2)
+            U3_vals = matCol(1, hOut_U3)
+            RF1_vals = matCol(1, hOut_RF1)
+            RF2_vals = matCol(1, hOut_RF2)
+            RF3_vals = matCol(1, hOut_RF3)
+            time_vals = matCol(0, hOut_RF1)
+
+            # Open text file and write results:
+            sortie = open('Results - ' + job + '.txt', 'w')
+
+            sortie.write('Results from ' + job + ': \n')
+            sortie.write('\nU1: ' + str(U1_vals))
+            sortie.write('\n\nU2: ' + str(U2_vals))
+            sortie.write('\n\nU3: ' + str(U3_vals))
+            sortie.write('\n\nRF1: ' + str(RF1_vals))
+            sortie.write('\n\nRF2: ' + str(RF2_vals))
+            sortie.write('\n\nRF3: ' + str(RF3_vals))
+            sortie.write('\n\nTime: ' + str(time_vals))
+
+        isFirstIP = True
+        odb.close()
+        sortie.close()
+
+
+# Job lists:
+test_jobs = ['TestODB1', 'TestODB2', 'TestODB3']
+
+rve_jobs = ['LongitudinalTensionAnalysis', 'LongitudinalCompressionAnalysis', 'LongitudinalShearAnalysis',
+            'TransverseSideTensionAnalysis', 'TransverseSideCompressionAnalysis', 'TransverseSideShearAnalysis',
+            'TransverseTopTensionAnalysis', 'TransverseTopCompressionAnalysis', 'TransverseTopShearAnalysis']
+
+comp_jobs = ['TensionAnalysis', 'CompressionAnalysis', 'ShearAnalysis']
+
+readODB(test_jobs)
 
 # End of script:
 print('*************************')
-print('End of script, no errors!')
+print('Results written, no errors!')

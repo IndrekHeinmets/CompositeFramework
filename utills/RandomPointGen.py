@@ -4,6 +4,8 @@ from math import pi
 import random
 
 # Find fibre count based on volume fraction:
+
+
 def findFibreCount():
     total_vol = RVE_size**3
     single_fibre_vol = pi * ((fibre_diameter / 2)**2) * RVE_size
@@ -13,6 +15,8 @@ def findFibreCount():
     return fibre_count, actual_volFraction
 
 # Check for fibre overlap:
+
+
 def checkFibreCol(edge_lst, point_lst, x, y):
     valid = True
     for point in point_lst:
@@ -28,6 +32,8 @@ def checkFibreCol(edge_lst, point_lst, x, y):
     return valid
 
 # Generate corresponding half fibre pairs:
+
+
 def handleHalfFibres(edge_lst, point_lst, x, y, edge_bound):
     # Corners:
     if x > edge_bound and y > edge_bound:
@@ -106,6 +112,8 @@ def handleHalfFibres(edge_lst, point_lst, x, y, edge_bound):
     return edge_lst, point_lst
 
 # Random fibre position creation:
+
+
 def randFibrePos():
     edge_lst = []
     point_lst = []
@@ -122,6 +130,7 @@ def randFibrePos():
     for point in edge_lst:
         point_lst.append(point)
     return point_lst
+
 
 if __name__ == '__main__':
     # Variables:
