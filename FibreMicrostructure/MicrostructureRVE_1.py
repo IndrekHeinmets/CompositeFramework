@@ -49,6 +49,8 @@ f_G23 = 5730000000.0
 i_name = 'Interface Medium'
 i_E = 10000000000.0
 i_P = 0.35
+i_Ys = 70000000.0
+m_Ps = 0
 
 # Load displacement:
 strain = 0.1
@@ -111,6 +113,7 @@ mdb.models['Model-1'].materials[m_name].Elastic(table=((m_E, m_P), ))
 mdb.models['Model-1'].materials[m_name].Plastic(scaleStress=None, table=((m_Ys, m_Ps), ))
 mdb.models['Model-1'].materials[f_name].Elastic(type=ENGINEERING_CONSTANTS, table=((f_E1, f_E2, f_E3, f_P12, f_P13, f_P23, f_G12, f_G13, f_G23), ))
 mdb.models['Model-1'].materials[i_name].Elastic(table=((i_E, i_P), ))
+mdb.models['Model-1'].materials[i_name].Plastic(scaleStress=None, table=((i_Ys, i_Ps), ))
 
 # Section creation:
 mdb.models['Model-1'].HomogeneousSolidSection(name='Cf_sec', material=f_name, thickness=None)
@@ -257,8 +260,14 @@ p.Set(faces=faces, name='YBottom')
 a.ReferencePoint(point=(-60.0, -60.0, 140.0))
 refPoints1 = (a.referencePoints[94], )
 a.Set(referencePoints=refPoints1, name='RPSet')
+a.ReferencePoint(point=(60.0, 80.0, 120.0))
+refPoints2 = (a.referencePoints[96], )
+a.Set(referencePoints=refPoints1, name='CornerRPSet')
+
 regionDef = mdb.models['Model-1'].rootAssembly.sets['RPSet']
 mdb.models['Model-1'].HistoryOutputRequest(name='RPHO', createStepName='StaticAnalysis', variables=('RF1', 'RF2', 'RF3', 'U1', 'U2', 'U3'), region=regionDef, sectionPoints=DEFAULT, rebar=EXCLUDE, numIntervals=hi)
+regionDef = mdb.models['Model-1'].rootAssembly.sets['CornerRPSet']
+mdb.models['Model-1'].HistoryOutputRequest(name='CornerRPHO', createStepName='StaticAnalysis', variables=('U1', 'U2', 'U3'), region=regionDef, sectionPoints=DEFAULT, rebar=EXCLUDE, numIntervals=hi)
 
 # Longitudinal Shear setup:
 mdb.models.changeKey(fromName='Model-1', toName='LongitudinalShear')
