@@ -50,7 +50,7 @@ i_name = 'Interface Medium'
 i_E = 10000000000.0
 i_P = 0.35
 i_Ys = 70000000.0
-m_Ps = 0
+i_Ps = 0
 
 # Load displacement:
 strain = 0.1
@@ -258,8 +258,14 @@ p.Set(faces=faces, name='YBottom')
 a.ReferencePoint(point=(-60.0, -60.0, 140.0))
 refPoints1 = (a.referencePoints[90], )
 a.Set(referencePoints=refPoints1, name='RPSet')
+v = a.instances['RVECube-1'].vertices
+verts1 = v.findAt(((59.758252, 59.557719, 120.0), ))
+a.Set(vertices=verts1, name='CornerNodeSet')
+
 regionDef = mdb.models['Model-1'].rootAssembly.sets['RPSet']
 mdb.models['Model-1'].HistoryOutputRequest(name='RPHO', createStepName='StaticAnalysis', variables=('RF1', 'RF2', 'RF3', 'U1', 'U2', 'U3'), region=regionDef, sectionPoints=DEFAULT, rebar=EXCLUDE, numIntervals=hi)
+regionDef = mdb.models['Model-1'].rootAssembly.sets['CornerNodeSet']
+mdb.models['Model-1'].HistoryOutputRequest(name='CornerNodeHO', createStepName='StaticAnalysis', variables=('U1', 'U2', 'U3'), region=regionDef, sectionPoints=DEFAULT, rebar=EXCLUDE, numIntervals=hi)
 
 # Longitudinal Shear setup:
 mdb.models.changeKey(fromName='Model-1', toName='LongitudinalShear')
