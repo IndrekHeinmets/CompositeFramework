@@ -1,6 +1,5 @@
 from job import *
 from odbAccess import openOdb
-import odbAccess
 import csv
 print('Running ODB reader...')
 
@@ -47,7 +46,7 @@ def readODB(path, job_list, RVE_size):
         # Open file and write results:
         with open('Results - ' + job + '.csv', 'w') as csvfile:
             writer = csv.writer(csvfile)
-            writer.writerow('Results from ' + job + ':')
+            writer.writerow(['Results from ' + job + ':'])
             writer.writerow(['Time', 'RF1', 'RF2', 'RF3', 'U1', 'U2', 'U3', 'StressX', 'StressY', 'StressZ', 'StrainX', 'StrainY', 'StrainZ'])
             for c, time in enumerate(time_vals):
                 writer.writerow([time, RF1_vals[c], RF2_vals[c], RF3_vals[c], U1_vals[c], U2_vals[c], U3_vals[c],
