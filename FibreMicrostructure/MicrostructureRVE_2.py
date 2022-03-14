@@ -298,7 +298,7 @@ mdb.models['LongitudinalTension'].DisplacementBC(name='ZSupport', createStepName
 region = a.instances['RVECube-1'].sets['YBottom']
 mdb.models['LongitudinalTension'].DisplacementBC(name='YSupport', createStepName='Initial', region=region, u1=UNSET, u2=SET, u3=UNSET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, distributionType=UNIFORM, fieldName='', localCsys=None)
 region = mdb.models['LongitudinalShear'].rootAssembly.sets['RPSet']
-mdb.models['LongitudinalTension'].DisplacementBC(name='Load', createStepName='StaticAnalysis', region=region, u1=UNSET, u2=UNSET, u3=l_disp, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
+mdb.models['LongitudinalTension'].DisplacementBC(name='Load', createStepName='StaticAnalysis', region=region, u1=l_disp, u2=UNSET, u3=SET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
 del mdb.models['LongitudinalTension'].boundaryConditions['ZRoller']
 a.regenerate()
 
