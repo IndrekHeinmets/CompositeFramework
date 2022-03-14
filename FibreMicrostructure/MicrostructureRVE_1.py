@@ -341,7 +341,7 @@ mdb.models['TransverseTensionSide'].DisplacementBC(name='ZSupport', createStepNa
 region = a.instances['RVECube-1'].sets['YBottom']
 mdb.models['TransverseTensionSide'].DisplacementBC(name='YSupport', createStepName='Initial', region=region, u1=UNSET, u2=SET, u3=UNSET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, distributionType=UNIFORM, fieldName='', localCsys=None)
 region = mdb.models['LongitudinalShear'].rootAssembly.sets['RPSet']
-mdb.models['TransverseTensionSide'].DisplacementBC(name='Load', createStepName='StaticAnalysis', region=region, u1=l_disp, u2=UNSET, u3=UNSET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
+mdb.models['TransverseTensionSide'].DisplacementBC(name='Load', createStepName='StaticAnalysis', region=region, u1=SET, u2=UNSET, u3=l_disp, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
 del mdb.models['TransverseTensionSide'].boundaryConditions['XRoller']
 a.regenerate()
 
