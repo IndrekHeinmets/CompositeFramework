@@ -21,20 +21,35 @@ def caseAxis(RF1, RF2, RF3, U1, U2, U3):
     loadCase, loadAxis = '', 0
 
     # Find load case:
-    if U1[-1] or U2[-1] or U3[-1] == 0:
+    # if U1[-1] or U2[-1] or U3[-1] == 0:
+    #     loadCase = 'shear'
+    # elif RF1[-1] or RF2[-1] or RF3[-1] < 0:
+    #     loadCase = 'compression'
+    # elif RF1[-1] or RF2[-1] or RF3[-1] > 0:
+    #     loadCase = 'tension'
+
+    if U1[-1] == 0 or U2[-1] == 0 or U3[-1] == 0:
         loadCase = 'shear'
-    elif RF1[-1] or RF2[-1] or RF3[-1] < 0:
+    elif RF1[-1] < 0 or RF2[-1] < 0 or RF3[-1] < 0:
         loadCase = 'compression'
-    elif RF1[-1] or RF2[-1] or RF3[-1] > 0:
+    elif RF1[-1] > 0 or RF2[-1] > 0 or RF3[-1] > 0:
         loadCase = 'tension'
 
     # Find Primary loading axis:
-    if 0 < RF1[-1] < 0:
+    # if 0 < RF1[-1] < 0:
+    #     loadAxis = 1
+    # elif 0 < RF2[-1] < 0:
+    #     loadAxis = 2
+    # elif 0 < RF3[-1] < 0:
+    #     loadAxis = 3
+
+    if RF1[-1] < 0 or RF[-1] > 0:
         loadAxis = 1
-    elif 0 < RF2[-1] < 0:
+    elif RF2[-1] < 0 or RF2[-1] > 0:
         loadAxis = 2
-    elif 0 < RF3[-1] < 0:
+    elif RF3[-1] < 0 or RF3[-1] > 0:
         loadAxis = 3
+
     return loadCase, loadAxis
 
 
@@ -84,6 +99,7 @@ def readODB(path, job_list, RVE_size):
             elif loadAxis == 3:
                 E3_tens = ((stressY[-1] - stressY[0]) / (strainY[-1] - strainY[0])) / 1e9
                 P23_tens = ((strainX[-1] - strainX[0]) / (strainZ[-1] - strainZ[0]))
+
         elif loadCase == 'compression':
             if loadAxis == 1:
                 E1_comp = -((stressZ[-1] - stressZ[0]) / (strainZ[-1] - strainZ[0])) / 1e9
@@ -96,20 +112,22 @@ def readODB(path, job_list, RVE_size):
             elif loadAxis == 3:
                 E3_comp = -((stressY[-1] - stressY[0]) / (strainY[-1] - strainY[0])) / 1e9
                 P23_comp = -((strainX[-1] - strainX[0]) / (strainY[-1] - strainY[0]))
+
         elif loadCase == 'shear':
-            if loadAxis == 1:
+            elif loadAxis == 1:
                 G12 = ((stressX[-1] - stressX[0]) / (strainZ[-1] - strainZ[0])) / 1e9
-            if loadAxis == 2:
+
+            elif loadAxis == 2:
                 G13 = ((stressY[-1] - stressY[0]) / (strainZ[-1] - strainZ[0])) / 1e9
-            id loadAxis == 3:
+
+            elif loadAxis == 3:
                 G23 = ((stressX[-1] - stressX[0]) / (strainY[-1] - strainY[0])) / 1e9
 
     # Averaged E&P vales from Tension&Compression:
     E1, E2, E3 = (E1_tens + E1_comp) / 2, (E2_tens + E2_comp) / 2, (E3_tens + E3_comp) / 2
     P12, P13, P23 = (P12_tens + P12_comp) / 2, (P13_tens + P13_comp) / 2, (P23_tens + P23_comp) / 2
 
-    return E1, E2, E3, P12, P13, P23, G12, G13, G23,
-    E1_tens, E1_comp, E2_tens, E2_comp, E3_tens, E3_comp, P12_tens, P12_comp, P13_tens, P13_comp, P23_tens, P23_comp
+    return E1, E2, E3, P12, P13, P23, G12, G13, G23, E1_tens, E1_comp, E2_tens, E2_comp, E3_tens, E3_comp, P12_tens, P12_comp, P13_tens, P13_comp, P23_tens, P23_comp
 
 
 def readWriteResults(base_path, model_list, job_list, RVE_size):  # AFTER TESTING REMOVE TENS/COMP SPECIFIC VALUES
@@ -117,8 +135,7 @@ def readWriteResults(base_path, model_list, job_list, RVE_size):  # AFTER TESTIN
         path = base_path + model + '/'
 
         # Read and return results from ODB:
-        E1, E2, E3, P12, P13, P23, G12, G13, G23,
-        E1_tens, E1_comp, E2_tens, E2_comp, E3_tens, E3_comp, P12_tens, P12_comp, P13_tens, P13_comp, P23_tens, P23_comp = readODB(path, job_list, RVE_size)
+        E1, E2, E3, P12, P13, P23, G12, G13, G23, E1_tens, E1_comp, E2_tens, E2_comp, E3_tens, E3_comp, P12_tens, P12_comp, P13_tens, P13_comp, P23_tens, P23_comp = readODB(path, job_list, RVE_size)
 
         # Open file and write simulation data:
         with open('Results-' + model + '.csv', 'wb') as csvfile:
@@ -133,7 +150,7 @@ if __name__ == '__main__':
     rve_jobs = ['LongitudinalTensionAnalysis', 'LongitudinalCompressionAnalysis', 'LongitudinalShearAnalysis',
                 'TransverseSideTensionAnalysis', 'TransverseSideCompressionAnalysis', 'TransverseSideShearAnalysis',
                 'TransverseTopTensionAnalysis', 'TransverseTopCompressionAnalysis', 'TransverseTopShearAnalysis']
-    rveModel_list = [RVE1, RVE2, RVE3]
+    rveModel_list = ['RVE1', 'RVE2', 'RVE3']
 
     comp_jobs = ['TensionAnalysis', 'CompressionAnalysis', 'ShearAnalysis']
     compModel_list = ['iNSERT ALL MODEL NAMES!']

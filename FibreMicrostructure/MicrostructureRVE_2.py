@@ -50,7 +50,7 @@ i_name = 'Interface Medium'
 i_E = 10000000000.0
 i_P = 0.35
 i_Ys = 70000000.0
-i_Ps = 0
+i_Ps = 0.0
 
 # Load displacement:
 strain = 0.1
@@ -315,14 +315,14 @@ a.regenerate()
 a = mdb.models['TransverseShearSide'].rootAssembly
 a.regenerate()
 # Constraint equation:
-mdb.models['TransverseShearSide'].Equation(name='ConstraintEqn', terms=((1.0, 'RVECube-1.XFront', 2), (-1.0, 'RPSet', 2)))
+mdb.models['TransverseShearSide'].Equation(name='ConstraintEqn', terms=((1.0, 'RVECube-1.XFront', 1), (-1.0, 'RPSet', 1)))
 # Boundary conditions:
 region = a.instances['RVECube-1'].sets['XBack']
 mdb.models['TransverseShearSide'].DisplacementBC(name='XSupport', createStepName='Initial', region=region, u1=SET, u2=SET, u3=SET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
 region = a.instances['RVECube-1'].sets['XFront']
 mdb.models['TransverseShearSide'].DisplacementBC(name='XRoller', createStepName='Initial', region=region, u1=SET, u2=UNSET, u3=SET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
 region = mdb.models['LongitudinalShear'].rootAssembly.sets['RPSet']
-mdb.models['TransverseShearSide'].DisplacementBC(name='Load', createStepName='StaticAnalysis', region=region, u1=SET, u2=l_disp, u3=SET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
+mdb.models['TransverseShearSide'].DisplacementBC(name='Load', createStepName='StaticAnalysis', region=region, u1=l_disp, u2=SET, u3=SET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
 a.regenerate()
 
 # Transverse Side Tension setup:
