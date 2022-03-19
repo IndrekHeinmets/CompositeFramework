@@ -47,22 +47,23 @@ r_size = 38.0
 
 # Matrix props:
 m_name = 'Epoxy Resin'
-m_E = 3800000000.0
+m_E = 3.8e9
 m_P = 0.35
-m_Ys = 55000000.0
+m_G = 2.1e9
+m_Ys = 55e6
 m_Ps = 0.0
 
 # Fiber props:
 f_name = 'Carbon Fiber'
-f_E1 = 228000000000.0
-f_E2 = 17200000000.0
-f_E3 = 17200000000.0
-f_P12 = 0.2
-f_P13 = 0.2
-f_P23 = 0.5
-f_G12 = 27600000000.0
-f_G13 = 27600000000.0
-f_G23 = 5730000000.0
+f_E1 =
+f_E2 =
+f_E3 =
+f_P12 =
+f_P13 =
+f_P23 =
+f_G12 =
+f_G13 =
+f_G23 =
 
 # Load displacement:
 strain = 0.1
@@ -155,9 +156,9 @@ del mdb.models['Model-1'].sketches['__profile1__']
 
 # Material creation:
 mdb.models['Model-1'].Material(name=m_name)
-mdb.models['Model-1'].Material(name=f_name)
-mdb.models['Model-1'].materials[m_name].Elastic(table=((m_E, m_P), ))
+mdb.models['Model-1'].materials[m_name].Elastic(type=ENGINEERING_CONSTANTS, table=((m_E, m_E, m_E, m_P, m_P, m_P, m_G, m_G, m_G), ))
 mdb.models['Model-1'].materials[m_name].Plastic(scaleStress=None, table=((m_Ys, m_Ps), ))
+mdb.models['Model-1'].Material(name=f_name)
 mdb.models['Model-1'].materials[f_name].Elastic(type=ENGINEERING_CONSTANTS, table=((f_E1, f_E2, f_E3, f_P12, f_P13, f_P23, f_G12, f_G13, f_G23), ))
 
 # Section creation:
