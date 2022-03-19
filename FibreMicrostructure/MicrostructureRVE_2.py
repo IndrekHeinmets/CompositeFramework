@@ -28,28 +28,30 @@ interface_diameter = 1.15 * fibre_diameter
 
 # Matrix props:
 m_name = 'Epoxy Resin'
-m_E = 3800000000.0
+m_E = 3.8e9
 m_P = 0.35
-m_Ys = 55000000.0
+m_G = 2.1e9
+m_Ys = 55e6
 m_Ps = 0.0
 
 # Fiber props:
 f_name = 'Carbon Fiber'
-f_E1 = 228000000000.0
-f_E2 = 17200000000.0
-f_E3 = 17200000000.0
+f_E1 = 228e9
+f_E2 = 17.2e9
+f_E3 = 17.2e9
 f_P12 = 0.2
 f_P13 = 0.2
 f_P23 = 0.5
-f_G12 = 27600000000.0
-f_G13 = 27600000000.0
-f_G23 = 5730000000.0
+f_G12 = 27.6e9
+f_G13 = 27.6e9
+f_G23 = 5.73e9
 
 # Interface Medium props:
 i_name = 'Interface Medium'
-i_E = 10000000000.0
+i_E = 10e9
 i_P = 0.35
-i_Ys = 70000000.0
+i_G = 3.5e9
+i_Ys = 70e6
 i_Ps = 0.0
 
 # Load displacement:
@@ -107,12 +109,12 @@ del mdb.models['Model-1'].sketches['__profile2__']
 
 # Material creation:
 mdb.models['Model-1'].Material(name=m_name)
-mdb.models['Model-1'].Material(name=f_name)
-mdb.models['Model-1'].Material(name=i_name)
-mdb.models['Model-1'].materials[m_name].Elastic(table=((m_E, m_P), ))
+mdb.models['Model-1'].materials[m_name].Elastic(type=ENGINEERING_CONSTANTS, table=((m_E, m_E, m_E, m_P, m_P, m_P, m_G, m_G, m_G), ))
 mdb.models['Model-1'].materials[m_name].Plastic(scaleStress=None, table=((m_Ys, m_Ps), ))
+mdb.models['Model-1'].Material(name=f_name)
 mdb.models['Model-1'].materials[f_name].Elastic(type=ENGINEERING_CONSTANTS, table=((f_E1, f_E2, f_E3, f_P12, f_P13, f_P23, f_G12, f_G13, f_G23), ))
-mdb.models['Model-1'].materials[i_name].Elastic(table=((i_E, i_P), ))
+mdb.models['Model-1'].Material(name=i_name)
+mdb.models['Model-1'].materials[m_name].Elastic(type=ENGINEERING_CONSTANTS, table=((i_E, i_E, i_E, i_P, i_P, i_P, i_G, i_G, i_G), ))
 mdb.models['Model-1'].materials[i_name].Plastic(scaleStress=None, table=((i_Ys, i_Ps), ))
 
 # Section creation:
@@ -267,161 +269,161 @@ mdb.models['Model-1'].HistoryOutputRequest(name='RPHO', createStepName='StaticAn
 regionDef = mdb.models['Model-1'].rootAssembly.sets['CornerNodeSet']
 mdb.models['Model-1'].HistoryOutputRequest(name='CornerNodeHO', createStepName='StaticAnalysis', variables=('U1', 'U2', 'U3'), region=regionDef, sectionPoints=DEFAULT, rebar=EXCLUDE, numIntervals=hi)
 
-# Longitudinal Shear setup:
-mdb.models.changeKey(fromName='Model-1', toName='LongitudinalShear')
-mdb.Model(name='TransverseShearSide', objectToCopy=mdb.models['LongitudinalShear'])
-mdb.Model(name='TransverseShearTop', objectToCopy=mdb.models['LongitudinalShear'])
-a = mdb.models['LongitudinalShear'].rootAssembly
+# XY Shear setup:
+mdb.models.changeKey(fromName='Model-1', toName='XYShear')
+mdb.Model(name='YZShear', objectToCopy=mdb.models['XYShear'])
+mdb.Model(name='XZShear', objectToCopy=mdb.models['XYShear'])
+a = mdb.models['XYShear'].rootAssembly
 a.regenerate()
 # Constraint equation:
-mdb.models['LongitudinalShear'].Equation(name='ConstraintEqn', terms=((1.0, 'RVECube-1.ZFront', 2), (-1.0, 'RPSet', 2)))
-# Boundary conditions:
-region = a.instances['RVECube-1'].sets['ZBack']
-mdb.models['LongitudinalShear'].DisplacementBC(name='ZSupport', createStepName='Initial', region=region, u1=SET, u2=SET, u3=SET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
-region = a.instances['RVECube-1'].sets['ZFront']
-mdb.models['LongitudinalShear'].DisplacementBC(name='ZRoller', createStepName='Initial', region=region, u1=SET, u2=UNSET, u3=SET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
-region = mdb.models['LongitudinalShear'].rootAssembly.sets['RPSet']
-mdb.models['LongitudinalShear'].DisplacementBC(name='Load', createStepName='StaticAnalysis', region=region, u1=SET, u2=l_disp, u3=SET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
-a.regenerate()
-
-# Longitudinal Tension setup:
-mdb.Model(name='LongitudinalTension', objectToCopy=mdb.models['LongitudinalShear'])
-a = mdb.models['LongitudinalTension'].rootAssembly
-a.regenerate()
-# Constraint equation:
-mdb.models['LongitudinalTension'].constraints['ConstraintEqn'].setValues(terms=((1.0, 'RVECube-1.ZFront', 3), (-1.0, 'RPSet', 3)))
+mdb.models['XYShear'].Equation(name='ConstraintEqn', terms=((1.0, 'RVECube-1.XFront', 2), (-1.0, 'RPSet', 2)))
 # Boundary conditions:
 region = a.instances['RVECube-1'].sets['XBack']
-mdb.models['LongitudinalTension'].DisplacementBC(name='XSupport', createStepName='Initial', region=region, u1=SET, u2=UNSET, u3=UNSET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, distributionType=UNIFORM, fieldName='', localCsys=None)
-region = a.instances['RVECube-1'].sets['ZBack']
-mdb.models['LongitudinalTension'].DisplacementBC(name='ZSupport', createStepName='Initial', region=region, u1=UNSET, u2=UNSET, u3=SET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, distributionType=UNIFORM, fieldName='', localCsys=None)
-region = a.instances['RVECube-1'].sets['YBottom']
-mdb.models['LongitudinalTension'].DisplacementBC(name='YSupport', createStepName='Initial', region=region, u1=UNSET, u2=SET, u3=UNSET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, distributionType=UNIFORM, fieldName='', localCsys=None)
-region = mdb.models['LongitudinalShear'].rootAssembly.sets['RPSet']
-mdb.models['LongitudinalTension'].DisplacementBC(name='Load', createStepName='StaticAnalysis', region=region, u1=l_disp, u2=UNSET, u3=SET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
-del mdb.models['LongitudinalTension'].boundaryConditions['ZRoller']
-a.regenerate()
-
-# Longitudinal Compression setup:
-mdb.Model(name='LongitudinalCompression', objectToCopy=mdb.models['LongitudinalTension'])
-a = mdb.models['LongitudinalCompression'].rootAssembly
-a.regenerate()
-# Boundary conditions:
-region = mdb.models['LongitudinalShear'].rootAssembly.sets['RPSet']
-mdb.models['LongitudinalCompression'].DisplacementBC(name='Load', createStepName='StaticAnalysis', region=region, u1=UNSET, u2=UNSET, u3=-l_disp, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
-a.regenerate()
-
-# Transverse Side Shear setup:
-a = mdb.models['TransverseShearSide'].rootAssembly
-a.regenerate()
-# Constraint equation:
-mdb.models['TransverseShearSide'].Equation(name='ConstraintEqn', terms=((1.0, 'RVECube-1.XFront', 1), (-1.0, 'RPSet', 1)))
-# Boundary conditions:
-region = a.instances['RVECube-1'].sets['XBack']
-mdb.models['TransverseShearSide'].DisplacementBC(name='XSupport', createStepName='Initial', region=region, u1=SET, u2=SET, u3=SET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
+mdb.models['XYShear'].DisplacementBC(name='XSupport', createStepName='Initial', region=region, u1=SET, u2=SET, u3=SET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
 region = a.instances['RVECube-1'].sets['XFront']
-mdb.models['TransverseShearSide'].DisplacementBC(name='XRoller', createStepName='Initial', region=region, u1=SET, u2=UNSET, u3=SET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
-region = mdb.models['LongitudinalShear'].rootAssembly.sets['RPSet']
-mdb.models['TransverseShearSide'].DisplacementBC(name='Load', createStepName='StaticAnalysis', region=region, u1=l_disp, u2=SET, u3=SET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
+mdb.models['XYShear'].DisplacementBC(name='XRoller', createStepName='Initial', region=region, u1=SET, u2=UNSET, u3=SET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
+region = mdb.models['XYShear'].rootAssembly.sets['RPSet']
+mdb.models['XYShear'].DisplacementBC(name='Load', createStepName='StaticAnalysis', region=region, u1=SET, u2=l_disp, u3=SET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
 a.regenerate()
 
-# Transverse Side Tension setup:
-mdb.Model(name='TransverseTensionSide', objectToCopy=mdb.models['TransverseShearSide'])
-a = mdb.models['TransverseTensionSide'].rootAssembly
+# Z Tension setup:
+mdb.Model(name='ZTension', objectToCopy=mdb.models['XYShear'])
+a = mdb.models['ZTension'].rootAssembly
 a.regenerate()
 # Constraint equation:
-mdb.models['TransverseTensionSide'].constraints['ConstraintEqn'].setValues(terms=((1.0, 'RVECube-1.XFront', 1), (-1.0, 'RPSet', 1)))
+mdb.models['ZTension'].constraints['ConstraintEqn'].setValues(terms=((1.0, 'RVECube-1.ZFront', 3), (-1.0, 'RPSet', 3)))
 # Boundary conditions:
 region = a.instances['RVECube-1'].sets['XBack']
-mdb.models['TransverseTensionSide'].DisplacementBC(name='XSupport', createStepName='Initial', region=region, u1=SET, u2=UNSET, u3=UNSET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, distributionType=UNIFORM, fieldName='', localCsys=None)
+mdb.models['ZTension'].DisplacementBC(name='XSupport', createStepName='Initial', region=region, u1=SET, u2=UNSET, u3=UNSET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, distributionType=UNIFORM, fieldName='', localCsys=None)
 region = a.instances['RVECube-1'].sets['ZBack']
-mdb.models['TransverseTensionSide'].DisplacementBC(name='ZSupport', createStepName='Initial', region=region, u1=UNSET, u2=UNSET, u3=SET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, distributionType=UNIFORM, fieldName='', localCsys=None)
+mdb.models['ZTension'].DisplacementBC(name='ZSupport', createStepName='Initial', region=region, u1=UNSET, u2=UNSET, u3=SET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, distributionType=UNIFORM, fieldName='', localCsys=None)
 region = a.instances['RVECube-1'].sets['YBottom']
-mdb.models['TransverseTensionSide'].DisplacementBC(name='YSupport', createStepName='Initial', region=region, u1=UNSET, u2=SET, u3=UNSET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, distributionType=UNIFORM, fieldName='', localCsys=None)
-region = mdb.models['LongitudinalShear'].rootAssembly.sets['RPSet']
-mdb.models['TransverseTensionSide'].DisplacementBC(name='Load', createStepName='StaticAnalysis', region=region, u1=l_disp, u2=UNSET, u3=UNSET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
-del mdb.models['TransverseTensionSide'].boundaryConditions['XRoller']
+mdb.models['ZTension'].DisplacementBC(name='YSupport', createStepName='Initial', region=region, u1=UNSET, u2=SET, u3=UNSET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, distributionType=UNIFORM, fieldName='', localCsys=None)
+region = mdb.models['XYShear'].rootAssembly.sets['RPSet']
+mdb.models['ZTension'].DisplacementBC(name='Load', createStepName='StaticAnalysis', region=region, u1=UNSET, u2=UNSET, u3=l_disp, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
+del mdb.models['ZTension'].boundaryConditions['XRoller']
 a.regenerate()
 
-# Transverse Side Compression setup:
-mdb.Model(name='TransverseCompressionSide', objectToCopy=mdb.models['TransverseTensionSide'])
-a = mdb.models['TransverseCompressionSide'].rootAssembly
+# Z Compression setup:
+mdb.Model(name='ZCompression', objectToCopy=mdb.models['ZTension'])
+a = mdb.models['ZCompression'].rootAssembly
 a.regenerate()
 # Boundary conditions:
-region = mdb.models['LongitudinalShear'].rootAssembly.sets['RPSet']
-mdb.models['TransverseCompressionSide'].DisplacementBC(name='Load', createStepName='StaticAnalysis', region=region, u1=-l_disp, u2=UNSET, u3=UNSET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
+region = mdb.models['XYShear'].rootAssembly.sets['RPSet']
+mdb.models['ZCompression'].DisplacementBC(name='Load', createStepName='StaticAnalysis', region=region, u1=UNSET, u2=UNSET, u3=-l_disp, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
 a.regenerate()
 
-# Transverse Top Shear setup:
-a = mdb.models['TransverseShearTop'].rootAssembly
+# YZ Shear setup:
+a = mdb.models['YZShear'].rootAssembly
 a.regenerate()
 # Constraint equation:
-mdb.models['TransverseShearTop'].Equation(name='ConstraintEqn', terms=((1.0, 'RVECube-1.YTop', 3), (-1.0, 'RPSet', 3)))
+mdb.models['YZShear'].Equation(name='ConstraintEqn', terms=((1.0, 'RVECube-1.YTop', 3), (-1.0, 'RPSet', 3)))
 # Boundary conditions:
 region = a.instances['RVECube-1'].sets['YBottom']
-mdb.models['TransverseShearTop'].DisplacementBC(name='YSupport', createStepName='Initial', region=region, u1=SET, u2=SET, u3=SET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
+mdb.models['YZShear'].DisplacementBC(name='YSupport', createStepName='Initial', region=region, u1=SET, u2=SET, u3=SET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
 region = a.instances['RVECube-1'].sets['YTop']
-mdb.models['TransverseShearTop'].DisplacementBC(name='YRoller', createStepName='Initial', region=region, u1=SET, u2=SET, u3=UNSET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
-region = mdb.models['LongitudinalShear'].rootAssembly.sets['RPSet']
-mdb.models['TransverseShearTop'].DisplacementBC(name='Load', createStepName='StaticAnalysis', region=region, u1=SET, u2=SET, u3=l_disp, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
+mdb.models['YZShear'].DisplacementBC(name='YRoller', createStepName='Initial', region=region, u1=SET, u2=SET, u3=UNSET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
+region = mdb.models['XYShear'].rootAssembly.sets['RPSet']
+mdb.models['YZShear'].DisplacementBC(name='Load', createStepName='StaticAnalysis', region=region, u1=SET, u2=SET, u3=l_disp, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
 a.regenerate()
 
-# Transverse Top Tension setup:
-mdb.Model(name='TransverseTensionTop', objectToCopy=mdb.models['TransverseShearTop'])
-a = mdb.models['TransverseTensionTop'].rootAssembly
+# X Tension setup:
+mdb.Model(name='XTension', objectToCopy=mdb.models['YZShear'])
+a = mdb.models['XTension'].rootAssembly
 a.regenerate()
 # Constraint equation:
-mdb.models['TransverseTensionTop'].constraints['ConstraintEqn'].setValues(terms=((1.0, 'RVECube-1.YTop', 2), (-1.0, 'RPSet', 2)))
+mdb.models['XTension'].constraints['ConstraintEqn'].setValues(terms=((1.0, 'RVECube-1.XFront', 1), (-1.0, 'RPSet', 1)))
 # Boundary conditions:
 region = a.instances['RVECube-1'].sets['XBack']
-mdb.models['TransverseTensionTop'].DisplacementBC(name='XSupport', createStepName='Initial', region=region, u1=SET, u2=UNSET, u3=UNSET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, distributionType=UNIFORM, fieldName='', localCsys=None)
+mdb.models['XTension'].DisplacementBC(name='XSupport', createStepName='Initial', region=region, u1=SET, u2=UNSET, u3=UNSET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, distributionType=UNIFORM, fieldName='', localCsys=None)
 region = a.instances['RVECube-1'].sets['ZBack']
-mdb.models['TransverseTensionTop'].DisplacementBC(name='ZSupport', createStepName='Initial', region=region, u1=UNSET, u2=UNSET, u3=SET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, distributionType=UNIFORM, fieldName='', localCsys=None)
+mdb.models['XTension'].DisplacementBC(name='ZSupport', createStepName='Initial', region=region, u1=UNSET, u2=UNSET, u3=SET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, distributionType=UNIFORM, fieldName='', localCsys=None)
 region = a.instances['RVECube-1'].sets['YBottom']
-mdb.models['TransverseTensionTop'].DisplacementBC(name='YSupport', createStepName='Initial', region=region, u1=UNSET, u2=SET, u3=UNSET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, distributionType=UNIFORM, fieldName='', localCsys=None)
-region = mdb.models['LongitudinalShear'].rootAssembly.sets['RPSet']
-mdb.models['TransverseTensionTop'].DisplacementBC(name='Load', createStepName='StaticAnalysis', region=region, u1=UNSET, u2=l_disp, u3=UNSET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
-del mdb.models['TransverseTensionTop'].boundaryConditions['YRoller']
+mdb.models['XTension'].DisplacementBC(name='YSupport', createStepName='Initial', region=region, u1=UNSET, u2=SET, u3=UNSET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, distributionType=UNIFORM, fieldName='', localCsys=None)
+region = mdb.models['XYShear'].rootAssembly.sets['RPSet']
+mdb.models['XTension'].DisplacementBC(name='Load', createStepName='StaticAnalysis', region=region, u1=l_disp, u2=UNSET, u3=SET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
+del mdb.models['XTension'].boundaryConditions['YRoller']
 a.regenerate()
 
-# Transverse Top Compression setup:
-mdb.Model(name='TransverseCompressionTop', objectToCopy=mdb.models['TransverseTensionTop'])
-a = mdb.models['TransverseCompressionTop'].rootAssembly
+# X Compression setup:
+mdb.Model(name='XCompression', objectToCopy=mdb.models['XTension'])
+a = mdb.models['XCompression'].rootAssembly
 a.regenerate()
 # Boundary conditions:
-region = mdb.models['LongitudinalShear'].rootAssembly.sets['RPSet']
-mdb.models['TransverseCompressionTop'].DisplacementBC(name='Load', createStepName='StaticAnalysis', region=region, u1=UNSET, u2=-l_disp, u3=UNSET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
+region = mdb.models['XYShear'].rootAssembly.sets['RPSet']
+mdb.models['XCompression'].DisplacementBC(name='Load', createStepName='StaticAnalysis', region=region, u1=-l_disp, u2=UNSET, u3=UNSET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
+a.regenerate()
+
+# XZ Shear setup:
+a = mdb.models['XZShear'].rootAssembly
+a.regenerate()
+# Constraint equation:
+mdb.models['XZShear'].Equation(name='ConstraintEqn', terms=((1.0, 'RVECube-1.XFront', 3), (-1.0, 'RPSet', 3)))
+# Boundary conditions:
+region = a.instances['RVECube-1'].sets['XBack']
+mdb.models['XZShear'].DisplacementBC(name='YXSupport', createStepName='Initial', region=region, u1=SET, u2=SET, u3=SET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
+region = a.instances['RVECube-1'].sets['XFront']
+mdb.models['XZShear'].DisplacementBC(name='XRoller', createStepName='Initial', region=region, u1=SET, u2=SET, u3=UNSET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
+region = mdb.models['XYShear'].rootAssembly.sets['RPSet']
+mdb.models['XZShear'].DisplacementBC(name='Load', createStepName='StaticAnalysis', region=region, u1=SET, u2=SET, u3=l_disp, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
+a.regenerate()
+
+# Y Tension setup:
+mdb.Model(name='YTension', objectToCopy=mdb.models['XZShear'])
+a = mdb.models['YTension'].rootAssembly
+a.regenerate()
+# Constraint equation:
+mdb.models['YTension'].constraints['ConstraintEqn'].setValues(terms=((1.0, 'RVECube-1.YTop', 2), (-1.0, 'RPSet', 2)))
+# Boundary conditions:
+region = a.instances['RVECube-1'].sets['XBack']
+mdb.models['YTension'].DisplacementBC(name='XSupport', createStepName='Initial', region=region, u1=SET, u2=UNSET, u3=UNSET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, distributionType=UNIFORM, fieldName='', localCsys=None)
+region = a.instances['RVECube-1'].sets['ZBack']
+mdb.models['YTension'].DisplacementBC(name='ZSupport', createStepName='Initial', region=region, u1=UNSET, u2=UNSET, u3=SET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, distributionType=UNIFORM, fieldName='', localCsys=None)
+region = a.instances['RVECube-1'].sets['YBottom']
+mdb.models['YTension'].DisplacementBC(name='YSupport', createStepName='Initial', region=region, u1=UNSET, u2=SET, u3=UNSET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, distributionType=UNIFORM, fieldName='', localCsys=None)
+region = mdb.models['XYShear'].rootAssembly.sets['RPSet']
+mdb.models['YTension'].DisplacementBC(name='Load', createStepName='StaticAnalysis', region=region, u1=UNSET, u2=l_disp, u3=UNSET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
+del mdb.models['YTension'].boundaryConditions['XRoller']
+a.regenerate()
+
+# Y Compression setup:
+mdb.Model(name='YCompression', objectToCopy=mdb.models['YTension'])
+a = mdb.models['YCompression'].rootAssembly
+a.regenerate()
+# Boundary conditions:
+region = mdb.models['XYShear'].rootAssembly.sets['RPSet']
+mdb.models['YCompression'].DisplacementBC(name='Load', createStepName='StaticAnalysis', region=region, u1=UNSET, u2=-l_disp, u3=UNSET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
 a.regenerate()
 print('Constraining and Loading done!')
 
 # Job creation:
-mdb.Job(name='LongitudinalTensionAnalysis', model='LongitudinalTension', description='', type=ANALYSIS, atTime=None, waitMinutes=0, waitHours=0, queue=None, memory=90, memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True,
+mdb.Job(name='ZTensionAnalysis', model='ZTension', description='', type=ANALYSIS, atTime=None, waitMinutes=0, waitHours=0, queue=None, memory=90, memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True,
         explicitPrecision=SINGLE, nodalOutputPrecision=SINGLE, echoPrint=OFF, modelPrint=OFF, contactPrint=OFF, historyPrint=OFF, userSubroutine='', scratch='', resultsFormat=ODB)
-mdb.Job(name='LongitudinalCompressionAnalysis', model='LongitudinalCompression', description='', type=ANALYSIS, atTime=None, waitMinutes=0, waitHours=0, queue=None, memory=90, memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True,
+mdb.Job(name='ZCompressionAnalysis', model='ZCompression', description='', type=ANALYSIS, atTime=None, waitMinutes=0, waitHours=0, queue=None, memory=90, memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True,
         explicitPrecision=SINGLE, nodalOutputPrecision=SINGLE, echoPrint=OFF, modelPrint=OFF, contactPrint=OFF, historyPrint=OFF, userSubroutine='', scratch='', resultsFormat=ODB)
-mdb.Job(name='LongitudinalShearAnalysis', model='LongitudinalShear', description='', type=ANALYSIS, atTime=None, waitMinutes=0, waitHours=0, queue=None, memory=90, memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True,
+mdb.Job(name='XYShearAnalysis', model='XYShear', description='', type=ANALYSIS, atTime=None, waitMinutes=0, waitHours=0, queue=None, memory=90, memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True,
         explicitPrecision=SINGLE, nodalOutputPrecision=SINGLE, echoPrint=OFF, modelPrint=OFF, contactPrint=OFF, historyPrint=OFF, userSubroutine='', scratch='', resultsFormat=ODB)
-mdb.Job(name='TransverseSideTensionAnalysis', model='TransverseTensionSide', description='', type=ANALYSIS, atTime=None, waitMinutes=0, waitHours=0, queue=None, memory=90, memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True,
+mdb.Job(name='XTensionAnalysis', model='XTension', description='', type=ANALYSIS, atTime=None, waitMinutes=0, waitHours=0, queue=None, memory=90, memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True,
         explicitPrecision=SINGLE, nodalOutputPrecision=SINGLE, echoPrint=OFF, modelPrint=OFF, contactPrint=OFF, historyPrint=OFF, userSubroutine='', scratch='', resultsFormat=ODB)
-mdb.Job(name='TransverseSideCompressionAnalysis', model='TransverseCompressionSide', description='', type=ANALYSIS, atTime=None, waitMinutes=0, waitHours=0, queue=None, memory=90, memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True,
+mdb.Job(name='XCompressionAnalysis', model='XCompression', description='', type=ANALYSIS, atTime=None, waitMinutes=0, waitHours=0, queue=None, memory=90, memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True,
         explicitPrecision=SINGLE, nodalOutputPrecision=SINGLE, echoPrint=OFF, modelPrint=OFF, contactPrint=OFF, historyPrint=OFF, userSubroutine='', scratch='', resultsFormat=ODB)
-mdb.Job(name='TransverseSideShearAnalysis', model='TransverseShearSide', description='', type=ANALYSIS, atTime=None, waitMinutes=0, waitHours=0, queue=None, memory=90, memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True,
+mdb.Job(name='YZShearAnalysis', model='YZShear', description='', type=ANALYSIS, atTime=None, waitMinutes=0, waitHours=0, queue=None, memory=90, memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True,
         explicitPrecision=SINGLE, nodalOutputPrecision=SINGLE, echoPrint=OFF, modelPrint=OFF, contactPrint=OFF, historyPrint=OFF, userSubroutine='', scratch='', resultsFormat=ODB)
-mdb.Job(name='TransverseTopTensionAnalysis', model='TransverseTensionTop', description='', type=ANALYSIS, atTime=None, waitMinutes=0, waitHours=0, queue=None, memory=90, memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True,
+mdb.Job(name='YTensionAnalysis', model='YTension', description='', type=ANALYSIS, atTime=None, waitMinutes=0, waitHours=0, queue=None, memory=90, memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True,
         explicitPrecision=SINGLE, nodalOutputPrecision=SINGLE, echoPrint=OFF, modelPrint=OFF, contactPrint=OFF, historyPrint=OFF, userSubroutine='', scratch='', resultsFormat=ODB)
-mdb.Job(name='TransverseTopCompressionAnalysis', model='TransverseCompressionTop', description='', type=ANALYSIS, atTime=None, waitMinutes=0, waitHours=0, queue=None, memory=90, memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True,
+mdb.Job(name='YCompressionAnalysis', model='YCompression', description='', type=ANALYSIS, atTime=None, waitMinutes=0, waitHours=0, queue=None, memory=90, memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True,
         explicitPrecision=SINGLE, nodalOutputPrecision=SINGLE, echoPrint=OFF, modelPrint=OFF, contactPrint=OFF, historyPrint=OFF, userSubroutine='', scratch='', resultsFormat=ODB)
-mdb.Job(name='TransverseTopShearAnalysis', model='TransverseShearTop', description='', type=ANALYSIS, atTime=None, waitMinutes=0, waitHours=0, queue=None, memory=90, memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True,
+mdb.Job(name='XZShearAnalysis', model='XZShear', description='', type=ANALYSIS, atTime=None, waitMinutes=0, waitHours=0, queue=None, memory=90, memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True,
         explicitPrecision=SINGLE, nodalOutputPrecision=SINGLE, echoPrint=OFF, modelPrint=OFF, contactPrint=OFF, historyPrint=OFF, userSubroutine='', scratch='', resultsFormat=ODB)
-# mdb.jobs['LongitudinalTensionAnalysis'].submit(consistencyChecking=OFF)
-# mdb.jobs['LongitudinalCompressionAnalysis'].submit(consistencyChecking=OFF)
-# mdb.jobs['LongitudinalShearAnalysis'].submit(consistencyChecking=OFF)
-# mdb.jobs['TransverseSideTensionAnalysis'].submit(consistencyChecking=OFF)
-# mdb.jobs['TransverseSideCompressionAnalysis'].submit(consistencyChecking=OFF)
-# mdb.jobs['TransverseSideShearAnalysis'].submit(consistencyChecking=OFF)
-# mdb.jobs['TransverseTopTensionAnalysis'].submit(consistencyChecking=OFF)
-# mdb.jobs['TransverseTopCompressionAnalysis'].submit(consistencyChecking=OFF)
-# mdb.jobs['TransverseTopShearAnalysis'].submit(consistencyChecking=OFF)
+# mdb.jobs['ZTensionAnalysis'].submit(consistencyChecking=OFF)
+# mdb.jobs['ZCompressionAnalysis'].submit(consistencyChecking=OFF)
+# mdb.jobs['XYShearAnalysis'].submit(consistencyChecking=OFF)
+# mdb.jobs['XTensionAnalysis'].submit(consistencyChecking=OFF)
+# mdb.jobs['XCompressionAnalysis'].submit(consistencyChecking=OFF)
+# mdb.jobs['YZShearAnalysis'].submit(consistencyChecking=OFF)
+# mdb.jobs['YTensionAnalysis'].submit(consistencyChecking=OFF)
+# mdb.jobs['YCompressionAnalysis'].submit(consistencyChecking=OFF)
+# mdb.jobs['XZShearAnalysis'].submit(consistencyChecking=OFF)
 # print('Jobs submitted for processing!')
 
 # End of script:
