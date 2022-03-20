@@ -117,6 +117,9 @@ def readODB(path, job_list, RVE_size):
 
         # Shear Modulus:
         elif loadCase == 'shear':
+            ###TEMP###
+            # G12, G13, G23 = 0, 0, 0
+            ##########
             if loadAxis == 1:
                 G12 = findSlope(stressX, strainX) / 1e9
 
@@ -130,47 +133,67 @@ def readODB(path, job_list, RVE_size):
     E1, E2, E3 = (E1_tens + abs(E1_comp)) / 2, (E2_tens + abs(E2_comp)) / 2, (E3_tens + abs(E3_comp)) / 2
     P12, P13, P23 = (P12_tens + abs(P12_comp)) / 2, (P13_tens + abs(P13_comp)) / 2, (P23_tens + abs(P23_comp)) / 2
 
+    # AFTER TESTING REMOVE TENS/COMP SPECIFIC VALUES
     return E1, E2, E3, P12, P13, P23, G12, G13, G23, E1_tens, E1_comp, E2_tens, E2_comp, E3_tens, E3_comp, P12_tens, P12_comp, P13_tens, P13_comp, P23_tens, P23_comp
 
 
-def readWriteResults(base_path, model_list, job_list, RVE_size):  # AFTER TESTING REMOVE TENS/COMP SPECIFIC VALUES
-    for c, model in enumerate(model_list):
-        path = base_path + model + '/'
+def readWriteResults(basePath, modelList, jobList, RVE_size):
+    resList = []
+    for c, model in enumerate(modelList):
+        path = basePath + model + '/'
 
         # Read and return results from ODB:
-        E1, E2, E3, P12, P13, P23, G12, G13, G23, E1_tens, E1_comp, E2_tens, E2_comp, E3_tens, E3_comp, P12_tens, P12_comp, P13_tens, P13_comp, P23_tens, P23_comp = readODB(path, job_list, RVE_size)
+        locals()[model] = readODB(path, jobList, RVE_size)
+        resList.append(locals()[model])
 
-        # Open file and write simulation data:
-        with open('Results-' + model + '.csv', 'wb') as csvfile:
-            writer = csv.writer(csvfile)
-            writer.writerow(['Results from ' + model + ':'])
-            writer.writerow(['E1', 'E2', 'E3', 'P12', 'P13', 'P23', 'G12', 'G13', 'G23', 'Temps-->', 'e1_tens', 'e1_comp', 'e2_tens', 'e2_comp', 'e3_tens', 'e3_comp', 'p12_tens', 'p12_comp', 'p13_tens', 'p13_comp', 'p23_tens', 'p23_comp'])
-            writer.writerow([E1, E2, E3, P12, P13, P23, G12, G13, G23, ' ', E1_tens, E1_comp, E2_tens, E2_comp, E3_tens, E3_comp, P12_tens, P12_comp, P13_tens, P13_comp, P23_tens, P23_comp])
+    # Open file and write simulation data:
+    with open('NumericalMaterialProperties' + '.csv', 'wb') as csvfile:
+        writer = csv.writer(csvfile)
+        for c, res in enumerate(resList):
+            writer.writerow(['Results from ' + modelList[c] + ':'])
+            writer.writerow(['E1', 'E2', 'E3', 'P12', 'P13', 'P23', 'G12', 'G13', 'G23', 'e1_tens', 'e1_comp', 'e2_tens', 'e2_comp', 'e3_tens', 'e3_comp', 'p12_tens', 'p12_comp', 'p13_tens', 'p13_comp', 'p23_tens', 'p23_comp'])
+            writer.writerow([res])
+
+# READER BACKUP, DELETE AFTER TESTING
+# def readWriteResults(base_path, model_list, job_list, RVE_size):
+#     for c, model in enumerate(model_list):
+#         path = base_path + model + '/'
+
+#         # Read and return results from ODB:
+#         E1, E2, E3, P12, P13, P23, G12, G13, G23, E1_tens, E1_comp, E2_tens, E2_comp, E3_tens, E3_comp, P12_tens, P12_comp, P13_tens, P13_comp, P23_tens, P23_comp = readODB(path, job_list, RVE_size)
+
+#         # Open file and write simulation data:
+#         with open('Results-' + model + '.csv', 'wb') as csvfile:
+#             writer = csv.writer(csvfile)
+#             writer.writerow(['Results from ' + model + ':'])
+#             writer.writerow(['E1', 'E2', 'E3', 'P12', 'P13', 'P23', 'G12', 'G13', 'G23', 'Temps-->', 'e1_tens', 'e1_comp', 'e2_tens', 'e2_comp', 'e3_tens', 'e3_comp', 'p12_tens', 'p12_comp', 'p13_tens', 'p13_comp', 'p23_tens', 'p23_comp'])
+#             writer.writerow([E1, E2, E3, P12, P13, P23, G12, G13, G23, ' ', E1_tens, E1_comp, E2_tens, E2_comp, E3_tens, E3_comp, P12_tens, P12_comp, P13_tens, P13_comp, P23_tens, P23_comp])
 
 
 if __name__ == '__main__':
-    ##################################################### VARIABLES #######################################################
-    rve_jobs = ['ZTensionAnalysis', 'ZCompressionAnalysis', 'XYShearAnalysis',
-                'XTensionAnalysis', 'XCompressionAnalysis', 'YZShearAnalysis',
-                'YTensionAnalysis', 'YCompressionAnalysis', 'XZShearAnalysis']
-    rveModel_list = ['RVE1', 'RVE2', 'RVE3']
+    #################################### VARIABLES ###########################################
+    rveJobs = ['ZTensionAnalysis', 'ZCompressionAnalysis', 'XYShearAnalysis',
+               'XTensionAnalysis', 'XCompressionAnalysis', 'YZShearAnalysis',
+               'YTensionAnalysis', 'YCompressionAnalysis', 'XZShearAnalysis']
+    rveModels = ['RVE1', 'RVE2', 'RVE3']
 
-    comp_jobs = ['TensionAnalysis', 'CompressionAnalysis', 'ShearAnalysis']
-    compModel_list = ['Plain', 'Basket', 'Mock-Leno', 'Satin', 'Twill', 'Extra']
+    compJobs = ['TensionAnalysis', 'CompressionAnalysis', 'ShearAnalysis']
+    compModels = ['Plain', 'Basket', 'Mock-Leno', 'Satin', 'Twill', 'Extra']
 
-    # TEMPS:
-    rveModel_list.pop(1)
-    rveModel_list.pop(1)
-    compModel_list.pop(1)
-    compModel_list.pop(1)
-    compModel_list.pop(1)
-    compModel_list.pop(1)
-    compModel_list.pop(1)
+    # TEMPS: ########
+    rveModels.pop(1)
+    rveModels.pop(1)
+    compModels.pop(1)
+    compModels.pop(1)
+    compModels.pop(1)
+    compModels.pop(1)
+    compModels.pop(1)
+    #################
 
     path = './ODBData/'
     RVE_size = 120
 
-    readWriteResults(path, rveModel_list, rve_jobs, RVE_size)
+    readWriteResults(path, rveModels, rveJobs, RVE_size)
 
     # End of script:
     print('*************************')
