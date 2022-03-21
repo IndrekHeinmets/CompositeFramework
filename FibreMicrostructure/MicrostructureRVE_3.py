@@ -59,7 +59,7 @@ strain = 0.1
 l_disp = RVE_size * strain
 
 # Mesh density:
-md = 8.0
+md = 6.0
 
 # History output time interval:
 hi = 20
@@ -258,8 +258,8 @@ a.ReferencePoint(point=(-60.0, -60.0, 140.0))
 refPoints1 = (a.referencePoints[90], )
 a.Set(referencePoints=refPoints1, name='RPSet')
 v = a.instances['RVECube-1'].vertices
-verts1 = v.findAt(((59.758252, 59.557719, 120.0), ))
-a.Set(vertices=verts1, name='CornerNodeSet')
+verts = v.findAt(((59.758252, 59.557719, 120.0), ))
+a.Set(vertices=verts, name='CornerNodeSet')
 
 regionDef = mdb.models['Model-1'].rootAssembly.sets['RPSet']
 mdb.models['Model-1'].HistoryOutputRequest(name='RPHO', createStepName='StaticAnalysis', variables=('RF1', 'RF2', 'RF3', 'U1', 'U2', 'U3'), region=regionDef, sectionPoints=DEFAULT, rebar=EXCLUDE, numIntervals=hi)

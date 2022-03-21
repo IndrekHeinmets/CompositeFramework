@@ -1,4 +1,6 @@
 import matplotlib.pyplot as plt
+from mpl_toolkits import mplot3d
+import numpy as np
 from math import sqrt
 from math import pi
 import random
@@ -150,6 +152,21 @@ if __name__ == '__main__':
     for point in point_lst:
         x_lst.append(point[0])
         y_lst.append(point[1])
+
+    # # 3D PLOTTING
+    # def z_function(x, y):
+    #     return np.sin(np.sqrt(x ** 2 + y ** 2))
+
+    # X, Y = np.meshgrid(x_lst, y_lst)
+    # Z = z_function(X, Y)
+    # fig = plt.figure()
+    # ax = plt.axes(projection="3d")
+    # ax.plot_wireframe(X, Y, Z, color='green')
+    # ax.set_xlabel('x')
+    # ax.set_ylabel('y')
+    # ax.set_zlabel('z')
+    # plt.show()s
+
     plt.figure(figsize=(10, 10), dpi=70)
     plt.axis([-60, 60, -60, 60])
     plt.scatter(x_lst, y_lst, s=7000)

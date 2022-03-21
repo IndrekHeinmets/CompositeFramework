@@ -5,6 +5,13 @@ import csv
 print('Running ODB reader...')
 
 
+def findAvg(lst):
+    elSum = 0.0
+    for el in lst:
+        elSum += el
+    return (elSum / len(lst))
+
+
 def matCol(i, matrix):
     return [row[i] for row in matrix]
 
@@ -122,12 +129,10 @@ def readODB(path, job_list, RVE_size):
             ##########
             if loadAxis == 1:
                 G12 = findSlope(stressX, strainX) / 1e9
+                G13 = findSlope(stressZ, strainZ) / 1e9
 
             elif loadAxis == 2:
                 G23 = findSlope(stressY, strainY) / 1e9
-
-            elif loadAxis == 3:
-                G13 = findSlope(stressZ, strainZ) / 1e9
 
     # Averaged E & P values from Tension & Compression:
     E1, E2, E3 = (E1_tens + abs(E1_comp)) / 2, (E2_tens + abs(E2_comp)) / 2, (E3_tens + abs(E3_comp)) / 2
@@ -138,21 +143,32 @@ def readODB(path, job_list, RVE_size):
 
 
 def readWriteResults(basePath, modelList, jobList, RVE_size):
+    matProps = ['E1', 'E2', 'E3',
+                'P12', 'P13', 'P23',
+                'G12', 'G13', 'G23',
+                'e1_tens', 'e1_comp', 'e2_tens', 'e2_comp', 'e3_tens', 'e3_comp', 'p12_tens', 'p12_comp', 'p13_tens', 'p13_comp', 'p23_tens', 'p23_comp']
     resList = []
     for c, model in enumerate(modelList):
         path = basePath + model + '/'
 
         # Read and return results from ODB:
-        locals()[model] = readODB(path, jobList, RVE_size)
-        resList.append(locals()[model])
+        resList.append(globals()[model]=readODB(path, jobList, RVE_size))
 
     # Open file and write simulation data:
     with open('NumericalMaterialProperties' + '.csv', 'wb') as csvfile:
         writer = csv.writer(csvfile)
         for c, res in enumerate(resList):
             writer.writerow(['Results from ' + modelList[c] + ':'])
-            writer.writerow(['E1', 'E2', 'E3', 'P12', 'P13', 'P23', 'G12', 'G13', 'G23', 'e1_tens', 'e1_comp', 'e2_tens', 'e2_comp', 'e3_tens', 'e3_comp', 'p12_tens', 'p12_comp', 'p13_tens', 'p13_comp', 'p23_tens', 'p23_comp'])
-            writer.writerow([res])
+            writer.writerow(matProps)
+            writer.writerow(res)
+            writer.writerow([' '])
+        avgProps = []
+        for c, p in enumerate(matProps):
+            avgProps.append(findAvg([resList[0][c], resList[1][c], resList[2][c]]))
+        writer.writerow(['Average results:'])
+        writer.writerow(matProps)
+        writer.writerow(avgProps)
+
 
 # READER BACKUP, DELETE AFTER TESTING
 # def readWriteResults(base_path, model_list, job_list, RVE_size):
@@ -175,10 +191,8 @@ if __name__ == '__main__':
     rveJobs = ['ZTensionAnalysis', 'ZCompressionAnalysis', 'XYShearAnalysis',
                'XTensionAnalysis', 'XCompressionAnalysis', 'YZShearAnalysis',
                'YTensionAnalysis', 'YCompressionAnalysis', 'XZShearAnalysis']
-    rveModels = ['RVE1', 'RVE2', 'RVE3']
-
-    compJobs = ['TensionAnalysis', 'CompressionAnalysis', 'ShearAnalysis']
     compModels = ['Plain', 'Basket', 'Mock-Leno', 'Satin', 'Twill', 'Extra']
+    rveModels = ['RVE1', 'RVE2', 'RVE3']
 
     # TEMPS: ########
     rveModels.pop(1)
