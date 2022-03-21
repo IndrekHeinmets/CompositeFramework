@@ -43,7 +43,7 @@ b_width = (pi_len * pi) * 2
 b_height = 4.0
 
 # RVE block:
-r_size = 38.0
+RVE_size = 38.0
 
 # Matrix props:
 m_name = 'Epoxy Resin'
@@ -67,7 +67,7 @@ f_G23 =
 
 # Load displacement:
 strain = 0.1
-l_disp = r_size * strain
+l_disp = RVE_size * strain
 
 # Mesh density:
 md = 0.5
@@ -237,6 +237,8 @@ orientation = mdb.models['Model-1'].parts['Composite'].datums[3]
 mdb.models['Model-1'].parts['Composite'].MaterialOrientation(region=region, orientationType=SYSTEM, axis=AXIS_3, localCsys=orientation, fieldName='', additionalRotationType=ROTATION_NONE, angle=0.0, additionalRotationField='', stackDirection=STACK_3)
 region = regionToolset.Region(cells=fibreCells2)
 orientation = mdb.models['Model-1'].parts['Composite'].datums[4]
+mdb.models['Model-1'].parts['Composite'].MaterialOrientation(region=region, orientationType=SYSTEM, axis=AXIS_3, localCsys=orientation, fieldName='', additionalRotationType=ROTATION_NONE, angle=0.0, additionalRotationField='', stackDirection=STACK_3)
+region = regionToolset.Region(cells=matrixCells)
 mdb.models['Model-1'].parts['Composite'].MaterialOrientation(region=region, orientationType=SYSTEM, axis=AXIS_3, localCsys=orientation, fieldName='', additionalRotationType=ROTATION_NONE, angle=0.0, additionalRotationField='', stackDirection=STACK_3)
 
 # Section assignment:

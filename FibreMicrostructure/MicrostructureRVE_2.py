@@ -114,7 +114,7 @@ mdb.models['Model-1'].materials[m_name].Plastic(scaleStress=None, table=((m_Ys, 
 mdb.models['Model-1'].Material(name=f_name)
 mdb.models['Model-1'].materials[f_name].Elastic(type=ENGINEERING_CONSTANTS, table=((f_E1, f_E2, f_E3, f_P12, f_P13, f_P23, f_G12, f_G13, f_G23), ))
 mdb.models['Model-1'].Material(name=i_name)
-mdb.models['Model-1'].materials[m_name].Elastic(type=ENGINEERING_CONSTANTS, table=((i_E, i_E, i_E, i_P, i_P, i_P, i_G, i_G, i_G), ))
+mdb.models['Model-1'].materials[i_name].Elastic(type=ENGINEERING_CONSTANTS, table=((i_E, i_E, i_E, i_P, i_P, i_P, i_G, i_G, i_G), ))
 mdb.models['Model-1'].materials[i_name].Plastic(scaleStress=None, table=((i_Ys, i_Ps), ))
 
 # Section creation:
@@ -186,6 +186,8 @@ v = p.vertices
 p.DatumCsysByThreePoints(origin=v.findAt(coordinates=(-60.241748, -60.442281, 120.0)), point1=v.findAt(coordinates=(-60.241748, -60.442281, 0.0)), point2=v.findAt(coordinates=(-60.241748, 59.557719, 0.0)), name='Datum csys-1', coordSysType=CARTESIAN)
 region = regionToolset.Region(cells=fibreCells)
 orientation = mdb.models['Model-1'].parts['RVECube'].datums[3]
+mdb.models['Model-1'].parts['RVECube'].MaterialOrientation(region=region, orientationType=SYSTEM, axis=AXIS_3, localCsys=orientation, fieldName='', additionalRotationType=ROTATION_NONE, angle=0.0, additionalRotationField='', stackDirection=STACK_3)
+region = regionToolset.Region(cells=matrixCells + interfaceCells)
 mdb.models['Model-1'].parts['RVECube'].MaterialOrientation(region=region, orientationType=SYSTEM, axis=AXIS_3, localCsys=orientation, fieldName='', additionalRotationType=ROTATION_NONE, angle=0.0, additionalRotationField='', stackDirection=STACK_3)
 
 # Section assignment:
