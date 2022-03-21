@@ -165,7 +165,7 @@ if __name__ == '__main__':
     # ax.set_xlabel('x')
     # ax.set_ylabel('y')
     # ax.set_zlabel('z')
-    # plt.show()s
+    # plt.show()
 
     plt.figure(figsize=(10, 10), dpi=70)
     plt.axis([-60, 60, -60, 60])
