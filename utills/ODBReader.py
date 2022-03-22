@@ -176,13 +176,14 @@ def readWriteResults(basePath, jobList, modelList, specSize):
             writer.writerow(res)
             writer.writerow([' '])
 
-        # for c, p in enumerate(matProps):
-        #     avgProps.append(findAvg([resList[0][c], resList[1][c], resList[2][c]]))  # For RVE's
-        #     avgProps.append(findAvg([resList[0][c], resList[1][c], resList[2][c],  # For Composite Models's
-        #                              resList[3][c], resList[4][c], resList[5][c]]))
-        # writer.writerow(['Average results:'])
-        # writer.writerow(matProps)
-        # writer.writerow(avgProps)
+        # Write averages to file:
+        for c, p in enumerate(matProps):
+            avgProps.append(findAvg([resList[0][c], resList[1][c], resList[2][c]]))  # For RVE's
+            # avgProps.append(findAvg([resList[0][c], resList[1][c], resList[2][c],  # For Composite Models's
+            #                          resList[3][c], resList[4][c], resList[5][c]]))
+        writer.writerow(['Average results:'])
+        writer.writerow(matProps)
+        writer.writerow(avgProps)
 
 
 if __name__ == '__main__':
@@ -190,15 +191,20 @@ if __name__ == '__main__':
     jobs = ['ZTensionAnalysis', 'ZCompressionAnalysis', 'XYShearAnalysis',
             'XTensionAnalysis', 'XCompressionAnalysis', 'YZShearAnalysis',
             'YTensionAnalysis', 'YCompressionAnalysis', 'XZShearAnalysis']
-    compModels = ['Plain', 'Basket', 'Mock-Leno',
-                  'Satin', 'Twill', 'Extra']
-    rveModels = ['RVE1', 'RVE2', 'RVE3']
 
-    path = './ODBData/'
-    rveSize = 120
+    compModels = ['PLAIN', 'BASKET', 'MOCK-LENO',
+                  'SATIN', 'TWILL', 'EXTRA']
+    compPath = './CompositeMesostructure/ODBData/'
     compSize = 38
 
-    readWriteResults(path, jobs, rveModels, compModels, rveSize, compSize)
+    RVEModels = ['RVE1', 'RVE2', 'RVE3']
+    RVEPath = './YarnMicrostructure/ODBData/'
+    RVESize = 120
+
+   # elastic_criterion of 0.015 TESTING
+
+    readWriteResults(RVEPath, jobs, rveModels, RVESize)
+    # readWriteResults(compPath, jobs, compModels, compSize)
 
     # End of script:
     print('*************************')
