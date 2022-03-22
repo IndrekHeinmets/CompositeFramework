@@ -30,7 +30,6 @@ interface_diameter = 1.15 * fibre_diameter
 m_name = 'Epoxy Resin'
 m_E = 3.8e9
 m_P = 0.35
-m_G = 2.1e9
 m_Ys = 55e6
 m_Ps = 0.0
 
@@ -50,7 +49,6 @@ f_G23 = 5.73e9
 i_name = 'Interface Medium'
 i_E = 10e9
 i_P = 0.35
-i_G = 3.5e9
 i_Ys = 70e6
 i_Ps = 0.0
 
@@ -59,7 +57,7 @@ strain = 0.1
 l_disp = RVE_size * strain
 
 # Mesh density:
-md = 6.0
+md = 8.0
 
 # History output time intervals:
 hi = 20
@@ -109,12 +107,12 @@ del mdb.models['Model-1'].sketches['__profile2__']
 
 # Material creation:
 mdb.models['Model-1'].Material(name=m_name)
-mdb.models['Model-1'].materials[m_name].Elastic(type=ENGINEERING_CONSTANTS, table=((m_E, m_E, m_E, m_P, m_P, m_P, m_G, m_G, m_G), ))
+mdb.models['Model-1'].materials[m_name].Elastic(table=((m_E, m_P), ))
 mdb.models['Model-1'].materials[m_name].Plastic(scaleStress=None, table=((m_Ys, m_Ps), ))
 mdb.models['Model-1'].Material(name=f_name)
 mdb.models['Model-1'].materials[f_name].Elastic(type=ENGINEERING_CONSTANTS, table=((f_E1, f_E2, f_E3, f_P12, f_P13, f_P23, f_G12, f_G13, f_G23), ))
 mdb.models['Model-1'].Material(name=i_name)
-mdb.models['Model-1'].materials[i_name].Elastic(type=ENGINEERING_CONSTANTS, table=((i_E, i_E, i_E, i_P, i_P, i_P, i_G, i_G, i_G), ))
+mdb.models['Model-1'].materials[i_name].Elastic(table=((i_E, i_P), ))
 mdb.models['Model-1'].materials[i_name].Plastic(scaleStress=None, table=((i_Ys, i_Ps), ))
 
 # Section creation:
@@ -187,8 +185,6 @@ v = p.vertices
 p.DatumCsysByThreePoints(origin=v.findAt(coordinates=(-60.241748, -60.442281, 120.0)), point1=v.findAt(coordinates=(-60.241748, -60.442281, 0.0)), point2=v.findAt(coordinates=(-60.241748, 59.557719, 0.0)), name='Datum csys-1', coordSysType=CARTESIAN)
 region = regionToolset.Region(cells=fibreCells)
 orientation = mdb.models['Model-1'].parts['RVECube'].datums[3]
-mdb.models['Model-1'].parts['RVECube'].MaterialOrientation(region=region, orientationType=SYSTEM, axis=AXIS_3, localCsys=orientation, fieldName='', additionalRotationType=ROTATION_NONE, angle=0.0, additionalRotationField='', stackDirection=STACK_3)
-region = regionToolset.Region(cells=matrixCells + interfaceCells)
 mdb.models['Model-1'].parts['RVECube'].MaterialOrientation(region=region, orientationType=SYSTEM, axis=AXIS_3, localCsys=orientation, fieldName='', additionalRotationType=ROTATION_NONE, angle=0.0, additionalRotationField='', stackDirection=STACK_3)
 
 # Section assignment:
@@ -345,7 +341,7 @@ mdb.models['XTension'].DisplacementBC(name='ZSupport', createStepName='Initial',
 region = a.instances['RVECube-1'].sets['YBottom']
 mdb.models['XTension'].DisplacementBC(name='YSupport', createStepName='Initial', region=region, u1=UNSET, u2=SET, u3=UNSET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, distributionType=UNIFORM, fieldName='', localCsys=None)
 region = mdb.models['XYShear'].rootAssembly.sets['RPSet']
-mdb.models['XTension'].DisplacementBC(name='Load', createStepName='StaticAnalysis', region=region, u1=l_disp, u2=UNSET, u3=SET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
+mdb.models['XTension'].DisplacementBC(name='Load', createStepName='StaticAnalysis', region=region, u1=l_disp, u2=UNSET, u3=UNSET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
 del mdb.models['XTension'].boundaryConditions['YRoller']
 a.regenerate()
 
@@ -365,7 +361,7 @@ a.regenerate()
 mdb.models['XZShear'].Equation(name='ConstraintEqn', terms=((1.0, 'RVECube-1.XFront', 3), (-1.0, 'RPSet', 3)))
 # Boundary conditions:
 region = a.instances['RVECube-1'].sets['XBack']
-mdb.models['XZShear'].DisplacementBC(name='YXSupport', createStepName='Initial', region=region, u1=SET, u2=SET, u3=SET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
+mdb.models['XZShear'].DisplacementBC(name='XSupport', createStepName='Initial', region=region, u1=SET, u2=SET, u3=SET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
 region = a.instances['RVECube-1'].sets['XFront']
 mdb.models['XZShear'].DisplacementBC(name='XRoller', createStepName='Initial', region=region, u1=SET, u2=SET, u3=UNSET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
 region = mdb.models['XYShear'].rootAssembly.sets['RPSet']
