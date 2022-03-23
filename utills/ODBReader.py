@@ -60,8 +60,8 @@ def caseAxis(RF1, RF2, RF3, U1, U2, U3):
     return loadCase, loadAxis
 
 
-def readODB(path, job_list, specSize, elasticCrit=0.015):
-    for c, job in enumerate(job_list):
+def readODB(path, jobList, specSize, elasticCrit=0.01):
+    for c, job in enumerate(jobList):
 
         odb = openOdb(path + job + '.odb')
         keys = odb.steps['StaticAnalysis'].historyRegions.keys()
@@ -93,18 +93,18 @@ def readODB(path, job_list, specSize, elasticCrit=0.015):
         stressX, stressY, stressZ = findStress(RF1_vals, specSize), findStress(RF2_vals, specSize), findStress(RF3_vals, specSize)
         strainX, strainY, strainZ = findStrain(U1_vals, specSize), findStrain(U2_vals, specSize), findStrain(U3_vals, specSize)
 
-        # # TEMPORARY WRITER:
+        # # Job results writer:
         # with open('Results from ' + job + '.csv', 'wb') as csvfile:
-        # writer = csv.writer(csvfile)
-        # writer.writerow(['Results from ' + job + ':'])
-        # writer.writerow(['Time', 'RF1', 'RF2', 'RF3', 'U1', 'U2', 'U3'])
-        # for i, time in enumerate(time_vals):
-        # writer.writerow([time, RF1_vals[i], RF2_vals[i], RF3_vals[i], U1_vals[i], U2_vals[i], U3_vals[i]])
+            # writer = csv.writer(csvfile)
+            # writer.writerow(['Results from ' + job + ':'])
+            # writer.writerow(['Time', 'RF1', 'RF2', 'RF3', 'U1', 'U2', 'U3'])
+            # for i, time in enumerate(time_vals):
+                # writer.writerow([time, RF1_vals[i], RF2_vals[i], RF3_vals[i], U1_vals[i], U2_vals[i], U3_vals[i]])
 
         loadCase, loadAxis = caseAxis(RF1_vals, RF2_vals, RF3_vals, U1_vals, U2_vals, U3_vals)
 
         # Tensile Young's Modulus & Poisson's Ratio:
-        # Stress/Strain limited to eleastic region only [Criterion:10% strain]
+        # Stress/Strain limited to eleastic region only [Criterion: 10% strain]
         if loadCase == 'tension':
             if loadAxis == 1:
                 strainX, i = limitList(elasticCrit, strainX)
@@ -140,16 +140,12 @@ def readODB(path, job_list, specSize, elasticCrit=0.015):
 
         # Shear Modulus:
         elif loadCase == 'shear':
-            # ###|TEMP|###
-            # G12, G13, G23 = 0, 0, 0
-            # ##########
             if loadAxis == 1:
+                strainX, i = limitList(elasticCrit, strainX)
                 if job == jobList[5]:
-                    strainX, i = limitList(elasticCrit, strainX)
                     G12 = findSlope(stressX[0:i], strainX) / 1e9
                 elif job == jobList[8]:
-                    strainZ, i = limitList(elasticCrit, strainZ)
-                    G13 = findSlope(stressZ[0:i], strainZ) / 1e9
+                    G13 = findSlope(stressX[0:i], strainX) / 1e9
             elif loadAxis == 2:
                 strainY, i = limitList(elasticCrit, strainY)
                 G23 = findSlope(stressY[0:i], strainY) / 1e9
@@ -161,36 +157,42 @@ def readODB(path, job_list, specSize, elasticCrit=0.015):
     return [E1, E2, E3, P12, P13, P23, G12, G13, G23]
 
 
-def readWriteResults(basePath, jobList, modelList, specSize):
-    matProps, resList, avgProps = ['E1', 'E2', 'E3', 'P12', 'P13', 'P23', 'G12', 'G13', 'G23'], [], []
+def readWriteResults(modName, avgRes, jobList, RVEModels, RVEPath, RVESize, compModels, compPath, compSize):
+    if modName == 'RVE':
+        modelList, basePath, specSize = RVEModels, RVEPath, RVESize
+    elif modName == 'Comp':
+        modelList, basePath, specSize = compModels, compPath, compSize
+
+    propsNames, resList, avgProps = ['E1', 'E2', 'E3', 'P12', 'P13', 'P23', 'G12', 'G13', 'G23'], [], []
     for c, model in enumerate(modelList):
         path = basePath + model + '/'
         resList.append(readODB(path, jobList, specSize))
 
     # Open file and write computational data:
-    with open('NumericalMaterialProperties' + '.csv', 'wb') as csvfile:
+    with open('Numerical' + modName + 'MaterialProperties' + '.csv', 'wb') as csvfile:
         writer = csv.writer(csvfile)
         for c, res in enumerate(resList):
             writer.writerow(['Results from ' + modelList[c] + ':'])
-            writer.writerow(matProps)
+            writer.writerow(propsNames)
             writer.writerow(res)
             writer.writerow([' '])
 
-        # Write averages to file:
-        for c, p in enumerate(matProps):
-            avgProps.append(findAvg([resList[0][c], resList[1][c], resList[2][c]]))  # For RVE's
-            # avgProps.append(findAvg([resList[0][c], resList[1][c], resList[2][c],  # For Composite Models's
-            #                          resList[3][c], resList[4][c], resList[5][c]]))
-        writer.writerow(['Average results:'])
-        writer.writerow(matProps)
-        writer.writerow(avgProps)
+        if avgRes:
+            for c, p in enumerate(propsNames):
+                if modName == 'RVE':
+                    avgProps.append(findAvg([resList[0][c], resList[1][c], resList[2][c]]))
+                elif modName == 'Comp':
+                    avgProps.append(findAvg([resList[0][c], resList[1][c], resList[2][c], resList[3][c], resList[4][c], resList[5][c]]))
+            writer.writerow(['Average results:'])
+            writer.writerow(propsNames)
+            writer.writerow(avgProps)
 
 
 if __name__ == '__main__':
     ############################# VARIABLES #################################
-    jobs = ['ZTensionAnalysis', 'ZCompressionAnalysis', 'XYShearAnalysis',
-            'XTensionAnalysis', 'XCompressionAnalysis', 'YZShearAnalysis',
-            'YTensionAnalysis', 'YCompressionAnalysis', 'XZShearAnalysis']
+    jobList = ['ZTensionAnalysis', 'ZCompressionAnalysis', 'XYShearAnalysis',
+               'XTensionAnalysis', 'XCompressionAnalysis', 'YZShearAnalysis',
+               'YTensionAnalysis', 'YCompressionAnalysis', 'XZShearAnalysis']
 
     compModels = ['PLAIN', 'BASKET', 'MOCK-LENO',
                   'SATIN', 'TWILL', 'EXTRA']
@@ -201,10 +203,15 @@ if __name__ == '__main__':
     RVEPath = './YarnMicrostructure/ODBData/'
     RVESize = 120
 
-   # elastic_criterion of 0.015 TESTING
+    # TEMPS #
+    compModels.pop(1)
+    compModels.pop(1)
+    compModels.pop(1)
+    compModels.pop(1)
+    compModels.pop(1)
 
-    readWriteResults(RVEPath, jobs, rveModels, RVESize)
-    # readWriteResults(compPath, jobs, compModels, compSize)
+    # Model names [RVE & Comp]
+    readWriteResults('Comp', False, jobList, RVEModels, RVEPath, RVESize, compModels, compPath, compSize)
 
     # End of script:
     print('*************************')
