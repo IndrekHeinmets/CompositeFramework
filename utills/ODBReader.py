@@ -95,11 +95,11 @@ def readODB(path, jobList, specSize, elasticCrit=0.01):
 
         # # Job results writer:
         # with open('Results from ' + job + '.csv', 'wb') as csvfile:
-            # writer = csv.writer(csvfile)
-            # writer.writerow(['Results from ' + job + ':'])
-            # writer.writerow(['Time', 'RF1', 'RF2', 'RF3', 'U1', 'U2', 'U3'])
-            # for i, time in enumerate(time_vals):
-                # writer.writerow([time, RF1_vals[i], RF2_vals[i], RF3_vals[i], U1_vals[i], U2_vals[i], U3_vals[i]])
+        # writer = csv.writer(csvfile)
+        # writer.writerow(['Results from ' + job + ':'])
+        # writer.writerow(['Time', 'RF1', 'RF2', 'RF3', 'U1', 'U2', 'U3'])
+        # for i, time in enumerate(time_vals):
+        # writer.writerow([time, RF1_vals[i], RF2_vals[i], RF3_vals[i], U1_vals[i], U2_vals[i], U3_vals[i]])
 
         loadCase, loadAxis = caseAxis(RF1_vals, RF2_vals, RF3_vals, U1_vals, U2_vals, U3_vals)
 
