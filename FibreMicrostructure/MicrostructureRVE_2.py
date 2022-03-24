@@ -263,7 +263,7 @@ verts = v.findAt(((59.758252, 59.557719, 120.0), ))
 a.Set(vertices=verts, name='CornerNodeSet')
 
 regionDef = mdb.models['Model-1'].rootAssembly.sets['RPSet']
-mdb.models['Model-1'].HistoryOutputRequest(name='RPHO', createStepName='StaticAnalysis', variables=('RF1', 'RF2', 'RF3', 'U1', 'U2', 'U3'), region=regionDef, sectionPoints=DEFAULT, rebar=EXCLUDE, numIntervals=hi)
+mdb.models['Model-1'].HistoryOutputRequest(name='RPHO', createStepName='StaticAnalysis', variables=('RF1', 'RF2', 'RF3'), region=regionDef, sectionPoints=DEFAULT, rebar=EXCLUDE, numIntervals=hi)
 regionDef = mdb.models['Model-1'].rootAssembly.sets['CornerNodeSet']
 mdb.models['Model-1'].HistoryOutputRequest(name='CornerNodeHO', createStepName='StaticAnalysis', variables=('U1', 'U2', 'U3'), region=regionDef, sectionPoints=DEFAULT, rebar=EXCLUDE, numIntervals=hi)
 

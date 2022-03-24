@@ -69,7 +69,7 @@ strain = 0.1
 l_disp = RVE_size * strain
 
 # Mesh density:
-md = 0.5
+md = 2.0
 
 # History output time intervals:
 hi = 20
@@ -330,7 +330,7 @@ verts = v.findAt(((56.699112, 2.0, 56.699112), ))
 a.Set(vertices=verts, name='CornerNodeSet')
 
 regionDef = mdb.models['Model-1'].rootAssembly.sets['RPSet']
-mdb.models['Model-1'].HistoryOutputRequest(name='RPHO', createStepName='StaticAnalysis', variables=('RF1', 'RF2', 'RF3', 'U1', 'U2', 'U3'), region=regionDef, sectionPoints=DEFAULT, rebar=EXCLUDE, numIntervals=hi)
+mdb.models['Model-1'].HistoryOutputRequest(name='RPHO', createStepName='StaticAnalysis', variables=('RF1', 'RF2', 'RF3'), region=regionDef, sectionPoints=DEFAULT, rebar=EXCLUDE, numIntervals=hi)
 regionDef = mdb.models['Model-1'].rootAssembly.sets['CornerNodeSet']
 mdb.models['Model-1'].HistoryOutputRequest(name='CornerNodeHO', createStepName='StaticAnalysis', variables=('U1', 'U2', 'U3'), region=regionDef, sectionPoints=DEFAULT, rebar=EXCLUDE, numIntervals=hi)
 
@@ -341,11 +341,11 @@ mdb.Model(name='XZShear', objectToCopy=mdb.models['XYShear'])
 a = mdb.models['XYShear'].rootAssembly
 a.regenerate()
 # Constraint equation:
-mdb.models['XYShear'].Equation(name='ConstraintEqn', terms=((1.0, 'RVECube-1.XFront', 2), (-1.0, 'RPSet', 2)))
+mdb.models['XYShear'].Equation(name='ConstraintEqn', terms=((1.0, 'Composite-1.XFront', 2), (-1.0, 'RPSet', 2)))
 # Boundary conditions:
-region = a.instances['RVECube-1'].sets['XBack']
+region = a.instances['Composite-1'].sets['XBack']
 mdb.models['XYShear'].DisplacementBC(name='XSupport', createStepName='Initial', region=region, u1=SET, u2=SET, u3=SET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
-region = a.instances['RVECube-1'].sets['XFront']
+region = a.instances['Composite-1'].sets['XFront']
 mdb.models['XYShear'].DisplacementBC(name='XRoller', createStepName='Initial', region=region, u1=SET, u2=UNSET, u3=SET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
 region = mdb.models['XYShear'].rootAssembly.sets['RPSet']
 mdb.models['XYShear'].DisplacementBC(name='Load', createStepName='StaticAnalysis', region=region, u1=SET, u2=l_disp, u3=SET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
@@ -356,13 +356,13 @@ mdb.Model(name='ZTension', objectToCopy=mdb.models['XYShear'])
 a = mdb.models['ZTension'].rootAssembly
 a.regenerate()
 # Constraint equation:
-mdb.models['ZTension'].constraints['ConstraintEqn'].setValues(terms=((1.0, 'RVECube-1.ZFront', 3), (-1.0, 'RPSet', 3)))
-# Boundary conditions:
-region = a.instances['RVECube-1'].sets['XBack']
+mdb.models['ZTension'].constraints['ConstraintEqn'].setValues(terms=((1.0, 'Composite-1.ZFront', 3), (-1.0, 'RPSet', 3)))
+# Boundary conditions:s
+region = a.instances['Composite-1'].sets['XBack']
 mdb.models['ZTension'].DisplacementBC(name='XSupport', createStepName='Initial', region=region, u1=SET, u2=UNSET, u3=UNSET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, distributionType=UNIFORM, fieldName='', localCsys=None)
-region = a.instances['RVECube-1'].sets['ZBack']
+region = a.instances['Composite-1'].sets['ZBack']
 mdb.models['ZTension'].DisplacementBC(name='ZSupport', createStepName='Initial', region=region, u1=UNSET, u2=UNSET, u3=SET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, distributionType=UNIFORM, fieldName='', localCsys=None)
-region = a.instances['RVECube-1'].sets['YBottom']
+region = a.instances['Composite-1'].sets['YBottom']
 mdb.models['ZTension'].DisplacementBC(name='YSupport', createStepName='Initial', region=region, u1=UNSET, u2=SET, u3=UNSET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, distributionType=UNIFORM, fieldName='', localCsys=None)
 region = mdb.models['XYShear'].rootAssembly.sets['RPSet']
 mdb.models['ZTension'].DisplacementBC(name='Load', createStepName='StaticAnalysis', region=region, u1=UNSET, u2=UNSET, u3=l_disp, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
@@ -382,11 +382,11 @@ a.regenerate()
 a = mdb.models['YZShear'].rootAssembly
 a.regenerate()
 # Constraint equation:
-mdb.models['YZShear'].Equation(name='ConstraintEqn', terms=((1.0, 'RVECube-1.YTop', 3), (-1.0, 'RPSet', 3)))
+mdb.models['YZShear'].Equation(name='ConstraintEqn', terms=((1.0, 'Composite-1.YTop', 3), (-1.0, 'RPSet', 3)))
 # Boundary conditions:
-region = a.instances['RVECube-1'].sets['YBottom']
+region = a.instances['Composite-1'].sets['YBottom']
 mdb.models['YZShear'].DisplacementBC(name='YSupport', createStepName='Initial', region=region, u1=SET, u2=SET, u3=SET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
-region = a.instances['RVECube-1'].sets['YTop']
+region = a.instances['Composite-1'].sets['YTop']
 mdb.models['YZShear'].DisplacementBC(name='YRoller', createStepName='Initial', region=region, u1=SET, u2=SET, u3=UNSET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
 region = mdb.models['XYShear'].rootAssembly.sets['RPSet']
 mdb.models['YZShear'].DisplacementBC(name='Load', createStepName='StaticAnalysis', region=region, u1=SET, u2=SET, u3=l_disp, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
@@ -397,13 +397,13 @@ mdb.Model(name='XTension', objectToCopy=mdb.models['YZShear'])
 a = mdb.models['XTension'].rootAssembly
 a.regenerate()
 # Constraint equation:
-mdb.models['XTension'].constraints['ConstraintEqn'].setValues(terms=((1.0, 'RVECube-1.XFront', 1), (-1.0, 'RPSet', 1)))
+mdb.models['XTension'].constraints['ConstraintEqn'].setValues(terms=((1.0, 'Composite-1.XFront', 1), (-1.0, 'RPSet', 1)))
 # Boundary conditions:
-region = a.instances['RVECube-1'].sets['XBack']
+region = a.instances['Composite-1'].sets['XBack']
 mdb.models['XTension'].DisplacementBC(name='XSupport', createStepName='Initial', region=region, u1=SET, u2=UNSET, u3=UNSET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, distributionType=UNIFORM, fieldName='', localCsys=None)
-region = a.instances['RVECube-1'].sets['ZBack']
+region = a.instances['Composite-1'].sets['ZBack']
 mdb.models['XTension'].DisplacementBC(name='ZSupport', createStepName='Initial', region=region, u1=UNSET, u2=UNSET, u3=SET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, distributionType=UNIFORM, fieldName='', localCsys=None)
-region = a.instances['RVECube-1'].sets['YBottom']
+region = a.instances['Composite-1'].sets['YBottom']
 mdb.models['XTension'].DisplacementBC(name='YSupport', createStepName='Initial', region=region, u1=UNSET, u2=SET, u3=UNSET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, distributionType=UNIFORM, fieldName='', localCsys=None)
 region = mdb.models['XYShear'].rootAssembly.sets['RPSet']
 mdb.models['XTension'].DisplacementBC(name='Load', createStepName='StaticAnalysis', region=region, u1=l_disp, u2=UNSET, u3=UNSET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
@@ -423,11 +423,11 @@ a.regenerate()
 a = mdb.models['XZShear'].rootAssembly
 a.regenerate()
 # Constraint equation:
-mdb.models['XZShear'].Equation(name='ConstraintEqn', terms=((1.0, 'RVECube-1.XFront', 3), (-1.0, 'RPSet', 3)))
+mdb.models['XZShear'].Equation(name='ConstraintEqn', terms=((1.0, 'Composite-1.XFront', 3), (-1.0, 'RPSet', 3)))
 # Boundary conditions:
-region = a.instances['RVECube-1'].sets['XBack']
+region = a.instances['Composite-1'].sets['XBack']
 mdb.models['XZShear'].DisplacementBC(name='XSupport', createStepName='Initial', region=region, u1=SET, u2=SET, u3=SET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
-region = a.instances['RVECube-1'].sets['XFront']
+region = a.instances['Composite-1'].sets['XFront']
 mdb.models['XZShear'].DisplacementBC(name='XRoller', createStepName='Initial', region=region, u1=SET, u2=SET, u3=UNSET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
 region = mdb.models['XYShear'].rootAssembly.sets['RPSet']
 mdb.models['XZShear'].DisplacementBC(name='Load', createStepName='StaticAnalysis', region=region, u1=SET, u2=SET, u3=l_disp, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
@@ -438,13 +438,13 @@ mdb.Model(name='YTension', objectToCopy=mdb.models['XZShear'])
 a = mdb.models['YTension'].rootAssembly
 a.regenerate()
 # Constraint equation:
-mdb.models['YTension'].constraints['ConstraintEqn'].setValues(terms=((1.0, 'RVECube-1.YTop', 2), (-1.0, 'RPSet', 2)))
+mdb.models['YTension'].constraints['ConstraintEqn'].setValues(terms=((1.0, 'Composite-1.YTop', 2), (-1.0, 'RPSet', 2)))
 # Boundary conditions:
-region = a.instances['RVECube-1'].sets['XBack']
+region = a.instances['Composite-1'].sets['XBack']
 mdb.models['YTension'].DisplacementBC(name='XSupport', createStepName='Initial', region=region, u1=SET, u2=UNSET, u3=UNSET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, distributionType=UNIFORM, fieldName='', localCsys=None)
-region = a.instances['RVECube-1'].sets['ZBack']
+region = a.instances['Composite-1'].sets['ZBack']
 mdb.models['YTension'].DisplacementBC(name='ZSupport', createStepName='Initial', region=region, u1=UNSET, u2=UNSET, u3=SET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, distributionType=UNIFORM, fieldName='', localCsys=None)
-region = a.instances['RVECube-1'].sets['YBottom']
+region = a.instances['Composite-1'].sets['YBottom']
 mdb.models['YTension'].DisplacementBC(name='YSupport', createStepName='Initial', region=region, u1=UNSET, u2=SET, u3=UNSET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, distributionType=UNIFORM, fieldName='', localCsys=None)
 region = mdb.models['XYShear'].rootAssembly.sets['RPSet']
 mdb.models['YTension'].DisplacementBC(name='Load', createStepName='StaticAnalysis', region=region, u1=UNSET, u2=l_disp, u3=UNSET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)

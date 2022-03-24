@@ -9,19 +9,19 @@ def findAvg(lst):
     elSum = 0.0
     for el in lst:
         elSum += el
-    return (elSum / len(lst))
+    return elSum / len(lst)
 
 
 def matCol(i, matrix):
     return [row[i] for row in matrix]
 
 
-def findStress(force_vals, specSize):
-    return [force / specSize**2 for force in force_vals]
+def findStress(forceVals, area):
+    return [force / area for force in forceVals]
 
 
-def findStrain(disp_vals, specSize):
-    return [disp / specSize for disp in disp_vals]
+def findStrain(dispVals, length):
+    return [disp / length for disp in dispVals]
 
 
 def limitList(crit, valList):
@@ -90,8 +90,8 @@ def readODB(path, jobList, specSize, elasticCrit=0.01):
         U3_vals = matCol(1, hOut_U3)
 
         # Stresses & Strains:
-        stressX, stressY, stressZ = findStress(RF1_vals, specSize), findStress(RF2_vals, specSize), findStress(RF3_vals, specSize)
-        strainX, strainY, strainZ = findStrain(U1_vals, specSize), findStrain(U2_vals, specSize), findStrain(U3_vals, specSize)
+        stressX, stressY, stressZ = findStress(RF1_vals, (specSize[1] * specSize[2])), findStress(RF2_vals, (specSize[0] * specSize[2])), findStress(RF3_vals, (specSize[0] * specSize[1]))
+        strainX, strainY, strainZ = findStrain(U1_vals, specSize[0]), findStrain(U2_vals, specSize[1]), findStrain(U3_vals, specSize[2])
 
         # # Job results writer:
         # with open('Results from ' + job + '.csv', 'wb') as csvfile:
@@ -197,11 +197,11 @@ if __name__ == '__main__':
     compModels = ['PLAIN', 'BASKET', 'MOCK-LENO',
                   'SATIN', 'TWILL', 'EXTRA']
     compPath = './CompositeMesostructure/ODBData/'
-    compSize = 38
+    compSize = (38, 4, 38)
 
     RVEModels = ['RVE1', 'RVE2', 'RVE3']
     RVEPath = './YarnMicrostructure/ODBData/'
-    RVESize = 120
+    RVESize = (120, 120, 120)
 
     # TEMPS #
     compModels.pop(1)
@@ -211,7 +211,7 @@ if __name__ == '__main__':
     compModels.pop(1)
 
     # Model names [RVE & Comp]
-    readWriteResults('Comp', False, jobList, RVEModels, RVEPath, RVESize, compModels, compPath, compSize)
+    readWriteResults('RVE', False, jobList, RVEModels, RVEPath, RVESize, compModels, compPath, compSize)
 
     # End of script:
     print('*************************')
