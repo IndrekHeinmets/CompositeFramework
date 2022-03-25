@@ -79,10 +79,10 @@ def readODB(path, jobList, specSize, elasticCrit=0.01):
         RF3_vals = matCol(1, hOut_RF3)
 
         # Displacements:
-        crp = odb.steps['StaticAnalysis'].historyRegions[keys[2]]
-        hOut_U1 = crp.historyOutputs['U3'].data
-        hOut_U2 = crp.historyOutputs['U2'].data
-        hOut_U3 = crp.historyOutputs['U1'].data
+        drp = odb.steps['StaticAnalysis'].historyRegions[keys[2]]
+        hOut_U1 = drp.historyOutputs['U3'].data
+        hOut_U2 = drp.historyOutputs['U2'].data
+        hOut_U3 = drp.historyOutputs['U1'].data
         odb.close()
 
         U1_vals = matCol(1, hOut_U1)
@@ -93,13 +93,13 @@ def readODB(path, jobList, specSize, elasticCrit=0.01):
         stressX, stressY, stressZ = findStress(RF1_vals, (specSize[1] * specSize[2])), findStress(RF2_vals, (specSize[0] * specSize[2])), findStress(RF3_vals, (specSize[0] * specSize[1]))
         strainX, strainY, strainZ = findStrain(U1_vals, specSize[0]), findStrain(U2_vals, specSize[1]), findStrain(U3_vals, specSize[2])
 
-        # # Job results writer:
-        # with open('Results from ' + job + '.csv', 'wb') as csvfile:
-        # writer = csv.writer(csvfile)
-        # writer.writerow(['Results from ' + job + ':'])
-        # writer.writerow(['Time', 'RF1', 'RF2', 'RF3', 'U1', 'U2', 'U3'])
-        # for i, time in enumerate(time_vals):
-        # writer.writerow([time, RF1_vals[i], RF2_vals[i], RF3_vals[i], U1_vals[i], U2_vals[i], U3_vals[i]])
+        # Job results writer:
+        with open('Results from ' + job + '.csv', 'wb') as csvfile:
+            writer = csv.writer(csvfile)
+            writer.writerow(['Results from ' + job + ':'])
+            writer.writerow(['Time', 'RF1', 'RF2', 'RF3', 'U1', 'U2', 'U3'])
+            for i, time in enumerate(time_vals):
+                writer.writerow([time, RF1_vals[i], RF2_vals[i], RF3_vals[i], U1_vals[i], U2_vals[i], U3_vals[i]])
 
         loadCase, loadAxis = caseAxis(RF1_vals, RF2_vals, RF3_vals, U1_vals, U2_vals, U3_vals)
 
@@ -194,8 +194,9 @@ if __name__ == '__main__':
                'XTensionAnalysis', 'XCompressionAnalysis', 'YZShearAnalysis',
                'YTensionAnalysis', 'YCompressionAnalysis', 'XZShearAnalysis']
 
-    compModels = ['PLAIN', 'BASKET', 'MOCK-LENO',
-                  'SATIN', 'TWILL', 'EXTRA']
+    # compModels = ['PLAIN', 'BASKET', 'MOCK-LENO',
+    #               'SATIN', 'TWILL', 'EXTRA']
+    compModels = ['MOCK-LENO']
     compPath = './CompositeMesostructure/ODBData/'
     compSize = (38, 4, 38)
 
@@ -203,15 +204,8 @@ if __name__ == '__main__':
     RVEPath = './YarnMicrostructure/ODBData/'
     RVESize = (120, 120, 120)
 
-    # TEMPS #
-    compModels.pop(1)
-    compModels.pop(1)
-    compModels.pop(1)
-    compModels.pop(1)
-    compModels.pop(1)
-
     # Model names [RVE & Comp]
-    readWriteResults('RVE', False, jobList, RVEModels, RVEPath, RVESize, compModels, compPath, compSize)
+    readWriteResults('Comp', False, jobList, RVEModels, RVEPath, RVESize, compModels, compPath, compSize)
 
     # End of script:
     print('*************************')
