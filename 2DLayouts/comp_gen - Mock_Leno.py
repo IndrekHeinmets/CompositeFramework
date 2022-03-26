@@ -110,7 +110,6 @@ def find_spline_nodes_l(sin_x, step, pi_len, overlap_len, sc):
 
         if y_b < y < y_a or y_b > y > y_a:
             points.append((x, y))
-
         else:
             x, offset, points = add_straight(x, y, overlap_len, step, points, offset)
 

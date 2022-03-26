@@ -93,13 +93,13 @@ def readODB(path, jobList, specSize, elasticCrit=0.01):
         stressX, stressY, stressZ = findStress(RF1_vals, (specSize[1] * specSize[2])), findStress(RF2_vals, (specSize[0] * specSize[2])), findStress(RF3_vals, (specSize[0] * specSize[1]))
         strainX, strainY, strainZ = findStrain(U1_vals, specSize[0]), findStrain(U2_vals, specSize[1]), findStrain(U3_vals, specSize[2])
 
-        # Job results writer:
-        with open('Results from ' + job + '.csv', 'wb') as csvfile:
-            writer = csv.writer(csvfile)
-            writer.writerow(['Results from ' + job + ':'])
-            writer.writerow(['Time', 'RF1', 'RF2', 'RF3', 'U1', 'U2', 'U3'])
-            for i, time in enumerate(time_vals):
-                writer.writerow([time, RF1_vals[i], RF2_vals[i], RF3_vals[i], U1_vals[i], U2_vals[i], U3_vals[i]])
+        # # Job results writer:
+        # with open('Results from ' + job + '.csv', 'wb') as csvfile:
+        #     writer = csv.writer(csvfile)
+        #     writer.writerow(['Results from ' + job + ':'])
+        #     writer.writerow(['Time', 'RF1', 'RF2', 'RF3', 'U1', 'U2', 'U3'])
+        #     for i, time in enumerate(time_vals):
+        #         writer.writerow([time, RF1_vals[i], RF2_vals[i], RF3_vals[i], U1_vals[i], U2_vals[i], U3_vals[i]])
 
         loadCase, loadAxis = caseAxis(RF1_vals, RF2_vals, RF3_vals, U1_vals, U2_vals, U3_vals)
 
@@ -194,9 +194,8 @@ if __name__ == '__main__':
                'XTensionAnalysis', 'XCompressionAnalysis', 'YZShearAnalysis',
                'YTensionAnalysis', 'YCompressionAnalysis', 'XZShearAnalysis']
 
-    # compModels = ['PLAIN', 'BASKET', 'MOCK-LENO',
-    #               'SATIN', 'TWILL', 'EXTRA']
-    compModels = ['MOCK-LENO']
+    compModels = ['PLAIN', 'BASKET', 'MOCK-LENO',
+                  'SATIN', 'TWILL', 'EXTRA']
     compPath = './CompositeMesostructure/ODBData/'
     compSize = (38, 4, 38)
 
