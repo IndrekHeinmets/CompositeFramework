@@ -89,10 +89,6 @@ def readODB(path, jobList, specSize, elasticCrit=0.01):
         U2_vals = matCol(1, hOut_U2)
         U3_vals = matCol(1, hOut_U3)
 
-        # Stresses & Strains:
-        stressX, stressY, stressZ = findStress(RF1_vals, (specSize[1] * specSize[2])), findStress(RF2_vals, (specSize[0] * specSize[2])), findStress(RF3_vals, (specSize[0] * specSize[1]))
-        strainX, strainY, strainZ = findStrain(U1_vals, specSize[0]), findStrain(U2_vals, specSize[1]), findStrain(U3_vals, specSize[2])
-
         # # Job results writer:
         # with open('Results from ' + job + '.csv', 'wb') as csvfile:
         #     writer = csv.writer(csvfile)
@@ -101,7 +97,12 @@ def readODB(path, jobList, specSize, elasticCrit=0.01):
         #     for i, time in enumerate(time_vals):
         #         writer.writerow([time, RF1_vals[i], RF2_vals[i], RF3_vals[i], U1_vals[i], U2_vals[i], U3_vals[i]])
 
+        # Find loading case and axis:
         loadCase, loadAxis = caseAxis(RF1_vals, RF2_vals, RF3_vals, U1_vals, U2_vals, U3_vals)
+
+        # Stresses & Strains:
+        stressX, stressY, stressZ = findStress(RF1_vals, (specSize[1] * specSize[2])), findStress(RF2_vals, (specSize[0] * specSize[2])), findStress(RF3_vals, (specSize[0] * specSize[1]))
+        strainX, strainY, strainZ = findStrain(U1_vals, specSize[0]), findStrain(U2_vals, specSize[1]), findStrain(U3_vals, specSize[2])
 
         # Tensile Young's Modulus & Poisson's Ratio:
         # Stress/Strain limited to eleastic region only [Criterion: 10% strain]
@@ -143,11 +144,14 @@ def readODB(path, jobList, specSize, elasticCrit=0.01):
             if loadAxis == 1:
                 strainX, i = limitList(elasticCrit, strainX)
                 if job == jobList[5]:
+                    stressX = findStress(RF1_vals, (specSize[0] * specSize[2]))
                     G12 = findSlope(stressX[0:i], strainX) / 1e9
                 elif job == jobList[8]:
+                    stressX = findStress(RF1_vals, (specSize[1] * specSize[2]))
                     G13 = findSlope(stressX[0:i], strainX) / 1e9
             elif loadAxis == 2:
                 strainY, i = limitList(elasticCrit, strainY)
+                stressY = findStress(RF2_vals, (specSize[1] * specSize[2]))
                 G23 = findSlope(stressY[0:i], strainY) / 1e9
 
     # Averaged E & P values from Tension & Compression:
@@ -204,7 +208,7 @@ if __name__ == '__main__':
     RVESize = (120, 120, 120)
 
     # Model names [RVE & Comp]
-    readWriteResults('Comp', False, jobList, RVEModels, RVEPath, RVESize, compModels, compPath, compSize)
+    readWriteResults('Comp', True, jobList, RVEModels, RVEPath, RVESize, compModels, compPath, compSize)
 
     # End of script:
     print('*************************')

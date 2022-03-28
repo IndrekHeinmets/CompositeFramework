@@ -14,11 +14,11 @@ volumes = {'RVE1': (1728005.38, 931469.31, 603186.25),
 
 def find_volume_fraction_microstructure(volumes, model):
     total_vol, matrix_vol, fiber_vol = volumes[model]
-    interface_vol = total_vol - (matrix_vol + fiber_vol)
+    interphase_vol = total_vol - (matrix_vol + fiber_vol)
     vf_fibers = round(fiber_vol / total_vol, 4)
     vf_matrix = round(matrix_vol / total_vol, 4)
-    vf_interface = round(interface_vol / total_vol, 4)
-    return vf_fibers, vf_matrix, vf_interface
+    vf_interphase = round(interphase_vol / total_vol, 4)
+    return vf_fibers, vf_matrix, vf_interphase
 
 
 def find_volume_fraction_mesostructure(volumes, model):
@@ -31,13 +31,13 @@ def find_volume_fraction_mesostructure(volumes, model):
 
 if __name__ == '__main__':
     # Enter the name of the model (RVE1, RVE2, RVE3, Plain, Basket, Mock-Leno, Satin, Twill, Extra):
-    model = 'Extra'
+    model = 'RVE1'
 
     if model == 'RVE1' or model == 'RVE2' or model == 'RVE3':
-        VolFraction_Fibers, VolFraction_Matrix, VolFraction_Interface = find_volume_fraction_microstructure(volumes, model)
+        VolFraction_Fibers, VolFraction_Matrix, VolFraction_Interphase = find_volume_fraction_microstructure(volumes, model)
         print(f"Volume Fraction of CF Fibers: {VolFraction_Fibers}")
         print(f"Volume Fraction of Resin Matrix: {VolFraction_Matrix}")
-        print(f"Volume Fraction of Interface Medium: {VolFraction_Interface}")
+        print(f"Volume Fraction of Interphase Medium: {VolFraction_Interphase}")
     else:
         VolFraction_Fibers, VolFraction_Matrix = find_volume_fraction_mesostructure(volumes, model)
         print(f"Volume Fraction of CF Fibers: {VolFraction_Fibers}")

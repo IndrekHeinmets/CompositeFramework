@@ -24,7 +24,7 @@ import random
 # Scale: Microns
 fibre_diameter = 20
 RVE_size = 6 * fibre_diameter
-interface_diameter = 1.15 * fibre_diameter
+interphase_diameter = 1.15 * fibre_diameter
 
 # Matrix props:
 m_name = 'Epoxy Resin'
@@ -45,8 +45,8 @@ f_G12 = 27.6e9
 f_G13 = 27.6e9
 f_G23 = 5.73e9
 
-# Interface Medium props:
-i_name = 'Interface Medium'
+# Interphase Medium props:
+i_name = 'Interphase Medium'
 i_E = 10e9
 i_P = 0.35
 i_Ys = 70e6
@@ -83,15 +83,15 @@ s.unsetPrimaryObject()
 p = mdb.models['Model-1'].parts['Fibre']
 del mdb.models['Model-1'].sketches['__profile__']
 
-# Interface Medium creation:
+# Interphase Medium creation:
 s1 = mdb.models['Model-1'].ConstrainedSketch(name='__profile1__', sheetSize=1)
 g1, v1, d1, c1 = s1.geometry, s1.vertices, s1.dimensions, s1.constraints
 s1.setPrimaryObject(option=STANDALONE)
-s1.CircleByCenterPerimeter(center=(0.0, 0.0), point1=(interface_diameter / 2, 0.0))
-p1 = mdb.models['Model-1'].Part(name='InterfaceMedium', dimensionality=THREE_D, type=DEFORMABLE_BODY)
+s1.CircleByCenterPerimeter(center=(0.0, 0.0), point1=(interphase_diameter / 2, 0.0))
+p1 = mdb.models['Model-1'].Part(name='InterphaseMedium', dimensionality=THREE_D, type=DEFORMABLE_BODY)
 p1.BaseSolidExtrude(sketch=s1, depth=RVE_size)
 s1.unsetPrimaryObject()
-p1 = mdb.models['Model-1'].parts['InterfaceMedium']
+p1 = mdb.models['Model-1'].parts['InterphaseMedium']
 del mdb.models['Model-1'].sketches['__profile1__']
 
 # Matrix creation:
@@ -128,25 +128,25 @@ a.DatumCsysByDefault(CARTESIAN)
 for c, point in enumerate(point_lst):
     x, y = point
     a.Instance(name='Fibre-' + str(c + 1), part=p, dependent=ON)
-    a.Instance(name='InterfaceMedium-' + str(c + 1), part=p1, dependent=ON)
+    a.Instance(name='InterphaseMedium-' + str(c + 1), part=p1, dependent=ON)
     a.translate(instanceList=('Fibre-' + str(c + 1), ), vector=(x, y, 0.0))
-    a.translate(instanceList=('InterfaceMedium-' + str(c + 1), ), vector=(x, y, 0.0))
+    a.translate(instanceList=('InterphaseMedium-' + str(c + 1), ), vector=(x, y, 0.0))
 a.Instance(name='EpoxyCube-1', part=p2, dependent=ON)
 
 # Merge into composite & delete original parts:
-a.InstanceFromBooleanMerge(name='RVECube', instances=(a.instances['Fibre-1'], a.instances['InterfaceMedium-1'], a.instances['Fibre-2'], a.instances['InterfaceMedium-2'],
-                                                      a.instances['Fibre-3'], a.instances['InterfaceMedium-3'], a.instances['Fibre-4'], a.instances['InterfaceMedium-4'],
-                                                      a.instances['Fibre-5'], a.instances['InterfaceMedium-5'], a.instances['Fibre-6'], a.instances['InterfaceMedium-6'],
-                                                      a.instances['Fibre-7'], a.instances['InterfaceMedium-7'], a.instances['Fibre-8'], a.instances['InterfaceMedium-8'],
-                                                      a.instances['Fibre-9'], a.instances['InterfaceMedium-9'], a.instances['Fibre-10'], a.instances['InterfaceMedium-10'],
-                                                      a.instances['Fibre-11'], a.instances['InterfaceMedium-11'], a.instances['Fibre-12'], a.instances['InterfaceMedium-12'],
-                                                      a.instances['Fibre-13'], a.instances['InterfaceMedium-13'], a.instances['Fibre-14'], a.instances['InterfaceMedium-14'],
-                                                      a.instances['Fibre-15'], a.instances['InterfaceMedium-15'], a.instances['Fibre-16'], a.instances['InterfaceMedium-16'],
-                                                      a.instances['Fibre-17'], a.instances['InterfaceMedium-17'], a.instances['Fibre-18'], a.instances['InterfaceMedium-18'],
-                                                      a.instances['Fibre-19'], a.instances['InterfaceMedium-19'], a.instances['Fibre-20'], a.instances['InterfaceMedium-20'],
-                                                      a.instances['Fibre-21'], a.instances['InterfaceMedium-21'], a.instances['EpoxyCube-1'], ), keepIntersections=ON, originalInstances=DELETE, domain=GEOMETRY)
+a.InstanceFromBooleanMerge(name='RVECube', instances=(a.instances['Fibre-1'], a.instances['InterphaseMedium-1'], a.instances['Fibre-2'], a.instances['InterphaseMedium-2'],
+                                                      a.instances['Fibre-3'], a.instances['InterphaseMedium-3'], a.instances['Fibre-4'], a.instances['InterphaseMedium-4'],
+                                                      a.instances['Fibre-5'], a.instances['InterphaseMedium-5'], a.instances['Fibre-6'], a.instances['InterphaseMedium-6'],
+                                                      a.instances['Fibre-7'], a.instances['InterphaseMedium-7'], a.instances['Fibre-8'], a.instances['InterphaseMedium-8'],
+                                                      a.instances['Fibre-9'], a.instances['InterphaseMedium-9'], a.instances['Fibre-10'], a.instances['InterphaseMedium-10'],
+                                                      a.instances['Fibre-11'], a.instances['InterphaseMedium-11'], a.instances['Fibre-12'], a.instances['InterphaseMedium-12'],
+                                                      a.instances['Fibre-13'], a.instances['InterphaseMedium-13'], a.instances['Fibre-14'], a.instances['InterphaseMedium-14'],
+                                                      a.instances['Fibre-15'], a.instances['InterphaseMedium-15'], a.instances['Fibre-16'], a.instances['InterphaseMedium-16'],
+                                                      a.instances['Fibre-17'], a.instances['InterphaseMedium-17'], a.instances['Fibre-18'], a.instances['InterphaseMedium-18'],
+                                                      a.instances['Fibre-19'], a.instances['InterphaseMedium-19'], a.instances['Fibre-20'], a.instances['InterphaseMedium-20'],
+                                                      a.instances['Fibre-21'], a.instances['InterphaseMedium-21'], a.instances['EpoxyCube-1'], ), keepIntersections=ON, originalInstances=DELETE, domain=GEOMETRY)
 del mdb.models['Model-1'].parts['Fibre']
-del mdb.models['Model-1'].parts['InterfaceMedium']
+del mdb.models['Model-1'].parts['InterphaseMedium']
 del mdb.models['Model-1'].parts['EpoxyCube']
 p = mdb.models['Model-1'].parts['RVECube']
 
@@ -171,12 +171,12 @@ fibreCells = p.cells.findAt(((58.708406, -51.097102, 0.0), ), ((-53.229988, 58.7
                             ((36.357023, 1.483781, 0.0), ), ((25.357023, -53.51622, 0.0), ), ((11.357023, -5.516219, 0.0), ), ((-59.045747, -21.997962, 0.0), ),
                             ((-52.193105, -59.875866, 0.0), ), ((58.552218, -21.805886, 0.0), ), ((1.288344, -60.173992, 0.0), ), ((-4.703152, 58.421408, 0.0), ),
                             ((59.091236, 57.194096, 0.0), ))
-interfaceCells = p.cells.findAt(((58.835899, 54.900359, 0.0), ), ((58.545392, -45.097224, 0.0), ), ((58.552218, -35.342842, 0.0), ), ((-47.735614, -59.875866, 0.0), ),
-                                ((-59.157074, 54.835467, 0.0), ), ((-40.533047, -15.708205, 0.0), ), ((16.466953, 28.291795, 0.0), ), ((-18.533047, -23.708205, 0.0), ),
-                                ((-45.533047, 9.291795, 0.0), ), ((45.466953, 26.291795, 0.0), ), ((-36.533047, -49.708205, 0.0), ), ((26.466953, -28.708205, 0.0), ),
-                                ((-37.533047, 31.291795, 0.0), ), ((-14.533047, 13.291795, 0.0), ), ((0.466953, -43.708205, 0.0), ), ((35.466953, -0.708205, 0.0), ),
-                                ((24.466953, -55.708205, 0.0), ), ((10.466953, -7.708205, 0.0), ), ((-58.854153, -35.613365, 0.0), ), ((8.266627, -60.173992, 0.0), ),
-                                ((8.138478, 58.20211, 0.0), ))
+interphaseCells = p.cells.findAt(((58.835899, 54.900359, 0.0), ), ((58.545392, -45.097224, 0.0), ), ((58.552218, -35.342842, 0.0), ), ((-47.735614, -59.875866, 0.0), ),
+                                 ((-59.157074, 54.835467, 0.0), ), ((-40.533047, -15.708205, 0.0), ), ((16.466953, 28.291795, 0.0), ), ((-18.533047, -23.708205, 0.0), ),
+                                 ((-45.533047, 9.291795, 0.0), ), ((45.466953, 26.291795, 0.0), ), ((-36.533047, -49.708205, 0.0), ), ((26.466953, -28.708205, 0.0), ),
+                                 ((-37.533047, 31.291795, 0.0), ), ((-14.533047, 13.291795, 0.0), ), ((0.466953, -43.708205, 0.0), ), ((35.466953, -0.708205, 0.0), ),
+                                 ((24.466953, -55.708205, 0.0), ), ((10.466953, -7.708205, 0.0), ), ((-58.854153, -35.613365, 0.0), ), ((8.266627, -60.173992, 0.0), ),
+                                 ((8.138478, 58.20211, 0.0), ))
 matrixCells = p.cells.findAt(((59.758252, 8.972106, 40.0), ))
 
 # Fibre orientation assignment:
@@ -189,18 +189,18 @@ mdb.models['Model-1'].parts['RVECube'].MaterialOrientation(region=region, orient
 # Section assignment:
 region = regionToolset.Region(cells=fibreCells)
 p.SectionAssignment(region=region, sectionName='Cf_sec', offset=0.0, offsetType=MIDDLE_SURFACE, offsetField='', thicknessAssignment=FROM_SECTION)
-region = regionToolset.Region(cells=interfaceCells)
+region = regionToolset.Region(cells=interphaseCells)
 p.SectionAssignment(region=region, sectionName='Int_sec', offset=0.0, offsetType=MIDDLE_SURFACE, offsetField='', thicknessAssignment=FROM_SECTION)
 region = regionToolset.Region(cells=matrixCells)
 p.SectionAssignment(region=region, sectionName='Epo_sec', offset=0.0, offsetType=MIDDLE_SURFACE, offsetField='', thicknessAssignment=FROM_SECTION)
 print('Assembly done!')
 
 # Seeding and meshing:
-p.setMeshControls(regions=fibreCells + interfaceCells + matrixCells, elemShape=TET, technique=FREE)
+p.setMeshControls(regions=fibreCells + interphaseCells + matrixCells, elemShape=TET, technique=FREE)
 elemType1 = mesh.ElemType(elemCode=C3D20R)
 elemType2 = mesh.ElemType(elemCode=C3D15)
 elemType3 = mesh.ElemType(elemCode=C3D10)
-p.setElementType(regions=((fibreCells + interfaceCells + matrixCells), ), elemTypes=(elemType1, elemType2, elemType3))
+p.setElementType(regions=((fibreCells + interphaseCells + matrixCells), ), elemTypes=(elemType1, elemType2, elemType3))
 p.seedPart(size=md, deviationFactor=0.1, minSizeFactor=0.1)
 p.generateMesh()
 print('Meshing done!')
