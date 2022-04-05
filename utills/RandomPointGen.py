@@ -5,10 +5,8 @@ from math import sqrt
 from math import pi
 import random
 
-# Find fibre count based on volume fraction:
 
-
-def findFibreCount():
+def findFibreCount():  # Find fibre count based on volume fraction
     total_vol = RVE_size**3
     single_fibre_vol = pi * ((fibre_diameter / 2)**2) * RVE_size
     total_fibre_vol = fibre_volFraction * total_vol
@@ -16,10 +14,8 @@ def findFibreCount():
     actual_volFraction = round((single_fibre_vol * fibre_count) / total_vol, 4)
     return fibre_count, actual_volFraction
 
-# Check for fibre overlap:
 
-
-def checkFibreCol(edge_lst, point_lst, x, y):
+def checkFibreCol(edge_lst, point_lst, x, y):  # Check for fibre overlap
     valid = True
     for point in point_lst:
         x1, y1 = point
@@ -33,10 +29,8 @@ def checkFibreCol(edge_lst, point_lst, x, y):
             valid = False
     return valid
 
-# Generate corresponding half fibre pairs:
 
-
-def handleHalfFibres(edge_lst, point_lst, x, y, edge_bound):
+def handleHalfFibres(edge_lst, point_lst, x, y, edge_bound):  # Generate corresponding half fibre pairs
     # Corners:
     if x > edge_bound and y > edge_bound:
         x1 = x - RVE_size
@@ -113,10 +107,8 @@ def handleHalfFibres(edge_lst, point_lst, x, y, edge_bound):
             edge_lst.append((x, y1))
     return edge_lst, point_lst
 
-# Random fibre position creation:
 
-
-def randFibrePos():
+def randFibrePos():  # Random fibre position creation
     edge_lst = []
     point_lst = []
     edge_bound = (RVE_size / 2) - (fibre_diameter / 2)
@@ -153,21 +145,8 @@ if __name__ == '__main__':
         x_lst.append(point[0])
         y_lst.append(point[1])
 
-    # # 3D PLOTTING
-    # def z_function(x, y):
-    #     return np.sin(np.sqrt(x ** 2 + y ** 2))
-
-    # X, Y = np.meshgrid(x_lst, y_lst)
-    # Z = z_function(X, Y)
-    # fig = plt.figure()
-    # ax = plt.axes(projection="3d")
-    # ax.plot_wireframe(X, Y, Z, color='green')
-    # ax.set_xlabel('x')
-    # ax.set_ylabel('y')
-    # ax.set_zlabel('z')
-    # plt.show()
-
-    plt.figure(figsize=(10, 10), dpi=70)
+    plt.figure(figsize=(7, 7), dpi=70)
     plt.axis([-60, 60, -60, 60])
-    plt.scatter(x_lst, y_lst, s=7000)
+    plt.scatter(x_lst, y_lst, facecolors='none', edgecolors='b', s=4200)
+    plt.scatter(x_lst, y_lst, color='red', s=75)
     plt.show()

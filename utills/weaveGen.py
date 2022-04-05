@@ -34,10 +34,6 @@ def find_spline_nodes(sin_x, step, pi_len, overlap_len, sc):
         else:
             x, offset, points, x_points, y_points = add_straight(x, y, overlap_len, step, points, x_points, y_points, offset)
 
-    print(len(points))
-    print(len(x_points))
-    print(len(y_points))
-
     return x_points, y_points, points
 
 
@@ -78,8 +74,5 @@ if __name__ == '__main__':
     ###########################################################################
 
     x, y, p = find_spline_nodes((sin_x * sc), (step / sc), (pi_len / sc), overlap_len, sc)
-    # print(p)
-    # print(len(p))
-
     plt.plot(x, y)
     plt.show()
