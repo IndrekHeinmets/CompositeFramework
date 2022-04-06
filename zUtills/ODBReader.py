@@ -200,7 +200,7 @@ if __name__ == '__main__':
 
     compModels = ['PLAIN', 'BASKET', 'MOCK-LENO',
                   'SATIN', 'TWILL', 'EXTRA']
-    compPath = './CompositeMesostructure/ODBData/'
+    compPath = './CompositeMacrostructure/ODBData/'
     compSize = (38, 4, 38)
 
     RVEModels = ['RVE1', 'RVE2', 'RVE3']

@@ -212,10 +212,10 @@ region = a.instances['WovenFibre-1'].sets['xBack']
 region1 = a1.instances['StraightFibre-1'].sets['xBack']
 mdb.models['WovenFibre'].DisplacementBC(name='xBackSup', createStepName='StaticAnalysis', region=region, u1=0.0, u2=0.0, u3=0.0, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
 mdb.models['StraightFibre'].DisplacementBC(name='xBackSup', createStepName='StaticAnalysis', region=region1, u1=0.0, u2=0.0, u3=0.0, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
-region = a.instances['WovenFibre-1'].sets['xFront']
-region1 = a1.instances['StraightFibre-1'].sets['xFront']
-mdb.models['WovenFibre'].DisplacementBC(name='Load', createStepName='StaticAnalysis', region=region, u1=l_disp, u2=UNSET, u3=UNSET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
-mdb.models['StraightFibre'].DisplacementBC(name='Load', createStepName='StaticAnalysis', region=region1, u1=l_disp, u2=UNSET, u3=UNSET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
+region = mdb.models['WovenFibre'].rootAssembly.sets['RPSet']
+region1 = mdb.models['StraightFibre'].rootAssembly.sets['RPSet']
+mdb.models['WovenFibre'].DisplacementBC(name='Load', createStepName='StaticAnalysis', region=region, u1=l_disp, u2=SET, u3=SET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
+mdb.models['StraightFibre'].DisplacementBC(name='Load', createStepName='StaticAnalysis', region=region1, u1=l_disp, u2=SET, u3=SET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
 a.regenerate()
 a1.regenerate()
 
