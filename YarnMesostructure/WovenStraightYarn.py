@@ -91,7 +91,7 @@ s.unsetPrimaryObject()
 s2 = mdb.models['StraightFibre'].ConstrainedSketch(name='__sweep__', sheetSize=1)
 g2, v2, d2, c2 = s2.geometry, s2.vertices, s2.dimensions, s2.constraints
 s2.setPrimaryObject(option=STANDALONE)
-s2.Line(point1=(points[0]), point2=(points[-1]))
+s2.Line(point1=(points[0]), point2=(points[-1][0], points[0][1]))
 s2.unsetPrimaryObject()
 
 # Weave fibre cross-section:
@@ -218,13 +218,15 @@ mdb.models['WovenFibre'].DisplacementBC(name='Load', createStepName='StaticAnaly
 mdb.models['StraightFibre'].DisplacementBC(name='Load', createStepName='StaticAnalysis', region=region1, u1=l_disp, u2=SET, u3=SET, ur1=UNSET, ur2=UNSET, ur3=UNSET, amplitude=UNSET, fixed=OFF, distributionType=UNIFORM, fieldName='', localCsys=None)
 a.regenerate()
 a1.regenerate()
+print('Constraining and Loading done!')
 
-mdb.Job(name='WovenTens', model='WovenFibre', description='', type=ANALYSIS, atTime=None, waitMinutes=0, waitHours=0, queue=None, memory=90, memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True,
+mdb.Job(name='WovenFibreTens', model='WovenFibre', description='', type=ANALYSIS, atTime=None, waitMinutes=0, waitHours=0, queue=None, memory=90, memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True,
         explicitPrecision=SINGLE, nodalOutputPrecision=SINGLE, echoPrint=OFF, modelPrint=OFF, contactPrint=OFF, historyPrint=OFF, userSubroutine='', scratch='', resultsFormat=ODB)
-mdb.Job(name='StraightTens', model='StraightFibre', description='', type=ANALYSIS, atTime=None, waitMinutes=0, waitHours=0, queue=None, memory=90, memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True,
+mdb.Job(name='StraightFibreTens', model='StraightFibre', description='', type=ANALYSIS, atTime=None, waitMinutes=0, waitHours=0, queue=None, memory=90, memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True,
         explicitPrecision=SINGLE, nodalOutputPrecision=SINGLE, echoPrint=OFF, modelPrint=OFF, contactPrint=OFF, historyPrint=OFF, userSubroutine='', scratch='', resultsFormat=ODB)
-# mdb.jobs['WovenTens'].submit(consistencyChecking=OFF)
-# mdb.jobs['StraightTens'].submit(consistencyChecking=OFF)
+# mdb.jobs['WovenFibreTens'].submit(consistencyChecking=OFF)
+# mdb.jobs['StraightFibreTens'].submit(consistencyChecking=OFF)
+# print('Jobs submitted for processing!')
 
 # End of script:
 print('*************************')
