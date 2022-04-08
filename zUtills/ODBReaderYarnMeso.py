@@ -41,7 +41,7 @@ def readODB(path, jobList, specSize, elasticCrit=0.01):
         # Reactions & Displacements:
         frp = odb.steps['StaticAnalysis'].historyRegions[keys[1]]
         hOut_RF1 = frp.historyOutputs['RF1'].data
-        hOut_U1 = drp.historyOutputs['U1'].data
+        hOut_U1 = frp.historyOutputs['U1'].data
         time_vals = matCol(0, hOut_RF1)
         RF1_vals = matCol(1, hOut_RF1)
         U1_vals = matCol(1, hOut_U1)
@@ -78,11 +78,10 @@ def readWriteResults(jobList, path, specSize):
 
 
 if __name__ == '__main__':
-    ################# VARIABLES #####################
-    jobList = ['WovenFibreTens', 'StraightFibreTens']
+    ################### VARIABLES #####################
+    jobList = ['WovenFibreTens', 'StraightFibreTens', 'MockLenoFibreTens']
     yarnPath = './YarnMesostructure/ODBData/'
     yarnSize = (37.5, 1.2, 4.5)
-
     readWriteResults(jobList, yarnPath, yarnSize)
 
     # End of script:
