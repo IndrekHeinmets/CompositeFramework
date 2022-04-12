@@ -227,7 +227,7 @@ mdb.models['StraightFibre'].parts['StraightFibre'].MaterialOrientation(region=re
 mdb.models['MockLenoFibre'].parts['MockLenoFibre'].MaterialOrientation(region=region2, orientationType=GLOBAL, axis=AXIS_1, additionalRotationType=ROTATION_NONE, localCsys=None, fieldName='', stackDirection=STACK_3)
 p.SectionAssignment(region=region, sectionName='Cf_sec', offset=0.0, offsetType=MIDDLE_SURFACE, offsetField='', thicknessAssignment=FROM_SECTION)
 p1.SectionAssignment(region=region1, sectionName='Cf_sec', offset=0.0, offsetType=MIDDLE_SURFACE, offsetField='', thicknessAssignment=FROM_SECTION)
-p1.SectionAssignment(region=region2, sectionName='Cf_sec', offset=0.0, offsetType=MIDDLE_SURFACE, offsetField='', thicknessAssignment=FROM_SECTION)
+p2.SectionAssignment(region=region2, sectionName='Cf_sec', offset=0.0, offsetType=MIDDLE_SURFACE, offsetField='', thicknessAssignment=FROM_SECTION)
 
 # Seeding and meshing:
 p.setMeshControls(regions=cells, elemShape=TET, technique=FREE)

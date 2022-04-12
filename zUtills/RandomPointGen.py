@@ -148,5 +148,5 @@ if __name__ == '__main__':
     plt.figure(figsize=(7, 7), dpi=70)
     plt.axis([-60, 60, -60, 60])
     plt.scatter(x_lst, y_lst, facecolors='none', edgecolors='b', s=4200)
-    plt.scatter(x_lst, y_lst, color='red', s=75)
+    plt.scatter(x_lst, y_lst, color='red', s=70)
     plt.show()
