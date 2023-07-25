@@ -28,13 +28,13 @@ def limitList(crit, valList):
 
 
 def findSlope(listY, listX):
-    m, i, r, p, s = linregress(listX, listY)
+    m, _, _, _, _ = linregress(listX, listY)
     return m
 
 
 def readODB(path, jobList, specSize, elasticCrit=0.01):
     E1List = []
-    for c, job in enumerate(jobList):
+    for job in jobList:
         odb = openOdb(path + job + '.odb')
         keys = odb.steps['StaticAnalysis'].historyRegions.keys()
 

@@ -35,7 +35,7 @@ def limitList(crit, valList):
 
 
 def findSlope(listY, listX):
-    m, i, r, p, s = linregress(listX, listY)
+    m, _, _, _, _ = linregress(listX, listY)
     return m
 
 
@@ -182,11 +182,11 @@ def readWriteResults(modName, avgRes, jobList, RVEModels, RVEPath, RVESize, comp
             writer.writerow([' '])
 
         if avgRes:
-            for c, p in enumerate(propsNames):
+            for i in range(len(propsNames)):
                 if modName == 'RVE':
-                    avgProps.append(findAvg([resList[0][c], resList[1][c], resList[2][c]]))
+                    avgProps.append(findAvg([resList[0][i], resList[1][i], resList[2][i]]))
                 elif modName == 'Comp':
-                    avgProps.append(findAvg([resList[0][c], resList[1][c], resList[2][c], resList[3][c], resList[4][c], resList[5][c]]))
+                    avgProps.append(findAvg([resList[0][i], resList[1][i], resList[2][i], resList[3][i], resList[4][i], resList[5][i]]))
             writer.writerow(['Average results:'])
             writer.writerow(propsNames)
             writer.writerow(avgProps)
